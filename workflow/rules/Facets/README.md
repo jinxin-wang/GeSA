@@ -23,3 +23,4 @@
 
 The presence of two different alleles at a particular gene locus. A heterozygous genotype may include one normal allele and one mutated allele or two different mutated alleles (compound heterozygote)
 
+#### [Chapter 7 FACETS: allele-specific copy number and clonal heterogeneity analysis tool for high-throughput DNA sequencing](https://link.springer.com/content/pdf/10.1007/978-1-0716-2293-3.pdf?pdf=button%20sticky)
