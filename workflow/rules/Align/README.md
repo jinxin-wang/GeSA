@@ -1,8 +1,24 @@
 ### 1. Description of Align Module
 
+Align Module typically refers to a computational tool or software module used to align or map sequencing reads to a reference genome.
+Researchers may determine where each read came from and how it links to the reference sequence by using the alignment process to determine each read's position and orientation within the reference genome.
+
 ### 2. Description of Interfaces and Dependencies
 
 - Specifications of Input Files
+1. Reference Genome File: contains the sequence of the reference genome to which the sequencing reads will be aligned. It is typically a FASTA-formatted file 
+```
+ "human": {
+            "index": "/mnt/beegfs/scratch/Lg_PANUNZI/Konstantin/gatk/human_g1k_v37.fasta",
+        },
+ "mouse": {
+            "index":  "/mnt/beegfs/scratch/j_wang/00_Genome_Ref/mm9/NCBIM37_um.fa"
+```
+2. Sequencing Read File : These files contain the raw or processed sequencing reads that need to be aligned to the reference genome. The reads can be in various formats notably FASTQ (.fastq)
+```
+fastq = ["DNA_samples_clean/{sample}_1.fastq.gz", "DNA_samples_clean/{sample}_2.fastq.gz"] if config["paired"] == True else "DNA_samples_clean/{sample}_0.fastq.gz"
+```
+3. Index Files : 
 
 - Ouput Files
 
