@@ -10,7 +10,7 @@ In the procedure known as base quality score recalibration (BQSR), machine learn
 For instance, we can determine that, for a given run, the following base we called had a 1% greater error rate whenever we called two A nucleotides in an a row. Therefore, the quality score of any base call that follows an AA in a read should be decreased by 1%. 
 it is done over several different covariates (mainly sequence context and position in read, or cycle) in a way that is additive . So the same base may have its quality score increased for one reason and decreased for another. This allows us to get more accurate base qualities overall, which in turn improves the accuracy of our variant calls.
 
-### 2. Description of Interfaces and Dependencies
+Procedure steps : 
 
 1. remove duplicated reads
 2. generate bam index with samtools
@@ -21,6 +21,8 @@ it is done over several different covariates (mainly sequence context and positi
 7. Base Quality Score Recalibration (BQSR) - second pass, GATK BaseRecalibrator
 8. analyse covariate BQSR - GATK AnalyzeCovariates
 
+### 2. Description of Interfaces and Dependencies
+
 interfaces : 
 
 1.input bam file : the bam file containing the aligned reads along with their associated base quality scores is required 
@@ -30,6 +32,23 @@ interfaces :
 ```
 
 2.Reference Genome : BQSR relies on the reference genome , it's a known sequence for aligning reads as well as identifying potential errors in base quality scores.
+
+for human reference genome :
+- human_g1k_v37.fasta refers to the reference genome file for the human genome ,build GRCh37 (Genome Reference Consortium human genome build 37),  contains the DNA sequence information for the reference genome, organized in the FASTA format , considered one of the commonly used versions in genomics research and analysis.
+- The file af-only-gnomad.raw.sites.b37.vcf.gz refers to a compressed Variant Call Format (VCF) file containing allele frequency information from the Genome Aggregation Database (gnomAD) , typically contains allele frequency information for genetic variants observed in diverse populations.
+
+```
+/mnt/beegfs/scratch/Lg_PANUNZI/Konstantin/gatk/human_g1k_v37.fasta
+/mnt/beegfs/userdata/i_padioleau/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz
+
+```
+for mouse human reference genome :
+- The file NCBIM37_um.fa refers to the reference genome file for the mouse genome assembly NCBIM37 , considered one of the earlier versions used in mouse genomics research and analysis.
+- The file mgp_V2_snp_indel_mm9.vcf.gz refers to a compressed Variant Call Format (VCF) file containing SNP (Single Nucleotide Polymorphism) and Indel (Insertion/Deletion) information from the Mouse Genome Project (MGP) version 2 
+```
+"/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
+/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz
+```
 
 3.Known Variants: BQSR also relies and use a set of known variants derived from certain databases in order to estimate error rates and detect differences in the base quality scores.
 
@@ -45,19 +64,6 @@ Dependencies :
 
 3.Reference Genome and known alignment : BQSR relies on a reference genome for aligning the reads and known variants for estimating error rates .The availability and quality of the reference genome and known variant dataset can impact the accuracy of BQSR.
 
-for human reference genome :
-human_g1k_v37.fasta refers to the reference genome file for the human genome ,build GRCh37 (Genome Reference Consortium human genome build 37),  contains the DNA sequence information for the reference genome, organized in the FASTA format , considered one of the commonly used versions in genomics research and analysis.
-```
-/mnt/beegfs/scratch/Lg_PANUNZI/Konstantin/gatk/human_g1k_v37.fasta
-/mnt/beegfs/userdata/i_padioleau/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz
-
-```
-for mouse human reference genome :
-The file NCBIM37_um.fa refers to the reference genome file for the mouse genome assembly NCBIM37 , considered one of the earlier versions used in mouse genomics research and analysis.
-```
-"/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
-/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz
-```
 4.Computational ressources : BQSR can be a computationally demanding method, particularly for NGS datasets of big size. The size of the input BAM file, the complexity of the reference genome, and the quantity of known variations all affect the execution time and resource needs.
 
 Packages and versions :
