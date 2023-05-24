@@ -21,8 +21,14 @@ In the Annovar module, there are specific input files that are required to perfo
 2. Reference genome file:  typically in FASTA format and is required to accurately map the variants to their genomic coordinates
   ANNOVAR can be used with different reference genome assemblies, including hg19 (GRCh37) , it can be obtained from the ANNOVAR website
 ```
-for human : "ref": "hg19"
-for mouse : "ref": "mm9"
+for human : 
+"ref": "hg19",
+ "DB": "/mnt/beegfs/userdata/i_padioleau/genome_data/annovar/humandb/"
+ ```
+ ```
+for mouse : 
+"ref": "mm9",
+"DB": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/annovardb/"
 ```
 4. Annotation database files: Annovar utilizes annotation databases to provide functional annotations for the variants , usually these databases include information on gene transcripts, variant classifications, conservation scores, population frequencies, and pathogenicity predictions. 
 
