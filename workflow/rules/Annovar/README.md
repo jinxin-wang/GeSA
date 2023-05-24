@@ -3,7 +3,9 @@
   The Annovar module is a bioinformatics tool commonly used in genomic research and analysis.
 The main purpose of Annovar, which stands for "Annotate Variation," is to annotate genetic variants found in high-throughput sequencing data.
 The module takes input in the form of variant call format (VCF) files, which are commonly used to store genetic variation information. Annovar processes the variants and provides comprehensive annotations to aid in the interpretation of the genetic data. Annovar's annotations include details on the functional implications of the variants, their genomic positions, and any potential associations they may have with well-known genes or genetic traits.
-  ANNOVAR provides a pre-built database package called "humandb" that contains the necessary files for annotation. the humandb package includes various databases, such as RefSeq, dbSNP, 1000 Genomes Project, and more
+  ANNOVAR provides a pre-built database package called "humandb" that contains the necessary files for annotation. the humandb package includes various databases, such as RefSeq, dbSNP, 1000 Genomes Project, and more.
+  
+  ANNOVAR is a versatile tool for variant annotation and analysis, whereas Haplotype Caller is a dedicated variant calling tool released by the Broad Institute's Genome Analysis Toolkit (GATK). ANNOVAR and Haplotype Caller can be combined in a pipeline for variant analysis even though they have different functions. 
   
 ### 2. Description of Interfaces and Dependencies
 
