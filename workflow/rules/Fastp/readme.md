@@ -1,3 +1,18 @@
+### 1. Description of Fastp Module
+
+### 2. Description of Interfaces and Dependencies
+
+- Specifications of Input Files
+
+- Ouput Files
+
+- Genome Reference
+
+- Packages and Versions
+
+### 3. Issues and TODO
+
+
 #### [fastp](https://github.com/OpenGene/fastp#readme): A tool designed to provide fast all-in-one preprocessing for FastQ files. 
 currently used version 0.20.1
 

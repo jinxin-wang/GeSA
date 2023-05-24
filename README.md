@@ -25,6 +25,12 @@ If the directory of your conda lib is not ~/.conda/, then
 $ cd
 $ ln -s "your_conda_lib_dir" .conda
 ```
+Or link the environments to ~/.conda/envs (if you already have this folder in ~/.conda/). For example:
+```
+ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/pipeline_GATK_2.1.4_V2/" .conda/envs
+ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/Mouse/" .conda/envs
+ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/meta_prism/" .conda/envs
+```
 
 - Step 2. deploy workflow
 
