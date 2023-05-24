@@ -50,6 +50,7 @@ vcf     = "annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"
 
 - Packages and Versions
 
+ANNOVAR version goes back to 2020/06/08.
 in order to use ANNOVAR, we need to have certain packages and dependencies installed. Here are the main requirements:
 
 1. Perl: ANNOVAR is implemented in Perl, so you need to have Perl installed on your system. Most Unix/Linux systems come with Perl pre-installed. You can check the Perl version by running the command perl -v in the terminal.
