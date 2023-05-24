@@ -78,7 +78,7 @@ SAMtools provides an extensive toolkit for general SAM/BAM file manipulation .
 
 ```
 GATK: GATK 4.1.4.1
-Samtools:
+Samtools: Samtools 1.9
 ```
 
 The specific BQSR functionality in GATK is implemented in the following tools:
