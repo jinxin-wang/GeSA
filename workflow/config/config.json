@@ -30,7 +30,7 @@
     },
 
     "gatk": {
-        "app": "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/gatk",
         "scripts": {
             "reformat_mutect2": "workflow/scripts/reformat_mutect2_vcf_for_oncotator_input_GATK_4_1_8_1.py",
         },
@@ -57,7 +57,7 @@
             "target_interval": " -L /mnt/beegfs/userdata/i_padioleau/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.bed",
             "genome_fasta": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
             "gnomad_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
-            "mutect_filter_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9_PASS_AF_only.vcf.gz",
+            "mutect_filter_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
             "WGS": {
                 "mutect_interval_dir": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/interval_mutect2",
                 "hsmetrics_interval": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
