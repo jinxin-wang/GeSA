@@ -24,7 +24,6 @@ for mouse : "ref": "mm9"
 ```
 4. Annotation database files: Annovar utilizes annotation databases to provide functional annotations for the variants , usually these databases include information on gene transcripts, variant classifications, conservation scores, population frequencies, and pathogenicity predictions. 
 
-6. Filter file (optional)
 
 - Ouput Files
 
@@ -33,18 +32,27 @@ for mouse : "ref": "mm9"
 ```
    output: "annovar/{sample}.avinput"
 ```
-2. Summary statistics file: this file gives summary statistics and counts for the annotated variants.It contains details on the total number of variants, the number of variants classified according to several categories (such as missense, frameshift, and synonymous), and the distribution of variants across functional regions of the genome.
+2. Summary statistics file (optional): this file gives summary statistics and counts for the annotated variants.It contains details on the total number of variants, the number of variants classified according to several categories (such as missense, frameshift, and synonymous), and the distribution of variants across functional regions of the genome.
 
 3. Filtered variant output file: Annovar can generate an additional output file containing the variants that pass the specified filters ,  If filtering criteria were applied during the analysis using a filter file.
  a file containing filtered variant output with additional functional annotations provided by ANNOVAR , only the variants that meet the specified criteria and can help in focusing on specific subsets of variants for downstream analysis
 ```
 txt     = "annovar/{sample}.%s_multianno.txt"%config["annovar"][config["samples"]]["ref"]
 ```
-4. VCF annotation output file:
-
+4. VCF annotation output file: VCF file that includes the original variant information from the input VCF file along with the additional annotations. This file maintains the VCF format and can be useful for compatibility with downstream tools or for further analysis.
+```
+vcf     = "annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"]]["ref"],
+```
 
 - Genome Reference
 
 - Packages and Versions
+
+in order to use ANNOVAR, we need to have certain packages and dependencies installed. Here are the main requirements:
+
+1. Perl: ANNOVAR is implemented in Perl, so you need to have Perl installed on your system. Most Unix/Linux systems come with Perl pre-installed. You can check the Perl version by running the command perl -v in the terminal.
+2. BioPerl: ANNOVAR relies on BioPerl, a collection of Perl modules for bioinformatics tasks. BioPerl provides various functionalities for working with biological data, including parsing and manipulating sequence data. You can install BioPerl using the Perl package manager, cpan, by running the command cpan BioPerl.
+3. Annotation databases: ANNOVAR uses annotation databases to provide functional annotations for the variants. These databases need to be downloaded and installed before running ANNOVAR. ANNOVAR comes with built-in annotation databases, such as RefSeq, dbSNP, 1000 Genomes Project, ExAC, and others. You can obtain these databases from the ANNOVAR website (https://annovar.openbioinformatics.org/en/latest/user-guide/download/) and follow the instructions provided to install them.
+
 
 ### 3. Issues and TODO
