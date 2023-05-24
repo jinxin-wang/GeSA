@@ -44,8 +44,19 @@ Dependencies :
 2.Variant Calling : to improve the accuracy of variant calling by applying BQSR to the input BAM file , it relies on the variant calling algorithm, such as GATK's HaplotypeCaller.
 
 3.Reference Genome and known alignment : BQSR relies on a reference genome for aligning the reads and known variants for estimating error rates .The availability and quality of the reference genome and known variant dataset can impact the accuracy of BQSR.
-```
 
+for human reference genome :
+human_g1k_v37.fasta refers to the reference genome file for the human genome ,build GRCh37 (Genome Reference Consortium human genome build 37),  contains the DNA sequence information for the reference genome, organized in the FASTA format , considered one of the commonly used versions in genomics research and analysis.
+```
+/mnt/beegfs/scratch/Lg_PANUNZI/Konstantin/gatk/human_g1k_v37.fasta
+/mnt/beegfs/userdata/i_padioleau/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz
+
+```
+for mouse human reference genome :
+The file NCBIM37_um.fa refers to the reference genome file for the mouse genome assembly NCBIM37 , considered one of the earlier versions used in mouse genomics research and analysis.
+```
+"/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
+/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz
 ```
 4.Computational ressources : BQSR can be a computationally demanding method, particularly for NGS datasets of big size. The size of the input BAM file, the complexity of the reference genome, and the quantity of known variations all affect the execution time and resource needs.
 
