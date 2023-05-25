@@ -22,6 +22,14 @@ fastq = ["DNA_samples_clean/{sample}_1.fastq.gz", "DNA_samples_clean/{sample}_2.
 
 - Ouput Files
 
+1. Alignment Results File : BAM (Binary Alignment/Map) File: A binary version of the SAM file that provides a more compact representation of the alignment results. BAM files are compressed and typically more efficient for storage and processing. They are often used for downstream analysis and visualization.
+```
+  temp("bam/{sample}.bam")
+```
+2. Log Files: Text files that capture information about the alignment process, including any warnings, errors, or progress updates. These files can be helpful for troubleshooting and understanding the alignment workflow.
+```
+"logs/bam/{sample}.bam.log"
+```
 - Genome Reference
 
 - Packages and Versions
