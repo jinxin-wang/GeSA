@@ -52,7 +52,7 @@ rule index_exom_mutect2:
         mem_mb = 10240
     conda: "pipeline_GATK_2.1.4_V2"
     shell:
-        '{params.gatk} IndexFeatureFile -I {input.exom_Mutect2} 2> {log}'
+        '{params.gatk} IndexFeatureFile -F {input.exom_Mutect2} 2> {log}'
 
 # A rule to generate a bed from mutect2 vcf  
 rule get_variant_bed_exom:

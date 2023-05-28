@@ -159,21 +159,24 @@ if config["mode"] == "T":
         
 rule all:
     input:
-        # expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ),
-        # expand('fastq_QC_clean/{sample}_fastqc.html', sample =  FASTQ),
+        expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ),
+        expand('fastq_QC_clean/{sample}_fastqc.html', sample =  FASTQ),
         expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE),
         # expand("BQSR/{sample}_BQSR_report.pdf", sample = TSAMPLE + NSAMPLE),
-        # expand(FACETS),
-        # expand(CNV_FACETS),
-        # expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = TSAMPLE + NSAMPLE),
-        # expand("annovar/{sample}.avinput", sample = TSAMPLE + NSAMPLE if config["samples"] == "human" else []),
-        # expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
-        # expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
-        # expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
+        expand(FACETS),
+        expand(CNV_FACETS),
+        expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = TSAMPLE + NSAMPLE),
+        expand("annovar/{sample}.avinput", sample = TSAMPLE + NSAMPLE if config["samples"] == "human" else []),
+        expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
+        expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
+        expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
         expand(MUTECT2),
         expand(ONCOTATOR),
         expand(ONCOTATOR_EXOM),
         expand(ANNOVAR),
+
+
+include: "rules/Sam2fq/sam2fq.smk"
 
 ######## clean fastq files with fastp ########
 include: "rules/Fastp/fastp.smk"
