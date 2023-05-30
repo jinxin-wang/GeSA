@@ -43,6 +43,8 @@ json_report = 'fastp_reports/{sample}_fastp_report.json'
 ```
 - Genome Reference
 
+fastp does not require a specific genome reference , we only need to specify the raw sequencing data in FASTQ format as an input within the Fastp module
+
 - Packages and Versions
 
 ### 3. Issues and TODO
