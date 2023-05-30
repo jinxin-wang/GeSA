@@ -1,9 +1,15 @@
 ### 1. Description of Fastp Module
 
+Fastp is an ultra-fast FASTQ preprocessor with useful quality control and data-filtering features. It is developed in C++ with multithreading supported to afford high performance. It can perform quality control, adapter trimming, quality filtering, per-read quality pruning and many other operations with a single scan of the FASTQ data. Quality control and reporting are displayed both before and after filtering, allowing for a clear depiction of the consequences of the filtering process , it helps enhance the accuracy and realibility of downstream analysis such as variant calling , genome assembly and transcriptome analysis.
+
+
 ### 2. Description of Interfaces and Dependencies
 
 - Specifications of Input Files
-
+'''
+input:
+            fastq_0="DNA_samples/{sample}_0.fastq.gz",
+'''
 - Ouput Files
 
 - Genome Reference
