@@ -6,11 +6,21 @@ Fastp is an ultra-fast FASTQ preprocessor with useful quality control and data-f
 ### 2. Description of Interfaces and Dependencies
 
 - Specifications of Input Files
-'''
+
+first of all , we need to specify the input file for either single-end or paired-end data 
+```
 input:
             fastq_0="DNA_samples/{sample}_0.fastq.gz",
-'''
+```
 - Ouput Files
+
+the fastp module generate several output files that provides information about the preprocessing steps and the resulting processed data 
+1. processed FASTQ file :
+```
+output:
+            fastq_clean = temp('DNA_samples_clean/{sample}_0.fastq.gz')
+```
+2. HTML report : fastp generate an HTML report file that contains the detailed statistics and visualization data about the quality control and processing steps , it includes 
 
 - Genome Reference
 
