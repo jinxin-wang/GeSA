@@ -28,6 +28,8 @@ The FastQC module can also be used to analyze cleaned or processed FASTQ files a
 
 - Genome Reference
 
+FastQC does not require a specific genome reference , we only need to specify the raw or processed sequencing data in FASTQ format as an input within the module
+
 - Packages and Versions
 
 ### 3. Issues and TODO
