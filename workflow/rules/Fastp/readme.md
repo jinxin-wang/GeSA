@@ -8,20 +8,39 @@ Fastp is an ultra-fast FASTQ preprocessor with useful quality control and data-f
 - Specifications of Input Files
 
 first of all , we need to specify the input file for either single-end or paired-end data 
+for single-end data :
 ```
 input:
             fastq_0="DNA_samples/{sample}_0.fastq.gz",
 ```
+for paired-end data 
+```
+            fastq_1="DNA_samples/{sample}_1.fastq.gz",
+            fastq_2="DNA_samples/{sample}_2.fastq.gz",
+```
+
 - Ouput Files
 
 the fastp module generate several output files that provides information about the preprocessing steps and the resulting processed data 
 1. processed FASTQ file :
+For single-end data :
 ```
-output:
             fastq_clean = temp('DNA_samples_clean/{sample}_0.fastq.gz')
 ```
-2. HTML report : fastp generate an HTML report file that contains the detailed statistics and visualization data about the quality control and processing steps , it includes 
+For paired-end data :
+```
+            fastq_clean_1 = temp('DNA_samples_clean/{sample}_1.fastq.gz'),
+            fastq_clean_2 = temp('DNA_samples_clean/{sample}_2.fastq.gz')
+```
+2. HTML report : fastp generate an HTML report file that contains the detailed statistics and visualization data about the quality control and processing steps , in order to help the users asses the quality of the input data and evalute the effect of the preprocessing steps , it usually includes graphs showing the distribution of read qualities , adapter content , read length 
 
+```           
+            html_report = 'fastp_reports/{sample}_fastp_report.html'
+```
+3. JSON report : which is a report that contains summary statistics and detailed informations about each processed read . it is usually used to extract specific information for downstream analysis 
+```
+json_report = 'fastp_reports/{sample}_fastp_report.json'
+```
 - Genome Reference
 
 - Packages and Versions
