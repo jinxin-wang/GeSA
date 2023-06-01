@@ -16,7 +16,7 @@ Its a combination of local re-assembly, likelihood calculation, and statistical 
         bam = "bam/{sample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{sample}.recal.bam",
         bai = "bam/{sample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{sample}.recal.bam.bai",
 ```
-- Ouput Files
+- Ouput Files 
 The output of the HaplotypeCaller module is commonly a file in the Variant Call Format (VCF) containing information about the identified genetic variants in the sample . Overall , it provides a comprehensive summary of the detected genetic variants, enabling downstream analyses such as variant annotation, population genetics studies, and identification of potentially disease-causing variants.
 
 As for the TBI file , it is a separate index file that is typically generated for VCF files and is used to enable quick and efficient retrieval of data from large VCF files, particularly for specific genomic regions of interest.
