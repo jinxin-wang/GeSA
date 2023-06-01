@@ -39,6 +39,9 @@ HaplotypeCaller files generated from different samples or genomic regions in VCF
 The main output of the "concatenate_haplotypecaller" rule is a single merged VCF file that contains the variant calls from all the input HaplotypeCaller files. This merged VCF file combines the variant information for all samples or genomic regions, providing a comprehensive overview of the variants detected across the dataset
 
 As well as an index file, commonly in the Tabix Index (TBI) format that allows for quick querying of specific genomic regions within the VCF file.
+
+lastly , the temporary text file is being used to store a list or collection of VCF filenames related to a particular sample. t can be used as an intermediate step within a larger workflow or program where this list of VCF filenames is needed for further processing or analysis.
+
 ```
         concatened_vcf = temp("haplotype_caller/{nsample}_germline_variants.vcf.gz"),
         concatened_tbi = temp("haplotype_caller/{nsample}_germline_variants.vcf.gz.tbi"),
