@@ -25,6 +25,25 @@ As for the TBI file , it is a separate index file that is typically generated fo
         VCF = temp("haplotype_caller_tmp/{sample}_germline_variants_ON_{interval}.vcf.gz"),
         TBI = temp("haplotype_caller_tmp/{sample}_germline_variants_ON_{interval}.vcf.gz.tbi")
 ```
+
+The HaplotypeCaller module's execution may generate temporary or intermediate files as part of its execution . Once the variant calling is complete, it is often necessary to concatenate or merge these temporary files into a single final output file.
+
+- input file :
+-
+HaplotypeCaller files generated from different samples or genomic regions in VCF format .
+```
+        vcfs = expand("haplotype_caller_tmp/{{nsample}}_germline_variants_ON_{mutect_interval}.vcf.gz", mutect_interval=mutect_intervals)
+```
+- output file :
+
+The main output of the "concatenate_haplotypecaller" rule is a single merged VCF file that contains the variant calls from all the input HaplotypeCaller files. This merged VCF file combines the variant information for all samples or genomic regions, providing a comprehensive overview of the variants detected across the dataset
+
+As well as an index file, commonly in the Tabix Index (TBI) format that allows for quick querying of specific genomic regions within the VCF file.
+```
+        concatened_vcf = temp("haplotype_caller/{nsample}_germline_variants.vcf.gz"),
+        concatened_tbi = temp("haplotype_caller/{nsample}_germline_variants.vcf.gz.tbi"),
+        vcf_liste      = temp("haplotype_tmp_list/{nsample}_haplotype_tmp_list.txt")
+```
 - Genome Reference
 
 - Packages and Versions
