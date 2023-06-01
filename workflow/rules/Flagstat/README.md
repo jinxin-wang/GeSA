@@ -27,6 +27,8 @@ The output file of the FLAGstat module is typically a text file that contains th
 ```
 - Genome Reference
 
+FLAGstat module itself does not require the genome reference as an input, the alignment process that generates the BAM file relies on the reference genome
+
 - Packages and Versions
 
 ### 3. Issues and TODO
