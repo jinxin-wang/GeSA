@@ -10,13 +10,20 @@ metaprism_config = {
         },
         "civic": {
             "run_per_sample": {
-                "maf": True,  
-                "cna": True
+                "maf": True,
             },     
             "rules_clean": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/CIViC_Curation_And_Rules_Mutation.xlsx",
             "evidences": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-ClinicalEvidenceSummaries_Annotated.xlsx",
             "gene_list": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-GeneSummaries.tsv",
             "code_dir": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator",
+        },
+        "oncokb": {
+            "run_per_sample": {"maf": True},
+            "code_dir": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator",
+            "data_dir": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data",
+            "gene_list": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data/cancerGeneList_oncokb_annotated.tsv",
+            "token": "81a7024b-b860-4e9c-ba71-4380d64b0e9a",
+            "rules_clean": "/mnt/beegfs/database/bioinfo/metaprism/wes/resources/oncokb/OncoKB_Curation_And_Rules.xlsx",
         },
         "vcf2maf": {
             "path": "/mnt/beegfs/software/metaprism/wes/external/vcf2maf",
