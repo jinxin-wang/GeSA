@@ -1,60 +1,3 @@
-metaprism_mutect2_TvN_config = {
-    "ref": {
-        "species": "homo_sapiens",
-    },
-    "params": {
-        "civic": {
-            "run_per_sample": {
-                "maf": False,  
-            },     
-            "rules_clean": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/CIViC_Curation_And_Rules_Mutation.xlsx",
-            "evidences": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-ClinicalEvidenceSummaries_Annotated.xlsx",
-            "gene_list": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-GeneSummaries.tsv",
-            "code_dir": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator",
-        },
-        "vcf2maf": {
-            "path": "/mnt/beegfs/software/metaprism/wes/external/vcf2maf",
-        },
-        "vep": {
-            "fasta": "homo_sapiens/104_GRCh37/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
-            "path": "/mnt/beegfs/software/metaprism/wes/external/vep",
-            "cache": "/mnt/beegfs/software/metaprism/wes/external/vep/cache",
-            "plugins_data": {
-                "CADD": [
-                    "/mnt/beegfs/software/metaprism/wes/external/vep/cache/Plugins/whole_genome_SNVs_1.6_grch37.tsv.gz",
-                    "/mnt/beegfs/software/metaprism/wes/external/vep/cache/Plugins/InDels_1.6_grch37.tsv.gz",
-                ],
-                "dbNSFP": [
-                    "/mnt/beegfs/software/metaprism/wes/external/vep/cache/Plugins/dbNSFP4.1a_grch37.gz",
-                ],
-            },
-            "dbnsfp": [
-                "SIFT_score",
-                "SIFT_pred",
-                "Polyphen2_HVAR_score",
-                "Polyphen2_HVAR_pred",
-                "CADD_raw_hg19",
-                "DEOGEN2_score",
-                "REVEL_score",
-                "VEST4_score",
-                "FATHMM_score",
-                "fathmm-MKL_coding_score",
-                "MutationAssessor_score",
-                "MutationAssessor_pred",
-                "MutationTaster_score",
-                "MutationTaster_pred",
-                "PROVEAN_score",
-                "GERP++_RS"
-                "clinvar_id",
-                "clinvar_clnsig",
-                "Ensembl_proteinid",
-                "Ensembl_transcriptid",
-            ]
-        },
-    },
-    "tumor_normal_pairs": "config/tumor_normal_pairs.tsv",
-}
-
 rule somatic_vep_vcf:
     input:
         vcf="Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
@@ -65,9 +8,9 @@ rule somatic_vep_vcf:
     conda:
         "../envs/perl.yaml"
     params:
-        species=metaprism_mutect2_TvN_config["ref"]["species"],
-        vep_dir=metaprism_mutect2_TvN_config["params"]["vep"]["path"],
-        vep_data=metaprism_mutect2_TvN_config["params"]["vep"]["cache"],
+        species=metaprism_config["ref"]["species"],
+        vep_dir=metaprism_config["params"]["vep"]["path"],
+        vep_data=metaprism_config["params"]["vep"]["cache"],
     threads: 4
     resources:
         queue="shortq",
@@ -113,9 +56,9 @@ rule somatic_vep_vcf2maf:
     conda:
         "../envs/perl.yaml"
     params:
-        path=metaprism_mutect2_TvN_config["params"]["vcf2maf"]["path"],
-        fasta="%s/%s" % (metaprism_mutect2_TvN_config["params"]["vep"]["cache"],metaprism_mutect2_TvN_config["params"]["vep"]["fasta"]),
-        dbnsfp=",".join(metaprism_mutect2_TvN_config["params"]["vep"]["dbnsfp"])
+        path=metaprism_config["params"]["vcf2maf"]["path"],
+        fasta="%s/%s" % (metaprism_config["params"]["vep"]["cache"],metaprism_config["params"]["vep"]["fasta"]),
+        dbnsfp=",".join(metaprism_config["params"]["vep"]["dbnsfp"])
     resources:
         queue="shortq",
         mem_mb=4000,
@@ -141,8 +84,8 @@ rule somatic_vep_vcf2maf:
 rule somatic_vep_tab:
     input:
         vcf="Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
-        cadd=metaprism_mutect2_TvN_config["params"]["vep"]["plugins_data"]["CADD"],
-        dbnsfp=metaprism_mutect2_TvN_config["params"]["vep"]["plugins_data"]["dbNSFP"],
+        cadd=metaprism_config["params"]["vep"]["plugins_data"]["CADD"],
+        dbnsfp=metaprism_config["params"]["vep"]["plugins_data"]["dbNSFP"],
     output:
         vcf=temp("Vep/TAB_Annotation/{tsample}_Vs_{nsample}_twicefiltered_TvN.tsv"),
     log:
@@ -150,10 +93,10 @@ rule somatic_vep_tab:
     conda:
         "../envs/perl.yaml"
     params:
-        species=metaprism_mutect2_TvN_config["ref"]["species"],
-        vep_dir=metaprism_mutect2_TvN_config["params"]["vep"]["path"],
-        vep_data=metaprism_mutect2_TvN_config["params"]["vep"]["cache"],
-        dbnsfp=",".join(metaprism_mutect2_TvN_config["params"]["vep"]["dbnsfp"])
+        species=metaprism_config["ref"]["species"],
+        vep_dir=metaprism_config["params"]["vep"]["path"],
+        vep_data=metaprism_config["params"]["vep"]["cache"],
+        dbnsfp=",".join(metaprism_config["params"]["vep"]["dbnsfp"])
     threads: 4
     resources:
         queue="shortq",
@@ -221,10 +164,10 @@ rule somatic_maf:
 rule somatic_maf_civic:
     input:
         table_alt="MAF/annotation/somatic_maf/{tsample}_Vs_{nsample}.maf",
-        table_cln=metaprism_mutect2_TvN_config["tumor_normal_pairs"],
-        table_gen=metaprism_mutect2_TvN_config["params"]["civic"]["gene_list"],
-        civic=metaprism_mutect2_TvN_config["params"]["civic"]["evidences"],
-        rules=metaprism_mutect2_TvN_config["params"]["civic"]["rules_clean"],
+        table_cln=metaprism_config["tumor_normal_pairs"],
+        table_gen=metaprism_config["params"]["civic"]["gene_list"],
+        civic=metaprism_config["params"]["civic"]["evidences"],
+        rules=metaprism_config["params"]["civic"]["rules_clean"],
         script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/04.3_civic_annotate.sh"
     output:
         table_pre=temp("MAF/annotation/civic_db/{tsample}_Vs_{nsample}_pre.tsv"),
@@ -235,9 +178,9 @@ rule somatic_maf_civic:
     conda:
         "../envs/python.yaml"
     params:
-        code_dir=metaprism_mutect2_TvN_config["params"]["civic"]["code_dir"],
+        code_dir=metaprism_config["params"]["civic"]["code_dir"],
         category="mut",
-        a_option=lambda wildcards, input: "-a %s" % input.table_alt,
+        a_option=lambda wildcards, input: "-a %s" % input.table_alt
     threads: 1
     resources:
         queue="shortq",
