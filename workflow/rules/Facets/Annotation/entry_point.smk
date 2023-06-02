@@ -36,4 +36,4 @@ include: "annotate_cna.smk"
 
 rule target:
     input:
-        "oncokb/annotation/somatic_cna_oncokb/ST4080_T_Vs_ST4080_N.tsv"
+        "oncokb/annotation/somatic_cna_oncokb/ST4080_T_vs_ST4080_N.tsv"
