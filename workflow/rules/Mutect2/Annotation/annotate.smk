@@ -1,6 +1,3 @@
-include: ""
-include: "annotate_variants.smk"
-
 metaprism_config = {
     "ref": {
         "species": "homo_sapiens",
@@ -63,6 +60,8 @@ metaprism_config = {
     },
     "tumor_normal_pairs": "config/tumor_normal_pairs.tsv",
 }
+
+include: "annotate_variants.smk"
 
 rule target:
     input:
