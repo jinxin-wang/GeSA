@@ -6,7 +6,7 @@ rule somatic_vep_vcf:
     log:
         "logs/annotation/somatic_vep/{tsample}_vs_{nsample}_vep_vcf.log"
     conda:
-        "../envs/perl.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/perl.yaml"
     params:
         species=metaprism_config["ref"]["species"],
         vep_dir=metaprism_config["params"]["vep"]["path"],
@@ -54,7 +54,7 @@ rule somatic_vep_vcf2maf:
         "logs/annotation/somatic_vep/{tsample}_vs_{nsample}_vcf2maf.log"
     threads: 1
     conda:
-        "../envs/perl.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/perl.yaml"
     params:
         path=metaprism_config["params"]["vcf2maf"]["path"],
         fasta="%s/%s" % (metaprism_config["params"]["vep"]["cache"],metaprism_config["params"]["vep"]["fasta"]),
@@ -91,7 +91,7 @@ rule somatic_vep_tab:
     log:
         "logs/annotation/somatic_vep/{tsample}_vs_{nsample}_vep_tab.log"
     conda:
-        "../envs/perl.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/perl.yaml"
     params:
         species=metaprism_config["ref"]["species"],
         vep_dir=metaprism_config["params"]["vep"]["path"],
@@ -145,7 +145,7 @@ rule somatic_maf:
     log:
         "logs/annotation/somatic_maf/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/python.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     threads: 1
     resources:
         queue="shortq",
@@ -176,7 +176,7 @@ rule somatic_maf_civic:
     log:
         "logs/annotation/somatic_maf_civic/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/python.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
         code_dir=metaprism_config["params"]["civic"]["code_dir"],
         category="mut",

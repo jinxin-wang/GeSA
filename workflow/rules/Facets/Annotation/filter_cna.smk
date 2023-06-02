@@ -33,7 +33,7 @@ def get_column_table_sample(wildcards, col):
 
 rule setup_r:
     conda:
-        "../envs/r.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/r.yaml"
     output:
         touch("logs/setup_r.done")
     resources:
@@ -48,11 +48,11 @@ rule setup_r:
 
 rule somatic_cnv_process_vcf:
     input:
-        vcf="facets/calling/somatic_cnv_facets/{tsample}_vs_{nsample}.vcf.gz"
+        vcf="facets/calling/somatic_cnv_facets/{tsample}_vs_{nsample}.vcf.gz",
         rules_arm=config["params"]["cnv"]["chr_arm_rules"],
         rules_cat=config["params"]["cnv"]["cna_cat_rules"],
         env="logs/setup_r.done",
-        script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/05.2_cnv_process_vcf.R"
+        script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/05.2_cnv_process_vcf.R",
     output:
         arm="facets/calling/somatic_cnv_chr_arm/{tsample}_vs_{nsample}.tsv",
         sum="facets/calling/somatic_cnv_sum/{tsample}_vs_{nsample}.tsv",
@@ -60,7 +60,7 @@ rule somatic_cnv_process_vcf:
     log:
         "logs/calling/somatic_cnv_process_vcf/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/r.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/r.yaml"
     threads: 1
     params:
         gender = lambda w: get_column_table_sample(w, "Gender"),
@@ -94,7 +94,7 @@ rule somatic_cnv_gene_calls:
     log:
         "logs/calling/somatic_cnv_gene_calls/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/python.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
         threshold=config["params"]["cnv"]["calls_threshold"]
     threads: 1

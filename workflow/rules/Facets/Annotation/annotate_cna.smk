@@ -13,7 +13,7 @@ rule somatic_cna_civic:
     log:
         "logs/annotation/somatic_cna_civic/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/python.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
         code_dir=config["params"]["civic"]["code_dir"],
         category="cna",
@@ -54,7 +54,7 @@ rule somatic_cna_oncokb:
     log:
         "logs/annotation/somatic_cna_oncokb/{tsample}_vs_{nsample}.log"
     conda:
-        "../envs/python.yaml"
+        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
         token=config["params"]["oncokb"]["token"],
         code_dir=config["params"]["oncokb"]["code_dir"],
