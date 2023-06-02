@@ -1,6 +1,3 @@
-include: "filter_cna.smk"
-include: "annotate_cna.smk"
-
 metaprism_config = {
     "params": {
         "cnv": {
@@ -32,3 +29,11 @@ metaprism_config = {
     }
 }
 
+
+include: "filter_cna.smk"
+include: "annotate_cna.smk"
+
+
+rule target:
+    input:
+        "oncokb/annotation/somatic_cna_oncokb/ST4080_T_Vs_ST4080_N.tsv"
