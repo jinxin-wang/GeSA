@@ -2,7 +2,7 @@ import pandas
 
 try:
     table = pandas.read_table(
-        config["general"]["samples"], 
+        metaprism_config["general"]["samples"], 
         dtype=str
     ).set_index(
         ["Sample_Id"], 
@@ -51,8 +51,8 @@ rule setup_r:
 rule somatic_cnv_process_vcf:
     input:
         vcf="facets/calling/somatic_cnv_facets/{tsample}_vs_{nsample}.vcf.gz",
-        rules_arm=config["params"]["cnv"]["chr_arm_rules"],
-        rules_cat=config["params"]["cnv"]["cna_cat_rules"],
+        rules_arm=metaprism_config["params"]["cnv"]["chr_arm_rules"],
+        rules_cat=metaprism_config["params"]["cnv"]["cna_cat_rules"],
         env="logs/setup_r.done",
         script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/05.2_cnv_process_vcf.R",
     output:
@@ -66,7 +66,7 @@ rule somatic_cnv_process_vcf:
     threads: 1
     params:
         gender = lambda w: get_column_table_sample(w, "Gender"),
-        threshold=config["params"]["cnv"]["calls_threshold"]
+        threshold=metaprism_config["params"]["cnv"]["calls_threshold"]
     resources:
         queue="shortq",
         mem_mb=8000,
@@ -89,7 +89,7 @@ rule somatic_cnv_process_vcf:
 rule somatic_cnv_gene_calls:
     input:
         tab="facets/calling/somatic_cnv_table/{tsample}_vs_{nsample}.tsv",
-        bed=config["params"]["cnv"]["bed"],
+        bed=metaprism_config["params"]["cnv"]["bed"],
         script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/05.3_cnv_gene_calls.py"
     output:
         "facets/calling/somatic_cnv_gene_calls/{tsample}_vs_{nsample}.tsv.gz"
@@ -98,7 +98,7 @@ rule somatic_cnv_gene_calls:
     conda:
         "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
-        threshold=config["params"]["cnv"]["calls_threshold"]
+        threshold=metaprism_config["params"]["cnv"]["calls_threshold"]
     threads: 1
     resources:
         queue="shortq",

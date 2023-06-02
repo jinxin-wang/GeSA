@@ -1,10 +1,10 @@
 rule somatic_cna_civic:
     input:
         table_alt="facets/calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz",
-        table_cln="config/tumor_normal_pairs.tsv",
-        table_gen=config["params"]["civic"]["gene_list"],
-        civic=config["params"]["civic"]["evidences"],
-        rules=config["params"]["civic"]["rules_clean"],
+        table_cln="metaprism_config/tumor_normal_pairs.tsv",
+        table_gen=metaprism_config["params"]["civic"]["gene_list"],
+        civic=metaprism_config["params"]["civic"]["evidences"],
+        rules=metaprism_config["params"]["civic"]["rules_clean"],
         script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/04.3_civic_annotate.sh"
     output:
         table_pre=temp("civic/annotation/somatic_cna_civic/{tsample}_vs_{nsample}_pre.tsv"),
@@ -15,7 +15,7 @@ rule somatic_cna_civic:
     conda:
         "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
-        code_dir=config["params"]["civic"]["code_dir"],
+        code_dir=metaprism_config["params"]["civic"]["code_dir"],
         category="cna",
         a_option=lambda wildcards, input: "-a %s" % input.table_alt
     threads: 1
@@ -42,9 +42,9 @@ rule somatic_cna_civic:
 rule somatic_cna_oncokb:
     input:
         table_alt="facets/calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz"
-        table_cln="config/tumor_normal_pairs.tsv",
-        table_gen=config["params"]["oncokb"]["gene_list"],
-        rules=config["params"]["oncokb"]["rules_clean"],
+        table_cln="metaprism_config/tumor_normal_pairs.tsv",
+        table_gen=metaprism_config["params"]["oncokb"]["gene_list"],
+        rules=metaprism_config["params"]["oncokb"]["rules_clean"],
         script_path="/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/scripts/04.3_oncokb_annotate.sh"
     output:
         table_alt_pre=temp("oncokb/annotation/somatic_cna_oncokb/{tsample}_vs_{nsample}_alt_pre.tsv"),
@@ -56,8 +56,8 @@ rule somatic_cna_oncokb:
     conda:
         "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
     params:
-        token=config["params"]["oncokb"]["token"],
-        code_dir=config["params"]["oncokb"]["code_dir"],
+        token=metaprism_config["params"]["oncokb"]["token"],
+        code_dir=metaprism_config["params"]["oncokb"]["code_dir"],
         category="cna",
         a_option=lambda wildcards, input: "-a %s" % input.table_alt
     threads: 1
