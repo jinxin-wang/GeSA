@@ -1,5 +1,7 @@
+import pandas
+
 try:
-    table = pd.read_table(
+    table = pandas.read_table(
         config["general"]["samples"], 
         dtype=str
     ).set_index(
