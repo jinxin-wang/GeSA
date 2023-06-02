@@ -41,7 +41,7 @@ rule somatic_cna_civic:
 
 rule somatic_cna_oncokb:
     input:
-        table_alt="facets/calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz"
+        table_alt="facets/calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz",
         table_cln="metaprism_config/tumor_normal_pairs.tsv",
         table_gen=metaprism_config["params"]["oncokb"]["gene_list"],
         rules=metaprism_config["params"]["oncokb"]["rules_clean"],
