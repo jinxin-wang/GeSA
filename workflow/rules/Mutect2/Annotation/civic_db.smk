@@ -24,6 +24,21 @@ metaprism_config should be a dict like:
     "tumor_normal_pairs": <path/to/tumor_normal_pairs.tsv>,
 }
 """
+metaprism_mutect2_TvN_config = {
+    "params": {
+        "ref": {
+            "species": "homo_sapiens",
+        },
+        "civic": {
+            "run_per_sample":
+                "maf": False,           
+        },
+        "rules_clean": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/CIViC_Curation_And_Rules_Mutation.xlsx",
+        "evidences": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-ClinicalEvidenceSummaries_Annotated.xlsx",
+        "gene_list": "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-GeneSummaries.tsv",
+    },
+    "tumor_normal_pairs": "config/tumor_normal_pairs.tsv",
+}
 
 # Import Yoann's work
 module metaprism_annotation:
