@@ -36,4 +36,4 @@ include: "annotate_cna.smk"
 
 rule target:
     input:
-        "oncokb/annotation/somatic_cna_oncokb/ST4080_T_vs_ST4080_N.tsv"
+        expand("{db}/annotation/somatic_cna_{db}/ST4080_T_vs_ST4080_N.tsv", db=["civic", "oncokb"])

@@ -50,7 +50,7 @@ rule setup_r:
 
 rule somatic_cnv_process_vcf:
     input:
-        vcf="facets/calling/somatic_cnv_facets/{tsample}_vs_{nsample}.vcf.gz",
+        vcf="cnv_facets/{tsample}_Vs_{nsample}.vcf.gz",
         rules_arm=metaprism_config["params"]["cnv"]["chr_arm_rules"],
         rules_cat=metaprism_config["params"]["cnv"]["cna_cat_rules"],
         env="logs/setup_r.done",
