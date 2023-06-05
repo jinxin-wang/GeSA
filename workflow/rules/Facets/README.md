@@ -60,6 +60,19 @@ the "facets_snp_pileup" rule generates a compressed CSV (Comma-Separated Values)
 ```
        CSV = "facets/{tsample}_Vs_{nsample}_facets.csv.gz"
 ```
+- genome reference 
+"facet_ref" file provide a reference of known genetic variants and their allele frequencies to FACETS for accurate estimation of allele-specific copy numbers and identification of copy number alterations in the tumor sample.
+```
+    "facet_snp_pileup": {
+        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/snp-pileup",
+        "human": {
+            "facet_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
+        },
+        "mouse": {
+            "facet_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
+        },
+    },
+  ```
 - Packages and Versions
 
 ### 3. Issues and TODO
