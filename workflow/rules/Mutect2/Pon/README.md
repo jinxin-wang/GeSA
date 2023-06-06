@@ -28,6 +28,50 @@ The rule generate a file that contains the extracted information from the PoN. T
 ```
 - Genome Reference
 
+--> A rule to sort exom vcf
+
+The purpose of the rule is to sort the exome VCF file based on genomic coordinates. Sorting the VCF file ensures that the variants are ordered according to their position on the genome.
+
+- input files :
+
+The input to the rule is the original exome VCF file. The path to the VCF file is specified as an input parameter.
+```
+Mutect2_vcf = "Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom_unsorted.vcf.gz"
+```
+The rule uses a command-line tool 'vcf-sort' to perform the sorting operation. The tool is invoked within the rule's shell section and takes the input VCF file as an argument.
+```
+vcfsort = config["vcfsort"]["app"],
+```
+- output files :
+The output of the rule is the sorted exome VCF file. 
+The sorting operation generates a new VCF file that contains the variants sorted based on their genomic coordinates. The sorted VCF file maintains the same variants as the input file but presents them in a sorted order
+```
+exom_Mutect2 = temp("Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz")
+```
+- genome reference :
+
+The genome reference used in the rule to sort the exome VCF file would typically be the same genome reference that was used during the variant calling and alignment steps in the exome sequencing analysis
+
 - Packages and Versions
+
+--> A rule to generate a bed from mutect2 vcf, on tumor versus normal with panel of normals
+
+The purpose of the rule is to generate a BED file that represents the genomic coordinates of the variants detected by Mutect2 in the tumor versus normal comparison, considering a panel of normals.
+
+- input files :
+The inputs to the rule typically include the Mutect2 VCF file, which contains the variant calls, and the panel of normals (PoN) file, which contains the variants observed in a set of normal samples.
+```
+        exom_Mutect2 = "Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz"
+```
+- output files :
+The output of the rule is the BED file that represents the genomic coordinates of the variants detected in the tumor versus normal comparison. The BED file format typically includes columns specifying the chromosome, start position, end position, and additional optional columns with additional information.
+```
+        exom_Mutect2 = temp("Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz.tbi")
+```
+- genome reference :
+
+The genome reference used in the rule to generate a BED file from the Mutect2 VCF is the same genome reference that was used during the Mutect2 variant calling and alignment steps
+
+--> A rule to generate a bed from mutect2 vcf, on tumor versus normal with panel of normals
 
 ### 3. Issues and TODO
