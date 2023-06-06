@@ -74,4 +74,18 @@ The genome reference used in the rule to generate a BED file from the Mutect2 VC
 
 --> A rule to generate a bed from mutect2 vcf, on tumor versus normal with panel of normals
 
+The purpose of the rule is to generate a BED file from the Mutect2 VCF file, specifically for the tumor versus normal comparison with a panel of normals.
+
+-input files :
+The input of the rule to generate a BED file from a Mutect2 VCF includes the Mutect2 VCF file , , it contains actual names of the tumor and normal samples, as well as the panel of normals name, respectively. The Mutect2 VCF file should be in a compressed (gzipped) VCF format.
+```
+        Mutect2_vcf = "Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz",
+        Mutect2_vcf_index = "Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz.tbi"
+```
+-output files :
+The output of the rule is the generated BED file (bed_file), which represents the genomic coordinates of the variants specific to the tumor versus normal comparison 
+```
+        MAF = temp("oncotator_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp_exom.TCGAMAF")
+```
+
 ### 3. Issues and TODO
