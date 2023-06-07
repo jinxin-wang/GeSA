@@ -116,10 +116,13 @@ rule oncotator_with_COSMIC_TvN_pon:
 The purpose of the oncotator_with_COSMIC_TvN_pon rule is to annotate a VCF (Variant Call Format) file with Oncotator, incorporating information from the COSMIC (Catalogue of Somatic Mutations in Cancer) database for tumor versus normal comparison with a panel of normals. The rule aims to enhance the annotation of variants in the VCF file by providing additional context and knowledge about cancer-related mutations.
 
 - input files :
-
+the primary input for the rule and contains the genomic positions, alleles, and associated variant information.
 ```
 tsv = "oncotator_TvNp_tsv_pileup/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup.tsv"
 ```
 - output files :
-
+The generated TSV file contain the oncotator annotation results, incorporating information from the pileup data, for the specified tumor versus normal comparison with the panel of normals.
+```
+tsv = "oncotator_TvNp_tsv_COSMIC/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_COSMIC.tsv"
+```
 ### 3. Issues and TODO
