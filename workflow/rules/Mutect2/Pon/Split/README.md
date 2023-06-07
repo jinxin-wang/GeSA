@@ -1,10 +1,12 @@
 --> A rule to generate a bed from mutect2 vcf, on tumor versus normal with panel of normals
 
 - input files : 
+VCF file containing the variants identified in the tumor sample compared to the normal sample
 ```
         Mutect2_vcf = "Mutect2_TvNp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp.vcf.gz"
 ```
 - output files :
+Variant BED file: This is the output BED file that contains the genomic regions of the filtered variants from the Tumor-Normal VCF file. The BED file should include the chromosome, start position, end position, and any additional relevant information for each variant.
 ```
         BED = temp("variant_bed_TvN/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvN.bed")
 ```
