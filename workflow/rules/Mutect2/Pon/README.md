@@ -87,5 +87,5 @@ The output of the rule is the generated BED file (bed_file), which represents th
 ```
         MAF = temp("oncotator_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp_exom.TCGAMAF")
 ```
-
+--> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
 ### 3. Issues and TODO
