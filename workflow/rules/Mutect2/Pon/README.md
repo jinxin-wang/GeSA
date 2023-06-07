@@ -89,6 +89,8 @@ The output of the rule is the generated BED file (bed_file), which represents th
 ```
 --> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
 
+rule oncotator_with_pileup_TvN_pon:
+
 The purpose of this rule is to simplify and process the Oncotator output specifically for the tumor versus normal comparison with the aid of a panel of normals. This simplification step helps in reducing the complexity of the annotations and focusing on the relevant information.
 
 - input files :
@@ -106,5 +108,18 @@ Simplified Oncotator Output: The output of the rule is a simplified version of t
 ```
 tsv = temp("oncotator_TvNp_tsv_pileup_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup_exom.tsv")
 ```
+
+--> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
+
+rule oncotator_with_COSMIC_TvN_pon:
+
+The purpose of the oncotator_with_COSMIC_TvN_pon rule is to annotate a VCF (Variant Call Format) file with Oncotator, incorporating information from the COSMIC (Catalogue of Somatic Mutations in Cancer) database for tumor versus normal comparison with a panel of normals. The rule aims to enhance the annotation of variants in the VCF file by providing additional context and knowledge about cancer-related mutations.
+
+- input files :
+
+```
+tsv = "oncotator_TvNp_tsv_pileup/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup.tsv"
+```
+- output files :
 
 ### 3. Issues and TODO
