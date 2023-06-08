@@ -27,23 +27,32 @@ his rule performs variant calling using samtools mpileup on the tumor and normal
 ```
         PILEUP = temp("pileup_TvN/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvN.pileup.gz")
 ```
+- Reference genome: 
+The reference genome in FASTA format used for alignment and variant calling.
 
 -->  A rule to split mutect2 results in pieces
 
+This rule splits the Mutect2 results file into smaller pieces to facilitate downstream analysis or processing of the data. By splitting the file, you can work with smaller subsets of variants at a time, improving computational efficiency or enabling parallelization.
+
 - input files : 
+Mutect2 VCF file: The Mutect2 variant call format (VCF) file containing the results of the variant calling analysis.
 ```
         Mutect2_vcf = "Mutect2_TvNp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp.vcf.gz",
         vcf_index = "Mutect2_TvNp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp.vcf.gz.tbi"
 ```
 - output files :
+-> Interval-specific VCF file (with bcftools suffix): The output VCF file specific to the interval, compressed using bcftools or similar tool.
+-> Interval-specific VCF file: The output VCF file specific to the interval, without any additional suffix or compression.
 ```
         interval_vcf_bcftools = temp("Mutect2_TvNp_oncotator_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_ON_{interval}_bcftools.vcf.gz"),
         interval_vcf          = temp("Mutect2_TvNp_oncotator_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_ON_{interval}.vcf.gz")
 ```
 
 --> A rule to annotate mutect2 tumor versus normal and panel of normal results with oncotator  
-
+rule oncotator_pon :
+This rule performs annotation of Mutect2 panel of normals (PON) results using Oncotator. Oncotator is a tool used for comprehensive annotation of genomic variants.
 - input files : 
+
 ```
         interval_vcf = "Mutect2_TvNp_oncotator_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_ON_{interval}.vcf.gz"
 ```
