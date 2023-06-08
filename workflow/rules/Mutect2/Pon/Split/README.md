@@ -52,53 +52,66 @@ Mutect2 VCF file: The Mutect2 variant call format (VCF) file containing the resu
 rule oncotator_pon :
 This rule performs annotation of Mutect2 panel of normals (PON) results using Oncotator. Oncotator is a tool used for comprehensive annotation of genomic variants.
 - input files : 
-
+Mutect2 VCF file (panel of normals): The Mutect2 variant call format (VCF) file containing the results of the panel of normals comparison.
 ```
         interval_vcf = "Mutect2_TvNp_oncotator_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_ON_{interval}.vcf.gz"
 ```
 - output files :
+The output MAF file with Mutect2 analysis results annotated by Oncotator.
 ```
         MAF = temp("oncotator_TvNp_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_ON_{interval}_annotated_TvNp.TCGAMAF")
 ```
 
 --> concatenate oncotator TvN_pon
-
+rule concatenate_oncotator_pon:
+This rule concatenates multiple Oncotator-annotated Mutect2 panel of normals (PON) VCF files into a single consolidated VCF file.
 - input files : 
+Oncotator-annotated Mutect2 PON VCF files: Multiple VCF files containing the results of Mutect2 panel of normals comparison, annotated with Oncotator.
 ```
         maf = expand("oncotator_TvNp_tmp/{{tsample}}_Vs_{{nsample}}_PON_{{panel_of_normal}}_ON_{mutect_interval}_annotated_TvNp.TCGAMAF", mutect_interval=mutect_intervals)
 ```
 - output files :
+-> Concatenated Oncotator-annotated PON VCF file: The output VCF file containing the consolidated Mutect2 PON results annotated with Oncotator.
+-> Temporary file list: The output file containing a list of temporary files generated during the analysis pipeline.
 ```
         concatened_oncotator = temp("oncotator_TvNp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp.TCGAMAF"),
         tmp_list = temp("oncotator_TvNp_tmp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_oncotator_tmp.list")
 ```
 
 --> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
-
+rule oncotator_reformat_TvN_pon:
+Filter out variants present in both the tumor and the panel of normal samples.
 - input files : 
+Tumor sample variant calls obtained from Oncotator / Oncotator output in Mutation Annotation Format (MAF) format
 ```
         maf="oncotator_TvNp/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp.TCGAMAF"
 ```
 - output files :
+Simplified variant calls specific to the tumor sample.
 ```
         maf = "oncotator_TvNp_maf/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_selection.TCGAMAF",
         tsv = temp("oncotator_TvNp_tsv/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp.tsv")
 ```
 
 --> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
-
-- input files : 
+rule oncotator_with_pileup_TvN_pon:
+The rule "oncotator_with_pileup_TvN_pon" implies a specific approach or procedure involving the use of Oncotator and pileup data for tumor vs. normal (TvN) comparison with a panel of normals (PoN). 
+- input files :
+-> TSV file contains relevant data or annotations related to the tumor sample, normal sample, and the panel of normal samples used for comparison
+-> The pileup file contains information about read coverage and genetic variants at each genomic position for the tumor sample and the normal sample.
 ```
         tsv = "oncotator_TvNp_tsv/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp.tsv",
         pileup = "pileup_TvN/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvN.pileup.gz"
 ```
 - output files :
+Output purpose is to store the combined information from Oncotator annotations and the pileup data, specifically for the analysis of tumor vs. normal (TvN) comparison with a panel of normal (PoN).
 ```
         tsv = temp("oncotator_TvNp_tsv_pileup/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup.tsv")
 ```
 
 --> A rule to simplify oncotator output on tumor vs normal samples with panel of normal
-
+rule oncotator_with_COSMIC_TvN_pon:
+the rule aims to simplify the Oncotator output for the analysis of tumor vs. normal samples with a panel of normal, with a particular focus on integrating data from the COSMIC (Catalogue of Somatic Mutations in Cancer) database. This rule streamlines the output by consolidating relevant information and annotations specific to the tumor vs. normal comparison.
 - input files : 
 ```
      tsv = "oncotator_TvNp_tsv_pileup/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup.tsv"
