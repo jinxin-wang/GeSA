@@ -113,10 +113,12 @@ Output purpose is to store the combined information from Oncotator annotations a
 rule oncotator_with_COSMIC_TvN_pon:
 the rule aims to simplify the Oncotator output for the analysis of tumor vs. normal samples with a panel of normal, with a particular focus on integrating data from the COSMIC (Catalogue of Somatic Mutations in Cancer) database. This rule streamlines the output by consolidating relevant information and annotations specific to the tumor vs. normal comparison.
 - input files : 
+TSV file that contains the combined information from Oncotator annotations and the pileup data.
 ```
      tsv = "oncotator_TvNp_tsv_pileup/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_pileup.tsv"
 ```
 - output files :
+ simplified Oncotator output with the integration of COSMIC data. It consolidates the relevant variant annotations, genomic coordinates, and additional information obtained from both Oncotator and the COSMIC database.
 ```
         tsv = "oncotator_TvNp_tsv_COSMIC/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvNp_with_COSMIC.tsv"
 ```
