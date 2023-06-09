@@ -3,8 +3,22 @@ The rule "annovar_on_mutect" likely involves running the ANNOVAR tool on the out
 - MuTect, on the other hand, is a specific variant caller designed for detecting somatic mutations in tumor-normal paired samples.
 
 The purpose of this rule is to annotate the variants called by MuTect using ANNOVAR, thereby providing additional functional and genomic information about the detected variants.
-input files :
+- input files :
 
 ```
  vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz"
 ```
+- output file :
+-> avinput: input file for ANNOVAR, which contains the variants from MuTect2 in a specific format expected by ANNOVAR. It is a preprocessed version of the VCF file that is suitable for annotation.
+-> txt:It contains detailed annotations for each variant, including gene annotations, functional effects, conservation scores, population frequencies, and other relevant information. The "mm9_multianno" indicates that the annotations are based on the mm9 genome build.
+-> vcf: It contains the same annotations as the txt file but in the VCF file structure, which is widely used for storing variant data. The "mm9_multianno" indicates that the annotations are based on the mm9 genome build.
+
+ ```
+         avinput = "annovar_mutect2_TvN/{tsample}_Vs_{nsample}.avinput",
+        txt = "annovar_mutect2_TvN/{tsample}_Vs_{nsample}.mm9_multianno.txt",
+        vcf = "annovar_mutect2_TvN/{tsample}_Vs_{nsample}.mm9_multianno.vcf"
+
+ ```
+- genome reference :
+ The genome reference used in the "annovar_on_mutect" rule is indicated by the "mm9" annotation in the output file paths. The "mm9" refers to the Mouse Genome Build 9
+ The mm9 assembly is a specific version of the mouse reference genome that was created by the National Center for Biotechnology Information (NCBI)
