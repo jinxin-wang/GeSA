@@ -24,4 +24,6 @@ vcf: The output file path indicates the location and name pattern of the ANNOVAR
         txt = "annovar_mutect2_T/{tsample}.mm9_multianno.txt",
         vcf = "annovar_mutect2_T/{tsample}.mm9_multianno.vcf"
 ```
-- 
+- genome reference
+
+The presence of "mm9" in the output file name pattern "annovar_mutect2_T/{tsample}.mm9_multianno.txt" suggests that the mouse genome reference version 9 was used for annotation. mm9 is one of the widely used versions of the mouse reference genome, which was released by the Mouse Genome Sequencing Consortium.
