@@ -10,6 +10,9 @@ This rule provides a standardized and reproducible way to perform somatic varian
 The rule aims to identify somatic mutations, which are genetic alterations that are present only in the tumor cells and not in the normal cells. By using the MuTect2 tool, the rule leverages its algorithm and strategies to detect somatic mutations from tumor-only sequencing data.The rule also likely includes steps to assess the quality of the sequencing data and apply appropriate filters to remove potential false positives or artifacts. This helps to increase the confidence in the identified somatic mutations and reduce the number of false-positive calls.
 
 - Specifications of Input Files
+
+these inputs is specify the location and names of the tumor BAM and BAI files required for the Mutect2 variant calling analysis. These files contain the aligned sequencing data for the tumor sample, which serves as the primary input for the variant calling process.
+
 ```
         tumor_bam = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
         tumor_bai = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai",
