@@ -45,5 +45,49 @@ vcf_liste :
         concatened_vcf = temp("Mutect2_T/{tsample}_tumor_only_T.vcf.gz"),
         vcf_liste      = temp("mutect2_T_tmp_list/{tsample}_tumor_only_T_mutect2_tmp.list"),
 ```
+--> rule concatenate_mutect2_tumor_only_stats:
+- input files :
 
+```
+      vcfs = expand("Mutect2_T_tmp/{{tsample}}_tumor_only_T_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals)
+```
+- output files :
+
+
+```
+        concatened_stats = temp("Mutect2_T/{tsample}_tumor_only_T.vcf.gz.stats"),
+        stat_liste       = temp("mutect2_T_tmp_list/{tsample}_tumor_only_T_mutect2_tmp_stats.list"),
+```
+
+--> rule filter_mutect_calls_tumor_only :
+- input files :
+
+```
+        Mutect2_vcf = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz",
+        Mutect2_stats = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz.stats",
+        contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table",
+```
+- output files :
+
+
+```
+        VCF   = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz"),
+        INDEX = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.tbi")
+```
+
+--> rule Filter_By_Orientation_Bias_tumor_only:
+- input files :
+
+```
+        Mutect2_vcf = "Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz",
+        Mutect2_idx = "Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.tbi",
+        pre_adapter_detail_metrics = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"
+```
+- output files :
+
+
+```
+        filtered_vcf       = "Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz",
+        filtered_vcf_index = "Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz.tbi",
+```
 ### 3. Issues and TODO
