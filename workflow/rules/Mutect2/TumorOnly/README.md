@@ -94,6 +94,9 @@ These input files are essential for applying the filtering criteria in the rule,
 ```
 
 --> rule Filter_By_Orientation_Bias_tumor_only:
+
+The "Filter_By_Orientation_Bias_tumor_only" rule is designed to filter variant calls from the Mutect2 tumor-only analysis based on orientation bias. Orientation bias refers to the tendency of certain sequencing technologies to produce systematic errors in the form of strand-specific biases.
+
 - input files :
 
 ```
