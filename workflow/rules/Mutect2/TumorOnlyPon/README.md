@@ -8,9 +8,10 @@ rule Mutect2_tumor_only_pon:
 The rule "Mutect2_tumor_only_pon" likely involves running the MuTect2 variant calling tool on tumor samples using a Panel of Normals (PoN). The purpose of this rule is to identify somatic mutations specific to the tumor samples while leveraging the information from the PoN to filter out potential germline variants or technical artifacts.
 
 - Specifications of Input Files
+
 -> tumor bam :This input file represents the aligned sequence data (in BAM format) for the tumor sample being analyzed. The actual file path depends on the value of config["remove_duplicates"]. If remove_duplicates is set to True, the file path will be "bam/{tsample}.nodup.recal.bam", indicating that the duplicate reads have been removed from the BAM file. If remove_duplicates is False, the file path will be "bam/{tsample}.recal.bam", indicating that the BAM file includes duplicate reads.
 -> tumor bai :This input file represents the index file (BAI) associated with the tumor BAM file. The BAI file is used for efficient access and querying of the BAM file. Similar to tumor_bam, the actual file path depends on the value of config["remove_duplicates"]. If remove_duplicates is True, the file path will be "bam/{tsample}.nodup.recal.bam.bai". If remove_duplicates is False, the file path will be "bam/{tsample}.recal.bam.bai".
--> panel of normal :
+-> panel of normal : The Panel of Normals (PoN) VCF file. It is specified as "PoN/{panel_of_normal}.vcf", where {panel_of_normal} represents the name or identifier of the PoN file.
 ```
         tumor_bam = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
         tumor_bai = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai",
@@ -18,13 +19,75 @@ The rule "Mutect2_tumor_only_pon" likely involves running the MuTect2 variant ca
 ```
 - Ouput Files
 
+These output files are generated as a result of the Mutect2 tumor-only PoN analysis and provide the VCF variants, associated index, and statistical metrics specific to the tumor sample and the applied interval.
+
+VCF: The file contains the variant calls specific to the tumor sample, considering the Panel of Normals (PoN) and the specified interval. The {tsample} placeholder represents the name or identifier of the tumor sample, {panel_of_normal} represents the name or identifier of the PoN file, and {interval} represents the specific interval used for variant calling.
+
+INDEX: The index file enables efficient querying and retrieval of specific variants from the VCF file. 
+
+STATS: The statistics file likely contains various statistical metrics and summary information related to the variant calling process. 
+
 ```
         VCF   = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz"),
         INDEX = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.tbi"),
         STATS = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.stats"),
 ```
-- Genome Reference
 
+--> rule concatenate_mutect2_tumor_only_pon:
+
+The "concatenate_mutect2_tumor_only_pon" rule likely aims to combine or concatenate multiple Mutect2 tumor-only PoN VCF files into a single consolidated file. By merging the individual PoN VCF files, the resulting file can be used as a comprehensive Panel of Normals for subsequent variant calling analyses
+
+- input files :
+```
+        vcfs = expand("Mutect2_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_Tp_ON_{mutect_interval}.vcf.gz", mutect_interval=mutect_intervals),
+        panel_of_normal = "PoN/{panel_of_normal}.vcf"
+```
+- output files :
+```
+        concatened_vcf = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz"),
+        vcf_liste      = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp.list")
+```
+
+--> rule concatenate_mutect2_tumor_only_pon_stats:
+
+- input files :
+```
+        vcfs = expand("Mutect2_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_Tp_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals),
+        panel_of_normal = "PoN/{panel_of_normal}.vcf"
+```
+- output files :
+```
+        concatened_stats = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats"),
+        stat_liste       = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp_stats.list")
+```
+
+--> rule filter_mutect_calls_tumor_only_pon:
+
+- input files :
+```
+        Mutect2_vcf = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz",
+        Mutect2_stats = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats",
+        contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table" ,
+        panel_of_normal = "PoN/{panel_of_normal}.vcf"
+```
+- output files :
+```
+        VCF   = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz"),
+        INDEX = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz.tbi"),
+```
+
+--> rule Filter_By_Orientation_Bias_tumor_only_pon:
+
+- input files :
+```
+        Mutect2_vcf = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz",
+        pre_adapter_detail_metrics = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt",
+```
+- output files :
+```
+        filtered_vcf       = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_twicefiltered_Tp.vcf.gz",
+        filtered_vcf_index = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_twicefiltered_Tp.vcf.gz.tbi",
+```
 - Packages and Versions
 
 ### 3. Issues and TODO
