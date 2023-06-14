@@ -39,4 +39,53 @@ This file contains summarized metrics for pre-adapter artifacts. It provides an 
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"),
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_summary_metrics.txt")
 ```
+
+
 ## A rule to estimate cross-sample contamination using GetPileupSummaries and CalculateContamination, step one GetPileupSummaries
+--> rule get_pileup_summaries:
+The rule "get_pileup_summaries" is a step within a larger rule that aims to estimate cross-sample contamination using the GetPileupSummaries and 
+CalculateContamination tools. In this context, the "get_pileup_summaries" step focuses on generating pileup summaries for the input samples 
+to facilitate the subsequent estimation of contamination levels.
+
+The "get_pileup_summaries" step is crucial in preparing the necessary data for contamination estimation. By generating pileup summaries for each sample, 
+it allows for the analysis of coverage and base composition at specific genomic positions. These summaries provide valuable information for subsequent 
+steps, such as identifying potential contamination events and estimating contamination levels among the samples.
+
+- input files : 
+tumor_bam: This variable represents the path to the tumor sample's BAM (Binary Alignment Map) file, which contains the aligned sequencing data for the tumor sample. The BAM file path is specified using a string format with {tsample} representing the tumor sample name.
+
+tumor_bai: This variable represents the path to the tumor sample's corresponding BAI (BAM index) file. The BAI file is used to facilitate efficient access and querying of the BAM file.
+
+```
+        tumor_bam = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
+        tumor_bai = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai",
+```
+
+- output files : 
+This file represents the pileup summaries for the tumor sample, specifically in a table format. The pileup summaries contain information such as read depth, base composition, and mapping quality at specific genomic positions.
+
+```
+        temp("cross_sample_contamination/{tsample}_getpileupsummaries.table")
+```
+
+##  A rule to estimate cross-sample contamination using GetPileupSummaries and CalculateContamination, step two CalculateContamination
+
+--> rule calculate_contamination:
+
+The "calculate_contamination" step utilizes the pileup summary information from the "get_pileup_summaries" step and applies statistical methods to estimate the level of cross-sample contamination between the tumor and normal samples. By comparing relevant features, such as allele frequencies, it can provide insights into potential contamination events that may affect the accuracy and interpretation of downstream analyses.
+
+- input files : 
+
+table: This variable represents the path to the pileup summary table file for a specific sample. The pileup summary table contains relevant information such as read depth, base composition, and mapping quality at specific genomic positions.
+```
+        table = "cross_sample_contamination/{tsample}_getpileupsummaries.table"
+```
+
+- output files : 
+This file represents the contamination estimation table for a specific sample. 
+The contamination estimation table contains the results of the contamination analysis, including the estimated contamination level, confidence intervals, and any additional relevant metrics or statistics. The table format allows for structured representation and easy interpretation of the contamination estimation results.
+
+```
+        temp("cross_sample_contamination/{tsample}_calculatecontamination.table")
+```
+
