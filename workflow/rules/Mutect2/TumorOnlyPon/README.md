@@ -1,5 +1,9 @@
 ### 1. Description of Mutect2 Tumor Only vs Panel of Normals Submodule
+The Mutect2 algorithm is a widely used tool for the identification of somatic mutations in cancer genomes through the analysis of DNA sequencing data. It is part of the Genome Analysis Toolkit (GATK), developed by the Broad Institute.
 
+The "Tumor Only" and "Panel of Normals" (PON) submodules within Mutect2 are designed to improve the accuracy of mutation calling by leveraging different sources of information.
+
+By combining the information from the Tumor Only and Panel of Normals submodules, Mutect2 aims to improve the accuracy of mutation calling in cancer genomes. The Tumor Only submodule detects somatic mutations specific to the tumor sample, while the Panel of Normals submodule helps filter out common germline variants and technical artifacts that may be present in the tumor sample but not relevant to the cancer biology.
 
 
 ### 2. Description of Interfaces and Dependencies
