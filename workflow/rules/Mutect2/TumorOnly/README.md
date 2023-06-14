@@ -98,14 +98,20 @@ These input files are essential for applying the filtering criteria in the rule,
 The "Filter_By_Orientation_Bias_tumor_only" rule is designed to filter variant calls from the Mutect2 tumor-only analysis based on orientation bias. Orientation bias refers to the tendency of certain sequencing technologies to produce systematic errors in the form of strand-specific biases.
 
 - input files :
+Mutect2_vcf:This file contains the variant calls that have passed the filtering criteria applied in the previous step. 
 
+Mutect2_idx: This file is used for efficient retrieval of specific variants from the VCF file. 
+
+pre_adapter_detail_metrics: This file likely contains detailed metrics and information about the sequencing artifacts, including orientation bias. 
 ```
         Mutect2_vcf = "Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz",
         Mutect2_idx = "Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.tbi",
         pre_adapter_detail_metrics = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"
 ```
 - output files :
+filtered_vcf: The file contains the variant calls that have undergone additional filtering based on orientation bias. The VCF file is compressed in the gzip format (".vcf.gz").
 
+filtered_vcf_index:The index file is used for quick retrieval of specific variants from the VCF file. 
 
 ```
         filtered_vcf       = "Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz",
