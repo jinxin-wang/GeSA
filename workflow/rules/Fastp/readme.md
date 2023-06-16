@@ -1,14 +1,51 @@
 ### 1. Description of Fastp Module
 
+Fastp is an ultra-fast FASTQ preprocessor with useful quality control and data-filtering features. It is developed in C++ with multithreading supported to afford high performance. It can perform quality control, adapter trimming, quality filtering, per-read quality pruning and many other operations with a single scan of the FASTQ data. Quality control and reporting are displayed both before and after filtering, allowing for a clear depiction of the consequences of the filtering process , it helps enhance the accuracy and realibility of downstream analysis such as variant calling , genome assembly and transcriptome analysis.
+
+
 ### 2. Description of Interfaces and Dependencies
 
 - Specifications of Input Files
 
+first of all , we need to specify the input file for either single-end or paired-end data 
+for single-end data :
+```
+input:
+            fastq_0="DNA_samples/{sample}_0.fastq.gz",
+```
+for paired-end data 
+```
+            fastq_1="DNA_samples/{sample}_1.fastq.gz",
+            fastq_2="DNA_samples/{sample}_2.fastq.gz",
+```
+
 - Ouput Files
 
+the fastp module generate several output files that provides information about the preprocessing steps and the resulting processed data 
+1. processed FASTQ file :
+For single-end data :
+```
+            fastq_clean = temp('DNA_samples_clean/{sample}_0.fastq.gz')
+```
+For paired-end data :
+```
+            fastq_clean_1 = temp('DNA_samples_clean/{sample}_1.fastq.gz'),
+            fastq_clean_2 = temp('DNA_samples_clean/{sample}_2.fastq.gz')
+```
+2. HTML report : fastp generate an HTML report file that contains the detailed statistics and visualization data about the quality control and processing steps , in order to help the users asses the quality of the input data and evalute the effect of the preprocessing steps , it usually includes graphs showing the distribution of read qualities , adapter content , read length 
+
+```           
+            html_report = 'fastp_reports/{sample}_fastp_report.html'
+```
+3. JSON report : which is a report that contains summary statistics and detailed informations about each processed read . it is usually used to extract specific information for downstream analysis 
+```
+json_report = 'fastp_reports/{sample}_fastp_report.json'
+```
 - Genome Reference
 
-- Packages and Versions
+fastp does not require a specific genome reference , we only need to specify the raw sequencing data in FASTQ format as an input within the Fastp module
+
+- Packages and Versions.
 
 ### 3. Issues and TODO
 
