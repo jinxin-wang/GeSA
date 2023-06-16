@@ -30,7 +30,7 @@
     },
 
     "gatk": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/gatk",
+        "app": "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         "scripts": {
             "reformat_mutect2": "workflow/scripts/reformat_mutect2_vcf_for_oncotator_input_GATK_4_1_8_1.py",
         },
