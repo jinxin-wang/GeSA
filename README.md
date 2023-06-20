@@ -18,6 +18,8 @@ $ git pull
 $ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/META_PRISM_conda_env.txt -n meta_prism
 $ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/Mouse_env.txt -n Mouse
 $ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/pipeline_GATK_2.1.4_conda_env.txt -n pipeline_GATK_2.1.4_V2
+$ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/metaprism_py_env.txt -n metaprism_py
+$ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/metaprism_r_env.txt -n metaprism_r
 ```
 
 If the directory of your conda lib is not ~/.conda/, then 
@@ -30,6 +32,8 @@ Or link the environments to ~/.conda/envs (if you already have this folder in ~/
 ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/pipeline_GATK_2.1.4_V2/" .conda/envs
 ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/Mouse/" .conda/envs
 ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/meta_prism/" .conda/envs
+ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/metaprism_py/" .conda/envs
+ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/metaprism_r/" .conda/envs
 ```
 
 - Step 2. deploy workflow
@@ -51,7 +55,7 @@ $ ln -s /datadir/* .
 
 2. If there are both tumor samples and panel of normal samples, then you need create a file **variant_call_list_Tp.tsv** in the project directory.
 
-3. If there are tumor, normal samples and panel of normal samples, then you need create a file **variant_call_list_TvNp.tsv** in the project directory.
+3. If there are tumor, normal samples and panel of normal samples, then you need create a file **variant_call_list_TvNp.tsv** in the project directory. 
 
 4. If there are only tumor samples, then you don't need to generate any tsv file. Or you can create a file **variant_call_list_T.tsv** in the project directory.
 
