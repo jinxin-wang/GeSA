@@ -31,6 +31,7 @@ FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
 
 TSAMPLE = []
 NSAMPLE = []
+PoN     = []
 
 ## Collecting information on files to produce
 FACETS     = []
@@ -57,7 +58,8 @@ def build_TvN_targets(tsample, nsample):
         ANNOVAR.append("annovar_mutect2_TvN/" + tsample + "_Vs_" + nsample + ".avinput")
 
 def build_Tp_targets(tsample, PoN):
-    MUTECT2.append("Mutect2_Tp/" + tsample + "_PON_" + Pon + "_twicefiltered_Tp.vcf.gz")
+    MUTECT2.append("Mutect2_Tp/" + tsample + "_PON_" + PoN + "_twicefiltered_Tp.vcf.gz")
+    CNV_FACETS.append("cnv_facets_tumorOnly/" + tsample + "_Vs_unmatchedNormal.vcf.gz")
     
     if config["samples"] == "human":
         ONCOTATOR.append("oncotator_Tp_tsv_COSMIC/" + tsample  + "_PON_" + PoN + "_Tp_with_COSMIC.tsv")
@@ -86,6 +88,7 @@ def build_TvNp_targets(tsample, nsample, PoN):
 
 def build_Tonly_targets(tsample):
     MUTECT2.append("Mutect2_T/" + tsample+ "_tumor_only_T.vcf.gz")
+    CNV_FACETS.append("cnv_facets_tumorOnly/" + tsample + "_Vs_unmatchedNormal.vcf.gz")
 
     if config["samples"] == "human":
         ONCOTATOR.append("oncotator_T_tsv_COSMIC/" + tsample + "_tumor_only_T_with_COSMIC.tsv")
@@ -110,6 +113,7 @@ if config["mode"] == "TvN":
             build_TvN_targets(tsample, nsample)
 
 if config["mode"] == "Tp":
+    TUMOR_ONLY = True
     print(OKGREEN + "[message] Pipeline runs in Tumor vs PoN mode." + ENDC)
     fname = "variant_call_list_Tp.tsv"
     with open(fname,'r') as fd: 
@@ -117,9 +121,10 @@ if config["mode"] == "Tp":
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
         for row in rd:
             tsample = row[0]
-            PoN     = row[1]
+            pon     = row[1]
             TSAMPLE.append(tsample)
-            build_Tp_targets(tsample, PoN)
+            PoN.append(pon)
+            build_Tp_targets(tsample, pon)
 
 if config["mode"] == "TvNp":
     print(OKGREEN + "[message] Pipeline runs in Tumor vs Normal vs PoN mode." + ENDC)
@@ -130,10 +135,11 @@ if config["mode"] == "TvNp":
         for row in rd:
             tsample = row[0]
             nsample = row[1]
-            PoN     = row[2]
+            pon     = row[2]
             TSAMPLE.append(tsample)
             NSAMPLE.append(nsample)
-            build_TvNp_targets(tsample, nsample, PoN)
+            PoN.append(pon)
+            build_TvNp_targets(tsample, nsample, pon)
 
 if config["mode"] == "T":
     TUMOR_ONLY = True
@@ -159,6 +165,8 @@ if config["mode"] == "T":
         
 rule all:
     input:
+        expand('PoN/{pon}.vcf.gz', pon = PoN),
+        expand('DNA_samples/{sample}.fastq.gz', sample = FASTQ),
         expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ),
         expand('fastq_QC_clean/{sample}_fastqc.html', sample =  FASTQ),
         expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE),
@@ -196,6 +204,9 @@ include: "rules/BQSR/BQSR.smk"
 if TUMOR_ONLY == False: 
     include: "rules/Facets/facets.smk"
     include: "rules/Facets/cnvFacets.smk"
+
+elif TUMOR_ONLY == True: 
+    include: "rules/Facets/cnvFacets_tumorOnly.smk"
 
 ######## HaplotypeCaller and Annovar ########
 
