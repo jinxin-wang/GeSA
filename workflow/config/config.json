@@ -79,6 +79,8 @@
         "mouse": {
             "facet_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
         },
+        "unmatched_normal_bam": "/mnt/beegfs/scratch/j_sangalang/WES/Normal_Blood_V6/MR1043_N.nodup.recal.bam",
+        "unmatched_normal_bai": "/mnt/beegfs/scratch/j_sangalang/WES/Normal_Blood_V6/MR1043_N.nodup.recal.bam.bai",
     }, 
 
 
