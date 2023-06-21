@@ -7,7 +7,7 @@ rule bwa_map:
     log:
         "logs/bam/{sample}.bam.log"
     params:
-        queue = "mediumq",
+        queue = "longq",
         bwa = config["bwa"]["app"],
         index = config["bwa"][config["samples"]]["index"],
         samtools = config["samtools"]["app"],
