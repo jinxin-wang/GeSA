@@ -1,12 +1,23 @@
+import json
+ 
+# Opening JSON file
+with open('config_file.json', 'r') as openfile:
+ 
+    # Reading from json file
+    json_object = json.load(openfile)
+
+Working_dir = json_object["working_dir"]
+ 
+
 rule generate_concat_bash:
-    
 
-    input: Sampes_metadata = 'Samples.csv'
+    input: Sampes_metadata = "Working_dir/Samples.csv"
 
-    output: Concat_script = "concat_bash.sh"
+    output: Concat_script = "Working_dir/concatenation_script.sh"
 
     params:
-        queue = "shortq",
+        queue = "shortq"
+
 
     threads : 1
     conda: "python_env"
@@ -19,13 +30,11 @@ rule generate_concat_bash:
         import pandas as pd
         import os
         import yaml
-        with open("config.yaml") as f:
-            download_config = yaml.load(f, Loader=yaml.FullLoader)
-            Working_dir = download_config["Directories"]
 
-        tgt_pwd = {Working_dir}/Sample_sheet.csv
 
-        sample_df = pd.read_csv('Samples.csv')
+        #tgt_pwd = {Working_dir}/Sample_sheet.csv
+
+        sample_df = pd.read_csv(input.Sampes_metadata, sep=',', header=0)
 
         sample_grps = sample_df.groupby(['sampleId', 'protocol'])
 
@@ -42,6 +51,6 @@ rule generate_concat_bash:
             bash_script += concat_command_r2
 
 
-        with open('concatenation_script.sh', 'w') as script_file:
+        with open(output.Concat_script.sh, 'w') as script_file:
             script_file.write(bash_script)
         print("Bash script generated successfully!")
