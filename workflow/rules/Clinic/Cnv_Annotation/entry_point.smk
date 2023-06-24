@@ -11,6 +11,4 @@ include: "annotate.smk"
 
 rule target:
     input:
-        "aggregate/somatic_maf/somatic_calls_union_ann_prefinal.maf.gz",
-        "aggregate/somatic_maf/somatic_calls.maf.gz" ,
-
+        "aggregate/somatic_cna/somatic_calls_union_ann.tsv.gz" ,
