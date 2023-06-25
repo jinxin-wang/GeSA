@@ -12,6 +12,8 @@ rule match_civic_disease:
         "logs/conf/match_civic_disease.log",
     params:
         corr_table = annotation_config["params"]["civic"]["corr_table"],
+    conda:
+        "base"
     threads: 1
     resources:
         queue = "shortq",
@@ -120,6 +122,8 @@ rule extract_samples_table:
         sample_table = annotation_config["general"]["samples"]
     log:
         "logs/conf/extract_samples_table.log"
+    conda:
+        "base",
     threads: 1
     resources:
         queue = "shortq",

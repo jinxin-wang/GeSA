@@ -87,14 +87,14 @@ rule somatic_maf_filters_process_fields:
         """
         cp {input.vcf} {output.vcf} && \
         cp {input.tbi} {output.tbi} && \
-        {params.python} -u workflow/rules/Clinic/Cnv_Annotation/scripts/utils_add_sample_ids.py \
+        {params.python} -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/utils_add_sample_ids.py \
             --input {input.tsv_tmp_1} \
             --tsample {wildcards.tsample} \
             --tlabel Tumor_Sample \
             --nsample {wildcards.nsample} \
             --nlabel Normal_Sample \
             --output {output.tsv_tmp_2} 2> {log} && \
-        {params.python} -u workflow/rules/Clinic/Cnv_Annotation/scripts/utils_remove_empty_fields.py  \
+        {params.python} -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/utils_remove_empty_fields.py  \
             --input {output.tsv_tmp_2} \
             --level 1 \
             --output {output.tsv} 2>> {log}
@@ -297,7 +297,7 @@ rule somatic_maf:
         mem_mb=4000,
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/03.2_maf_merge_vep_and_maf.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/03.2_maf_merge_vep_and_maf.py \
             --vep_table {input.vep} \
             --maf_table {input.maf} \
             --keep_vep_header \
@@ -330,7 +330,7 @@ rule somatic_maf_civic:
         mem_mb= 4000,
     shell:
         """
-        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_civic_annotate.sh \
+        bash workflow/rules/Clinic/Mut_Annotation/TvN/scripts/04.3_civic_annotate.sh \
             {params.a_option} \
             -b {params.table_cln} \
             -c {params.table_gen} \
@@ -371,7 +371,7 @@ rule somatic_maf_oncokb:
         mem_mb= 4000,
     shell:
         """
-        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_oncokb_annotate.sh \
+        bash workflow/rules/Clinic/Mut_Annotation/TvN/scripts/04.3_oncokb_annotate.sh \
             {params.a_option} \
             -c {params.table_gen} \
             -b {params.table_cln} \
@@ -403,7 +403,7 @@ rule somatic_maf_civic_aggregate:
         mem_mb= 16000,
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
@@ -426,7 +426,7 @@ rule somatic_maf_oncokb_aggregate:
         mem_mb= 16000,
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
@@ -447,7 +447,7 @@ rule somatic_maf_union_ann:
         "metaprism_python"
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.2_concatenate_annotations.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/06.2_concatenate_annotations.py \
             --civ {input.civ} \
             --okb {input.okb} \
             --cat maf \
@@ -471,7 +471,7 @@ rule somatic_maf_aggregate:
         mem_mb=16000,
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --keep_header \
             --output {output} &> {log}
@@ -501,7 +501,7 @@ rule somatic_maf_last_filtering:
     threads: 1
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/03.3_maf_last_filtering_steps.py \
+        python -u workflow/rules/Clinic/Mut_Annotation/TvN/scripts/03.3_maf_last_filtering_steps.py \
             --inp_filters {input.filters} \
             --inp_maf {input.maf} \
             --inp_maf_ann {input.maf_ann} \

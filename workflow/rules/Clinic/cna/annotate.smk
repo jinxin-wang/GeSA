@@ -1,3 +1,7 @@
+import pandas as pd
+
+samples_df = pd.read_csv(config["general"]["samples"], dtype=str, sep="\t").set_index(["Sample_Id"])
+
 # Process VCF file
 rule somatic_cnv_process_vcf:
     input:
@@ -14,15 +18,15 @@ rule somatic_cnv_process_vcf:
         "metaprism_r"
     threads: 1
     params:
-        gender = lambda w: get_column_table_sample(w, "Gender"),
-        threshold=config["params"]["cnv"]["calls_threshold"]
+        gender = lambda w: samples_df.loc[w.tsample, "Gender"],
+        threshold=config["params"]["cnv"]["calls_threshold"],
     resources:
         queue="shortq",
         mem_mb=8000,
         time_min=20
     shell:
         """
-        Rscript workflow/scripts/05.2_cnv_process_vcf.R \
+        Rscript workflow/rules/Clinic/Cnv_Annotation/scripts/05.2_cnv_process_vcf.R \
             --input_vcf {input.vcf} \
             --gender {params.gender} \
             --rules_arm {input.rules_arm} \
@@ -54,7 +58,7 @@ rule somatic_cnv_gene_calls:
         time_min=20
     shell:
         """
-        python -u workflow/scripts/05.3_cnv_gene_calls.py \
+        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/05.3_cnv_gene_calls.py \
             --input_tab {input.tab} \
             --input_bed {input.bed} \
             --threshold {params.threshold} \
@@ -84,52 +88,51 @@ rule somatic_cnv_gene_calls_filtered:
 ####
 
 # Annnotate SCNAs using (in-house) civic annotator
-if config["params"]["civic"]["run_per_sample"]["cna"]:
-    # prepare a table for each pair tsample_vs_nsample
-    rule somatic_cna_civic:
-        input:
-            table_alt="calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz",
-            table_cln="config/tumor_normal_pairs.tsv",
-            table_gen=config["params"]["civic"]["gene_list"],
-            civic=config["params"]["civic"]["evidences"],
-            rules=config["params"]["civic"]["rules_clean"],
-        output:
-            table_pre = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}_pre.tsv",
-            table_run = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}_run.tsv",
-            table_pos = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}.tsv",
-        params:
-            code_dir=config["params"]["civic"]["code_dir"],
-            category="cna",
-            a_option=lambda wildcards, input: "-a %s" % input.table_alt
-        log:
-            "logs/annotation/somatic_cna_civic/{tsample}_vs_{nsample}.log" 
-        conda:
-            "metaprism_python"
-        resources:
-            queue="shortq",
-            mem_mb=24000,
-        threads: 1
-        shell:
-            """
-            bash workflow/scripts/04.3_civic_annotate.sh \
-                {params.a_option} \
-                -b {input.table_cln} \
-                -c {input.table_gen} \
-                -d {output.table_pre} \
-                -e {output.table_run} \
-                -f {output.table_pos} \
-                -m {params.code_dir} \
-                -n {input.civic} \
-                -o {input.rules} \
-                -t {params.category} \
-                -l {log}
-            """
+# prepare a table for each pair tsample_vs_nsample
+rule somatic_cna_civic:
+    input:
+        table_alt="calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz",
+        table_cln=config["general"]["tumor_normal_pairs"],
+        table_gen=config["params"]["civic"]["gene_list"],
+        civic=config["params"]["civic"]["evidences"],
+        rules=config["params"]["civic"]["rules_clean"],
+    output:
+        table_pre = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}_pre.tsv",
+        table_run = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}_run.tsv",
+        table_pos = "annotation/somatic_cna_civic/{tsample}_vs_{nsample}.tsv",
+    params:
+        code_dir=config["params"]["civic"]["code_dir"],
+        category="cna",
+        a_option=lambda wildcards, input: "-a %s" % input.table_alt
+    log:
+        "logs/annotation/somatic_cna_civic/{tsample}_vs_{nsample}.log" 
+    conda:
+        "metaprism_python"
+    resources:
+        queue="shortq",
+        mem_mb=24000,
+    threads: 1
+    shell:
+        """
+        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_civic_annotate.sh \
+            {params.a_option} \
+            -b {input.table_cln} \
+            -c {input.table_gen} \
+            -d {output.table_pre} \
+            -e {output.table_run} \
+            -f {output.table_pos} \
+            -m {params.code_dir} \
+            -n {input.civic} \
+            -o {input.rules} \
+            -t {params.category} \
+            -l {log}
+        """
 
 # prepare a table for each pair tsample_vs_nsample
 rule somatic_cna_oncokb:
     input:
         table_alt="calling/somatic_cnv_gene_calls_filtered/{tsample}_vs_{nsample}.tsv.gz",
-        table_cln="config/tumor_normal_pairs.tsv",
+        table_cln=config["general"]["tumor_normal_pairs"],
         table_gen=config["params"]["oncokb"]["gene_list"],
         rules=config["params"]["oncokb"]["rules_clean"]
     output:
@@ -152,25 +155,25 @@ rule somatic_cna_oncokb:
         mem_mb=4000,
     shell:
         """
-            bash workflow/scripts/04.3_oncokb_annotate.sh \
-                {params.a_option} \
-                -b {input.table_cln} \
-                -c {input.table_gen} \
-                -d {output.table_alt_pre} \
-                -g {output.table_cln_pre} \
-                -e {output.table_run} \
-                -f {output.table_pos} \
-                -k {params.token} \
-                -m {params.code_dir} \
-                -o {input.rules} \
-                -t {params.category} \
-                -l {log}
+        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_oncokb_annotate.sh \
+            {params.a_option} \
+            -b {input.table_cln} \
+            -c {input.table_gen} \
+            -d {output.table_alt_pre} \
+            -g {output.table_cln_pre} \
+            -e {output.table_run} \
+            -f {output.table_pos} \
+            -k {params.token} \
+            -m {params.code_dir} \
+            -o {input.rules} \
+            -t {params.category} \
+            -l {log}
         """
 
 # Aggregate all somatic civic-annotated MAF tables.
 rule somatic_cna_civic_aggregate:
     input:
-        lambda w: get_input_concatenate(w, typ="cna", db="civic"),
+        expand("annotation/somatic_cna_civic/{tsample}_vs_{nsample}.tsv", zip, tsample=tsamples, nsample=nsamples),
     output:
         "aggregate/somatic_cna/somatic_calls_civic.tsv.gz" ,
     conda:
@@ -184,14 +187,14 @@ rule somatic_cna_civic_aggregate:
         time_min=60
     shell:
         """
-        python -u workflow/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
 
 rule somatic_cna_oncokb_aggregate:
     input:
-        lambda w: get_input_concatenate(w, typ="cna", db="oncokb")
+        expand("annotation/somatic_cna_oncokb/{tsample}_vs_{nsample}.tsv", zip, tsample=tsamples, nsample=nsamples),
     output:
         "aggregate/somatic_cna/somatic_calls_oncokb.tsv.gz" ,
     conda:
@@ -205,7 +208,7 @@ rule somatic_cna_oncokb_aggregate:
         time_min=60
     shell:
         """
-        python -u workflow/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
@@ -228,7 +231,7 @@ rule somatic_cna_union_ann:
     threads: 1
     shell:
         """
-        python -u workflow/scripts/06.2_concatenate_annotations.py \
+        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.2_concatenate_annotations.py \
             --civ {input.civ} \
             --okb {input.okb} \
             --cat cna \
