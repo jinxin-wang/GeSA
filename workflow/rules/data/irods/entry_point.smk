@@ -7,3 +7,4 @@ rule target:
     input:
         config["general"]["MetaTable"],
         config["general"]["DownloadScript"],
+        "conf/download_success"

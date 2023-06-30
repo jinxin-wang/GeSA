@@ -8,7 +8,7 @@ rule gen_irods_download_bash:
     params:
         pj_name      = config["general"]["ProjectName"],
         storage_path = config["general"]["StoragePath"],
-        gb_attrs     = config["irods"]["GroupByAttrs"]
+        gb_attrs     = config["irods"]["GroupByAttrs"],
         queue        = "shortq",
     threads: 1
     resources:
@@ -22,20 +22,20 @@ rule gen_irods_download_bash:
         
 	with open(str(output.script), 'w') as fd: 
             for name, group in df:
-                file_path = "%s/%s/%s"%(storage_path, name[0], name[1].replace(" ", "_").replace("-", "_"))
-                fd.writeline("mkdir -p %s ; "%file_path)
-                fd.writeline("cd %s ; "%file_path)
+                file_path = "%s/%s/%s"%(params.storage_path, name[0], name[1].replace(" ", "_").replace("-", "_"))
+                fd.write("mkdir -p %s ; \n"%file_path)
+                fd.write("cd %s ; \n"%file_path)
                 for data_path in group['datafilePath']:
-		    src_num = data_path.split('/')[3]
-                    fd.writeline("iget -K %s %s ; "%(data_path, src_num))
+                    src_num = data_path.split('/')[4]
+                    fd.write("iget -K %s %s ; \n"%(data_path, src_num))
 
 
 
 rule exec_irods_download:
     input:
-        meta="conf/download.sh"
+        meta = config["general"]["DownloadScript"],
     output:
-        temp("conf/download_success")
+        "conf/download_success"
     log:
         "logs/download/exec_irods_download.log"
     params:

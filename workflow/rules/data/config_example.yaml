@@ -2,7 +2,7 @@ general:
   ProjectName: MELACHILD 
   MetaTable: config/irods_meta_table.tsv 
   DownloadScript: config/download.sh
-  StoragePath: /mnt/beegfs/scratch/j_wang/01_RawData/FD02/20230630_MELACHILD/
+  StoragePath: /mnt/beegfs/scratch/j_wang/01_RawData/FD02/20230630_MELACHILD
 
 irods:
   pwd: http://Jxin@igr8182/#@! 
@@ -14,5 +14,5 @@ irods:
     - sampleType 
     - protocol 
   GroupByAttrs:
-    - sampleAlias
+    - sampleId
     - protocol
