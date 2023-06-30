@@ -15,9 +15,6 @@ rule irods_meta_table:
         import pandas as pd
         import subprocess as sp
 
-        #### login iRODs
-        sp.run(["iinit", params.pwd])
-
         #### exec a command which return a list of key: value pairs
         #### key is the attribute, the function return list of values
         def get_attr_values(cmd, collection, attribute):
@@ -75,6 +72,9 @@ rule irods_meta_table:
         ## meta table
         table = []
 
+        #### login iRODs
+        sp.run(["iinit", params.pwd])
+
         for collection in get_attr_values("imeta qu -C projectName like %s | grep %s ", params.pj_name, "collection"):
             ## if an attribute has more than one value, then join the values with seperator "|"
             metas = ["|".join(get_attr_values("imeta ls -C %s %s | grep value ", collection, attribute)) for attribute in params.attrs ]
@@ -95,7 +95,7 @@ rule irods_meta_table:
                     build_meta_table(abs_path, files_set, table, metas)
 
             if len(files_set) > 0 :
-                raise ValueError("Unmatched Read pairs: %s"%("\n".join(files_set)))
+                raise ValueError("Unmatched Reads: \n%s"%("\n".join(files_set)))
 
         ## save
         table = pd.DataFrame(table, columns = ["R1", "R2"] + params.attrs)
