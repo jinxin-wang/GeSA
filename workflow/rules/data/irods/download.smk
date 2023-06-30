@@ -44,5 +44,5 @@ rule exec_irods_download:
     resources:
         mem_mb = 10240
     shell:
-        "bash conf/download.sh 2> {log} "
-	" && touch conf/download_success "
+        "bash {input.meta} 2> {log} "
+	" && touch {output} "
