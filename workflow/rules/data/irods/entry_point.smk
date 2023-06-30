@@ -6,5 +6,5 @@ include: "download.smk"
 rule target:
     input:
         config["general"]["MetaTable"],
-        config["general"]["DownloadScript"],
-        "conf/download_success"
+        # config["general"]["DownloadScript"],
+        # config["irods"]["DownloadSucess"],

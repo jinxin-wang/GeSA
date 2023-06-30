@@ -5,14 +5,18 @@ general:
   StoragePath: /mnt/beegfs/scratch/j_wang/01_RawData/FD02/20230630_MELACHILD
 
 irods:
-  pwd: http://Jxin@igr8182/#@! 
+  # iinit password
+  pwd: http://Jxin@igr8182/#@!
+  DownloadSucess: config/download_success
+  # general.MetaTable attributes
   attributes: 
     - patientAlias 
     - patientId 
     - sampleAlias 
     - sampleId 
     - sampleType 
-    - protocol 
+    - protocol
+  # group data files by two attr
   GroupByAttrs:
-    - sampleId
+    - patientAlias
     - protocol
