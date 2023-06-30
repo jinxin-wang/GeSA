@@ -1,26 +1,22 @@
-import json
+# import json
  
-# Opening JSON file
-with open('config_file.json', 'r') as openfile:
+# # Opening JSON file
+# with open('config_file.json', 'r') as openfile:
  
-    # Reading from json file
-    json_object = json.load(openfile)
+#     # Reading from json file
+#     json_object = json.load(openfile)
 
-Working_dir = json_object["working_dir"]
+# Working_dir = json_object["working_dir"]
  
 
 rule generate_concat_bash:
 
-    input: Sampes_metadata = "Working_dir/Samples.csv"
-
+    input: 
+        Sampes_metadata = "Working_dir/Samples.csv"
     output: Concat_script = "Working_dir/concatenation_script.sh"
-
     params:
         queue = "shortq"
-
-
     threads : 1
-    conda: "python_env"
     resources:
         mem_mb = 5120
     log:
@@ -53,4 +49,5 @@ rule generate_concat_bash:
 
         with open(output.Concat_script.sh, 'w') as script_file:
             script_file.write(bash_script)
+
         print("Bash script generated successfully!")
