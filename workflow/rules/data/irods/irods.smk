@@ -1,13 +1,12 @@
 rule irods_meta_table:
-    input:
-        pj_name = config["general"]["ProjectName"],
-        attrs   = config["irods"]["attributes"],
-        pwd     = config["irods"]["password"],
     output:
-        "config/irods_meta_table.tsv"
+        meta_table = config["general"]["MetaTable"],
     log:
         "logs/data_collection/irods_meta_table.log"
     params:
+        pj_name = config["general"]["ProjectName"],
+        attrs   = config["irods"]["attributes"],
+        pwd     = config["irods"]["pwd"],
         queue  = "shortq",
     threads : 1
     resources:
@@ -17,7 +16,7 @@ rule irods_meta_table:
         import subprocess as sp
 
         #### login iRODs
-        sp.run("iinit %s"%input.pwd)
+        sp.run(["iinit", params.pwd])
         
         def get_attr_values(cmd, collection, attribute):
             values = []
@@ -29,8 +28,8 @@ rule irods_meta_table:
 
         table = []
 
-        for collection in get_attr_values("imeta qu -C projectName like %s | grep %s ", input.pj_name, "collection"):
-            metas = ["|".join(get_attr_values("imeta ls -C %s %s | grep value ", collection, attribute)) for attribute in input.attrs ]
+        for collection in get_attr_values("imeta qu -C projectName like %s | grep %s ", params.pj_name, "collection"):
+            metas = ["|".join(get_attr_values("imeta ls -C %s %s | grep value ", collection, attribute)) for attribute in params.attrs ]
             abs_path  = ""
             base_path = ""
             for line in sp.check_output("ils -lr %s"%collection, shell=True).splitlines():
@@ -46,8 +45,8 @@ rule irods_meta_table:
                     table.append([abs_path] + metas)
 
 
-        table = pd.DataFrame(table, columns = ["datafilePath"] + input.attrs)
-        table.to_csv(output, sep="\t")
+        table = pd.DataFrame(table, columns = ["datafilePath"] + params.attrs)
+        table.to_csv(str(output.meta_table), sep="\t", index=False)
 
 
 

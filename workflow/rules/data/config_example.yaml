@@ -1,0 +1,13 @@
+general:
+  ProjectName: MELACHILD 
+  MetaTable: config/irods_meta_table.tsv 
+
+irods:
+  pwd: http://Jxin@igr8182/#@! 
+  attributes: 
+    - patientAlias 
+    - patientId 
+    - sampleAlias 
+    - sampleId 
+    - sampleType 
+    - protocol 
