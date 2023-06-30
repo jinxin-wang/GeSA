@@ -6,7 +6,6 @@ rule gen_irods_download_bash:
     log:
         "logs/download/gen_irods_download_bash.log"
     params:
-        pj_name      = config["general"]["ProjectName"],
         storage_path = config["general"]["StoragePath"],
         gb_attrs     = config["irods"]["GroupByAttrs"],
         queue        = "shortq",
@@ -15,27 +14,40 @@ rule gen_irods_download_bash:
         mem_mb = 1024
     run:
         import pandas as pd
-	
+        from pathlib import Path
+
+        ## replace " ", "-" by "_"
+        def sf(s):
+            return s.replace(' ', '_').replace('-', '_')
+
+        def write_cmd(data_path: str, patientId: str, protocol: str):
+            file_name = data_path.split('dataset/')[-1]
+            file_path = Path(params.storage_path).joinpath(patientId).joinpath(protocol).joinpath(file_name)
+            fd.write("mkdir -p %s \n"%(file_path.parent))
+            fd.write("cd %s ; \n"%(file_path.parent))
+            fd.write("iget -fK -N %d %s ; \n"%(threads, data_path))
+        
         df = pd.read_csv(str(input.meta), sep='\t', header=0)
-	## group by two attributs, for example : patientId and protocol
+	## group by two attributs, for example: patientId and protocol
         df = df.groupby(params.gb_attrs)
         
-	with open(str(output.script), 'w') as fd: 
+	with open(str(output.script), 'w') as fd :
+            fd.write("set -e \n")
             for name, group in df:
-                file_path = "%s/%s/%s"%(params.storage_path, name[0], name[1].replace(" ", "_").replace("-", "_"))
-                fd.write("mkdir -p %s ; \n"%file_path)
-                fd.write("cd %s ; \n"%file_path)
-                for data_path in group['datafilePath']:
-                    src_num = data_path.split('/')[4]
-                    fd.write("iget -K %s %s ; \n"%(data_path, src_num))
+                patientId = sf(name[0].split('|')[0])
+                protocol  = sf(name[1])
 
+                for data_path in group['R1']:
+                    write_cmd(data_path, patientId, protocol)
 
+                for data_path in group['R2']:
+                    write_cmd(data_path, patientId, protocol)
 
 rule exec_irods_download:
     input:
         meta = config["general"]["DownloadScript"],
     output:
-        "conf/download_success"
+        config["irods"]["DownloadSucess"],
     log:
         "logs/download/exec_irods_download.log"
     params:
@@ -44,5 +56,5 @@ rule exec_irods_download:
     resources:
         mem_mb = 10240
     shell:
-        "bash {input.meta} 2> {log} "
-	" && touch {output} "
+        " bash {input.meta} 2> {log} && "
+	" touch {output} "
