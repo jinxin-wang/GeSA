@@ -8,6 +8,7 @@ rule gen_irods_download_bash:
     params:
         storage_path = config["general"]["StoragePath"],
         gb_attrs     = config["irods"]["GroupByAttrs"],
+        download_threads = config["irods"]["DownloadThreads"],
         queue        = "shortq",
     threads: 1
     resources:
@@ -23,25 +24,19 @@ rule gen_irods_download_bash:
         def write_cmd(data_path: str, patientId: str, protocol: str):
             file_name = data_path.split('dataset/')[-1]
             file_path = Path(params.storage_path).joinpath(patientId).joinpath(protocol).joinpath(file_name)
-            fd.write("mkdir -p %s \n"%(file_path.parent))
+            fd.write("\nmkdir -p %s \n"%(file_path.parent))
             fd.write("cd %s ; \n"%(file_path.parent))
-            fd.write("iget -fK -N %d %s ; \n"%(threads, data_path))
+            fd.write("iget -fK -N %d %s ; \n"%(params.download_threads, data_path))
         
-        df = pd.read_csv(str(input.meta), sep='\t', header=0)
-	## group by two attributs, for example: patientId and protocol
-        df = df.groupby(params.gb_attrs)
+        meta_df = pd.read_csv(str(input.meta), sep='\t', header=0)
         
 	with open(str(output.script), 'w') as fd :
             fd.write("set -e \n")
-            for name, group in df:
-                patientId = sf(name[0].split('|')[0])
-                protocol  = sf(name[1])
-
-                for data_path in group['R1']:
-                    write_cmd(data_path, patientId, protocol)
-
-                for data_path in group['R2']:
-                    write_cmd(data_path, patientId, protocol)
+            for ind, row in meta_df.iterrows():
+                patientId = sf(row[params.gb_attrs[0]].split('|')[0])
+                protocol  = sf(row[params.gb_attrs[1]])
+                write_cmd(row['R1'], patientId, protocol)
+                write_cmd(row['R2'], patientId, protocol)
 
 rule exec_irods_download:
     input:
@@ -52,7 +47,7 @@ rule exec_irods_download:
         "logs/download/exec_irods_download.log"
     params:
         queue = "longq",
-    threads: 8
+    threads: config["irods"]["DownloadThreads"],
     resources:
         mem_mb = 10240
     shell:
