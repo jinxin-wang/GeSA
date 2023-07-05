@@ -33,14 +33,24 @@ rule generate_concat_bash:
             r2 = grp['R2'].tolist()
                 
             bash_script += f"# Concatenation for ID={sample_id}, Type={protocol}, R1\n"
-            r1_name = sample_id + '_' + sample_type + '_R1.fastq.gz'
-            r2_name = sample_id + '_' + sample_type + '_R2.fastq.gz'
-            mkdir_cmd = "mkdir -p %s \n "%Path(params.tgt_pwd).joinpath(protocol)
+            r1_name = sample_id + '_' + sample_type + '_1.fastq.gz'
+            r2_name = sample_id + '_' + sample_type + '_2.fastq.gz'
+            mkdir_cmd = "mkdir -p %s ; \n"%Path(params.tgt_pwd).joinpath(protocol)
             bash_script += mkdir_cmd
-            concat_cmd_r1 = "cat %s  > %s \n "%(' '.join(r1), Path(params.tgt_pwd).joinpath(protocol).joinpath(r1_name))
+
+            if len(r1) > 1: 
+                concat_cmd_r1 = "cat %s  > %s ; \n"%(' '.join(r1), Path(params.tgt_pwd).joinpath(protocol).joinpath(r1_name))
+            else:
+                concat_cmd_r1 = "ln -s %s %s ; \n"%(' '.join(r1), Path(params.tgt_pwd).joinpath(protocol).joinpath(r1_name))
+
             bash_script += concat_cmd_r1
             bash_script += f"# Concatenation for ID={sample_id}, Type={protocol}, R2\n"
-            concat_cmd_r2 = "cat %s  > %s \n "%(' '.join(r2), Path(params.tgt_pwd).joinpath(protocol).joinpath(r2_name))
+
+            if len(r2) > 1: 
+                concat_cmd_r2 = "cat %s  > %s ; \n\n"%(' '.join(r2), Path(params.tgt_pwd).joinpath(protocol).joinpath(r2_name))
+            else:
+                concat_cmd_r2 = "ln -s %s %s ; \n\n"%(' '.join(r2), Path(params.tgt_pwd).joinpath(protocol).joinpath(r2_name))
+                
             bash_script += concat_cmd_r2
 
         with open(output.Concat_script, 'w') as script_file:
@@ -50,9 +60,9 @@ rule generate_concat_bash:
 
 rule exec_concat_bash:
     input:
-        Concat_script = config["Concat"]["ConcatScript"],
+        Concat_script = config["concat"]["ConcatScript"],
     output:
-        Concat_success = config["Concat"]["ConcatSuccess"],
+        Concat_success = config["concat"]["ConcatSuccess"],
     log: 
         "logs/data/exec_concat_bash.log"
     params:

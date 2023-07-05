@@ -4,5 +4,6 @@ include: "generate_concat_bash.smk"
 
 rule target:
     input:
-        config["general"]["ConcatScript"],
+        config["concat"]["ConcatScript"],
+        config["concat"]["ConcatSuccess"],
 
