@@ -1,3 +1,5 @@
+import os.path
+
 metaprism_config = {
     "algos": [
         "arriba",
@@ -252,7 +254,7 @@ rule filter_fusions:
         """
 
 
-checkpoint oncokb_preprocess:
+rule oncokb_preprocess:
     input:
         # fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
         # sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER,
@@ -263,7 +265,7 @@ checkpoint oncokb_preprocess:
         script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.8.1_oncokb_preprocess.py",
     output:
         # temp(directory("%s/{cohort}/rna/fusions/oncokb_pre" % D_FOLDER))
-        temp(directory("fusion_annotation/oncokb_pre"))
+        temp(expand("fusion_annotation/oncokb_pre/{sample}.tsv", sample=SAMPLE))
     log:
         "logs/oncokb_preprocess.log"
     conda:
@@ -273,13 +275,15 @@ checkpoint oncokb_preprocess:
         queue="shortq",
         mem_mb=4000,
         time_min=10
+    params:
+        out_dir=lambda wildcards, output: os.path.dirname(output[0])
     shell:
         """
         python {input.script} \
             --table_fus {input.fus} \
             --table_sam {input.sam} \
             --table_bio {input.bio} \
-            --output {output} &> {log}
+            --output {params.out_dir} &> {log}
         """
 
 
@@ -311,13 +315,6 @@ rule oncokb_annotate:
             -t {params.tumor_type} \
             -o {output} &> {log}
         """
-
-
-def oncokb_postprocess_input(wildcards):
-    checkpoint_output = checkpoints.oncokb_preprocess.get(**wildcards).output[0]
-    # return expand("%s/{{cohort}}/rna/fusions/oncokb/{sample}.tsv" % D_FOLDER,
-    return expand("fusion_annotation/oncokb/{sample}.tsv",
-                  sample=glob_wildcards(os.path.join(checkpoint_output, "{sample}.tsv")).sample)
 
 
 rule oncokb_postprocess:
@@ -363,7 +360,7 @@ checkpoint civic_preprocess:
         bio=config["curated_design"],
         script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.9.1_civic_preprocess.py",
     output:
-        directory("fusion_annotation/civic_pre")
+        temp(expand("fusion_annotation/civic_pre/{sample}.tsv", sample=SAMPLE))
     log:
         "logs/civic_preprocess.log"
     conda:
@@ -373,13 +370,15 @@ checkpoint civic_preprocess:
         queue="shortq",
         mem_mb=4000,
         time_min=20
+    params:
+        out_dir=lambda wildcards, output: os.path.dirname(output[0])
     shell:
         """
         python {input.script} \
             --table_fus {input.fus} \
             --table_sam {input.sam} \
             --table_bio {input.bio} \
-            --output {output} &> {log}
+            --output {params.out_dir} &> {log}
         """
 
 
@@ -414,13 +413,6 @@ rule civic_annotate:
             --tumor_types "{params.tumor_type}" \
             --output {output} &> {log}
         """
-
-
-def civic_postprocess_input(wildcards):
-    checkpoint_output = checkpoints.civic_preprocess.get(**wildcards).output[0]
-    # return expand("%s/{{cohort}}/rna/fusions/civic/{sample}.tsv" % D_FOLDER,
-    return expand("fusion_annotation/civic_pre/{sample}.tsv",
-                  sample=glob_wildcards(os.path.join(checkpoint_output, "{sample}.tsv")).sample)
 
 
 rule civic_postprocess:
