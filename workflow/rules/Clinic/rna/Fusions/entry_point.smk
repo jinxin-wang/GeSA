@@ -12,9 +12,9 @@ metaprism_config = {
     "data": {
         "fusion_annotator": "external/FusionAnnotator/FusionAnnotator",
         "resources": {
-            "genome_lib_dir": "resources/ctat_resource_lib/ctat_genome_lib_build_dir",
+            "genome_lib_dir": "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/ctat_genome_lib_build_dir",
             "drivers": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/meta-PRISM/data/resources/curated/cancer_genes_curated.tsv",
-            "fusions_lists": "resources/fusions_lists",
+            "fusions_lists": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/meta-PRISM/meta-PRISM/resources/fusions_analysis/fusions_lists",
             "gencode": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/meta-PRISM/data/resources/gencode/gencode.v27.annotation.gff3.gene.tsv",
         },
     },
