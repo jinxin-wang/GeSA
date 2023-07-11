@@ -43,8 +43,7 @@ clinical_df = pandas.read_csv(
     sep="\t",
     header=0,
     index_col=0
-)["Project_TCGA_More", "MSKCC_Oncotree", "Civic_Disease"]
-
+)[["Project_TCGA_More", "MSKCC_Oncotree", "Civic_Disease"]]
 
 def get_column_table_sample(wildcards, col, table=clinical_df):
     """Get the value of the column col for the sample"""
@@ -122,7 +121,7 @@ rule aggregate_tables_callers:
     input:
         agg=expand(
             "fusion_annotation/{algo}/sample_aggregation.tsv",
-            algo=config["algos"]
+            algo=metaprism_config["algos"]
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
     conda: "metaprism_r"
@@ -130,7 +129,7 @@ rule aggregate_tables_callers:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER
         agg="fusion_annotation/aggregated_callers.tsv.gz"
     params:
-        algos=config["algos"],
+        algos=metaprism_config["algos"],
         cohort=metaprism_config.get("cohort", "prism"),
     resources:
         mem_mb=30000,
