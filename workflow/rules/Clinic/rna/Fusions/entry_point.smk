@@ -32,7 +32,7 @@ metaprism_config = {
             "rules_clean": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/meta-PRISM/data/resources/civic/CIViC_Curation_And_Rules_Mutation.xlsx",
         },
     },
-    "curated_design": "design_curated.tsv",
+    "curated_design": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/cln_prism_in_design_curated.tsv",
     "metaprism_pipeline_prefix": "/mnt/beegfs/pipelines/MetaPRISM_Public/code/scripts/fusions_analysis",
 }
 
@@ -62,7 +62,7 @@ wildcard_constraints:
 rule aggregate_tables_samples:
     input:
         annotation_folder="{algo}",
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.1_aggregate_tables_samples.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: "metaprism_r"
     output:
         agg="fusion_annotation/{algo}/sample_aggregation.tsv",
@@ -95,7 +95,7 @@ rule aggregate_tables_callers:
             "fusion_annotation/{algo}/sample_aggregation.tsv",
             algo=config["algos"]
         ),
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.2_aggregate_tables_callers.R",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
     conda: "metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER
@@ -122,7 +122,7 @@ rule annotate_fusions_FusionAnnotator_1:
     input:
         # table="%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER,
         table="fusion_annotation/aggregated_callers.tsv.gz",
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_1.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_1.py",
     conda:
         "metaprism_r"
     output:
@@ -172,7 +172,7 @@ rule annotate_fusions_FusionAnnotator_3:
         fusions="fusion_annotation/aggregated_callers.tsv.gz",
         # annots="%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_2.tsv" % D_FOLDER,
         annots="fusion_annotation/aggregated_FusionAnnotator_2.tsv",
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_3.py"
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_3.py"
     conda:
         "metaprism_r"
     output:
@@ -198,7 +198,7 @@ rule annotate_fusions_custom:
         drivers=config["data"]["resources"]["drivers"],
         gencode=config["data"]["resources"]["gencode"],
         fusions_lists=config["data"]["resources"]["fusions_lists"],
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.4_annotate_fusions_custom.R",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.4_annotate_fusions_custom.R",
     conda:
         "metaprism_r"
     output:
@@ -225,7 +225,7 @@ rule filter_fusions:
     input:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated.tsv.gz" % D_FOLDER
         fusion="fusion_annotation/annotate_fusions_custom.tsv",
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.7_filter_fusions.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.7_filter_fusions.py",
     conda:
         "metaprism_r"
     output:
@@ -262,7 +262,7 @@ rule oncokb_preprocess:
         sam="fusion_annotation/sample_list.tsv",
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER # TODO: Find origin
         bio=config["curated_design"],
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.8.1_oncokb_preprocess.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.1_oncokb_preprocess.py",
     output:
         # temp(directory("%s/{cohort}/rna/fusions/oncokb_pre" % D_FOLDER))
         temp(expand("fusion_annotation/oncokb_pre/{sample}.tsv", sample=SAMPLE))
@@ -326,7 +326,7 @@ rule oncokb_postprocess:
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER,
         bio=config["curated_design"],
         okb=oncokb_postprocess_input,
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.8.2_oncokb_postprocess.py"
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.2_oncokb_postprocess.py"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
         "fusion_annotation/annotated_filtered_oncokb.tsv.gz"
@@ -358,7 +358,7 @@ checkpoint civic_preprocess:
         fus="fusion_annotation/annotated_filtered.tsv.gz",
         sam="fusion_annotation/sample_list.tsv",
         bio=config["curated_design"],
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.9.1_civic_preprocess.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.1_civic_preprocess.py",
     output:
         temp(expand("fusion_annotation/civic_pre/{sample}.tsv", sample=SAMPLE))
     log:
@@ -424,7 +424,7 @@ rule civic_postprocess:
         sam="fusion_annotation/sample_list.tsv",
         bio=config["curated_design"],
         civ=civic_postprocess_input,
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.9.2_civic_postprocess.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.2_civic_postprocess.py",
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_civic.tsv.gz" % D_FOLDER
         "fusion_annotation/annotated_filtered_civic.tsv.gz"
@@ -455,7 +455,7 @@ rule union_ann:
     input:
         civ="fusion_annotation/annotated_filtered_civic.tsv.gz",
         okb="fusion_annotation/annotated_filtered_oncokb.tsv.gz",
-        script=f"{metaprism_pipeline_prefix}/workflow/scripts/00.10_concatenate_fus_annotations.py",
+        script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.10_concatenate_fus_annotations.py",
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_union_ann.tsv.gz" % D_FOLDER
         "fusion_annotation/annotated_filtered_union_ann.tsv.gz"
