@@ -13,7 +13,7 @@ metaprism_config = {
         "prism",
     ],
     "data": {
-        "fusion_annotator": "external/FusionAnnotator/FusionAnnotator",
+        "fusion_annotator": "/mnt/beegfs/pipelines/MetaPRISM_Public/code/scripts/fusions_analysis/external/FusionAnnotator/FusionAnnotator",
         "resources": {
             "genome_lib_dir": "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/ctat_genome_lib_build_dir",
             "drivers": "/mnt/beegfs/pipelines/MetaPRISM_Public/data/meta-PRISM/data/resources/curated/cancer_genes_curated.tsv",
