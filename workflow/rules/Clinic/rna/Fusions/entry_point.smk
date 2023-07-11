@@ -40,7 +40,7 @@ metaprism_config = {
 }
 
 clinical_df = pandas.read_csv(
-    "/mnt/beegfs/pipelines/MetaPRISM_Public/data/cln_prism_in_design_curated.tsv",
+    metaprism_config["curated_design"],
     sep="\t",
     header=0,
     index_col=0
