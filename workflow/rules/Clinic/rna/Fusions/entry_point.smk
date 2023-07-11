@@ -8,6 +8,8 @@ metaprism_config = {
         "arriba",
         "fusioninspector",
         "starfusion",
+        #"ericscript",
+        #"pizzly",
     ],
     "cohort": [
         "prism",
