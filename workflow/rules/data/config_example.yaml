@@ -1,18 +1,34 @@
 general:
   ProjectName: MELACHILD 
   MetaTable: config/irods_meta_table.tsv 
+  SampleSheet: config/sample_sheet.tsv
   DownloadScript: config/download.sh
   StoragePath: /mnt/beegfs/scratch/j_wang/01_RawData/FD02/20230630_MELACHILD
+  ConcatPath:  /mnt/beegfs/scratch/j_wang/02_ConcatData/FD02/20230630_MELACHILD
+  DownloadResource: irods
 
+concat:
+  ConcatScript: config/concat.sh
+  ConcatSuccess: config/concat_success
+  
 irods:
-  pwd: http://Jxin@igr8182/#@! 
+  DownloadThreads: 8
+  # iinit password
+  pwd: http://Jxin@igr8182/#@!
+  DownloadSucess: config/download_success
+  # general.MetaTable attributes
   attributes: 
     - patientAlias 
     - patientId 
     - sampleAlias 
     - sampleId 
     - sampleType 
-    - protocol 
-  GroupByAttrs:
-    - sampleId
     - protocol
+  # group data files by two attr
+  GroupByAttrs:
+    - patientAlias
+    - protocol
+  SampleSheetAttrs: 
+    - patientAlias
+    - protocol
+    - sampleType
