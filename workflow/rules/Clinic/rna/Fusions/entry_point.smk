@@ -1,6 +1,7 @@
 import os.path
 import pandas
 
+from pathlib import Path
 
 metaprism_config = {
     "algos": [
@@ -60,23 +61,11 @@ def get_tumor_type_civic(wildcards):
     """Get the tumor type Civic_Disease of the sample"""
     return get_column_table_sample(wildcards, "Civic_Disease")
 
-SAMPLE = []
+def get_samples_from_arriba(prefix: str = "arriba", suffix: str = ".arriba.fusions.tsv"):
+    path_list = Path(prefix).glob(f"*.{suffix}")
+    return [s[len(prefix):len(suffix)] for s in path_list]
 
-def get_fusion(wildcards, config) -> str:
-    prefix = ""
-    suffix = ""
-    if str(wildcards.algo) == "arriba":
-        prefix = "arriba"
-        suffix = "_R.arriba.fusions.tsv"
-    elif str(wildcards.algo) == "starfusion":
-        prefix = "starfusion"
-        suffix = "_R.starfusion.abridged.tsv"
-    elif str(wildcards.algo) == "fusioninspector":
-        prefix = "fusioninspector"
-        suffix = "_R.FusionInspector.fusions.tsv"
-
-    return f"{prefix}/{wildcards.sample}{suffix}"
-
+SAMPLE = get_samples_from_arriba()
 
 wildcard_constraints:
     algo=r"|".join(metaprism_config["algos"]),
@@ -84,7 +73,8 @@ wildcard_constraints:
 
 
 rule target:
-
+    input:
+        "fusion_annotation/annotated_filtered_union_ann.tsv.gz"
 
 
 rule aggregate_tables_samples:
@@ -353,7 +343,7 @@ rule oncokb_postprocess:
         sam="fusion_annotation/sample_list.tsv",
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER,
         bio=metaprism_config["curated_design"],
-        okb=oncokb_postprocess_input,
+        okb=expand("fusion_annotation/oncokb/{sample}.tsv", sample=SAMPLE),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.2_oncokb_postprocess.py"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
@@ -451,7 +441,9 @@ rule civic_postprocess:
         fus="fusion_annotation/annotated_filtered.tsv.gz",
         sam="fusion_annotation/sample_list.tsv",
         bio=metaprism_config["curated_design"],
-        civ=civic_postprocess_input,
+        civ=expand(
+            "fusion_annotation/civic_pre/{sample}.tsv", sample=SAMPLE
+        ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.2_civic_postprocess.py",
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_civic.tsv.gz" % D_FOLDER
