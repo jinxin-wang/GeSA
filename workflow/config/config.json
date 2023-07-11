@@ -7,21 +7,21 @@
 
     "fastp": {
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastp",
-        "adapters": "/mnt/beegfs/userdata/j_wang/references/fastp/adapters_for_fastp.tsv",
+        "adapters": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/adapters_for_fastp.tsv",
     },
 
     "fastqc": {
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastqc",
-        "adapters": "/mnt/beegfs/userdata/j_wang/references/fastqc/adapters_for_fastqc.tsv",
+        "adapters": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/adapters_for_fastqc.tsv",
     },
 
     "bwa": {
         "app": "/mnt/beegfs/software/bwa/2.2.1/bin/bwa-mem2",
         "human": {
-            "index": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/human_g1k_v37.fasta",
+            "index": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/Konstantin/gatk/human_g1k_v37.fasta",
         },
         "mouse": {
-            "index":  "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/NCBIM37_um.fa",
+            "index":  "/mnt/beegfs/scratch/j_wang/00_Genome_Ref/mm9/NCBIM37_um.fa",
         },
     },
 
@@ -37,36 +37,36 @@
 
         "human": {
             "target_interval": " -L 1",
-            "genome_fasta": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/human_g1k_v37.fasta",
-            "gnomad_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/af-only-gnomad.raw.sites.b37.vcf.gz",
-            "mutect_filter_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/small_exac_common_3_b37.vcf",
+            "genome_fasta": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/Konstantin/gatk/human_g1k_v37.fasta",
+            "gnomad_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
+            "mutect_filter_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/small_exac_common_3_b37.vcf",
             "WGS": {
-                "mutect_interval_dir": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/splitted_genome_bed_20Mb_segment",
-                "hsmetrics_interval": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/human_g1k_v37_major_chr_100kb_windows.interval",
-                "hsmetrics_bait": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/human_g1k_v37_major_chr_100kb_windows.interval",
+                "mutect_interval_dir": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/splitted_genome_bed_20Mb_segment",
+                "hsmetrics_interval": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/human_g1k_v37_major_chr_100kb_windows.interval",
+                "hsmetrics_bait": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/human_g1k_v37_major_chr_100kb_windows.interval",
             },
 
             "WES": {
-                "mutect_interval_dir": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/bed_for_mutect2",
-                "hsmetrics_interval": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/S07604514_Padded_b37.intervals",
-                "hsmetrics_bait": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/S07604514_Padded_b37.intervals",
+                "mutect_interval_dir": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/agilent_SS_XT_V6/bed_for_mutect2",
+                "hsmetrics_interval": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/agilent_SS_XT_V6/S07604514_Padded_b37.intervals",
+                "hsmetrics_bait": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/agilent_SS_XT_V6/S07604514_Padded_b37.intervals",
             },
         },
 
         "mouse": {
-            "target_interval": " -L /mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/Sureselect_mouse_v1.padded.uniq.bed",
-            "genome_fasta": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/NCBIM37_um.fa",
-            "gnomad_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/mgp_V2_snp_indel_mm9.vcf.gz",
-            "mutect_filter_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/mgp_V2_snp_indel_mm9.vcf.gz",
+            "target_interval": " -L /mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.bed",
+            "genome_fasta": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
+            "gnomad_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
+            "mutect_filter_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
             "WGS": {
-                "mutect_interval_dir": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/interval_mutect2",
-                "hsmetrics_interval": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/Sureselect_mouse_v1.padded.uniq.interval",
-                "hsmetrics_bait"    : "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/Sureselect_mouse_v1.padded.uniq.interval",
+                "mutect_interval_dir": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/interval_mutect2",
+                "hsmetrics_interval": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
+                "hsmetrics_bait"    : "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
             },
             "WES": {
-                "mutect_interval_dir": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/mutect2_intervals",
-                "hsmetrics_interval":  "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/Sureselect_mouse_v1.padded.uniq.interval",
-                "hsmetrics_bait"    :  "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/Sureselect_mouse_v1.padded.uniq.interval",
+                "mutect_interval_dir": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/mutect2_intervals",
+                "hsmetrics_interval":  "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
+                "hsmetrics_bait"    :  "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
             },
         },
     },
@@ -74,10 +74,10 @@
     "facet_snp_pileup": {
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/snp-pileup",
         "human": {
-            "facet_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/af-only-gnomad.raw.sites.b37.vcf.gz",
+            "facet_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
         },
         "mouse": {
-            "facet_ref": "/mnt/beegfs/userdata/j_wang/references/bwa_gatk_facet/mouse/mgp_V2_snp_indel_mm9.vcf.gz",
+            "facet_ref": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
         },
     }, 
 
@@ -93,13 +93,13 @@
         "app": "/mnt/beegfs/scratch/j_wang/00_Genome_Ref/annovar/table_annovar.pl",
         "human": {
             "ref": "hg19",
-            "DB": "/mnt/beegfs/userdata/j_wang/references/annovar/humandb/",
+            "DB": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/annovar/humandb/",
             "protocols": "refGene,avsnp150,gnomad211_genome,gnomad211_exome,gme,mcap,revel,regsnpintron,gerp++gt2,clinvar_20200316,intervar_20180118,popfreq_max_20150413,dbnsfp35a,cosmic70,icgc21",
             "operations": "g,f,f,f,f,f,f,f,f,f,f,f,f,f,f",
         },
         "mouse": {
             "ref": "mm9",
-            "DB": "/mnt/beegfs/userdata/j_wang/references/annovar/mouse/annovardb/",
+            "DB": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/annovardb/",
             "protocols": "",
             "operations": "",
         },
@@ -112,10 +112,10 @@
     "bcftools": {
         "app":"~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/bcftools",
         "human": {
-            "exom_bed": "/mnt/beegfs/userdata/j_wang/references/bcftools/S07604514_Padded_b37.bed",
+            "exom_bed": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/agilent_SS_XT_V6/bed_for_mutect2/S07604514_Padded_b37.bed",
         },
         "mouse": {
-            "exom_bed": "/mnt/beegfs/userdata/j_wang/references/bcftools/mouse/Sureselect_mouse_v1.padded.uniq.bed",
+            "exom_bed": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.bed",
         },
     },
 
@@ -143,10 +143,10 @@
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/oncotator",
         "human": {
             "ref": "hg19",
-            "DB": "/mnt/beegfs/userdata/j_wang/references/oncotator/oncotator_v1_ds_April052016",
-            "cosmic_mutation": "/mnt/beegfs/userdata/j_wang/references/oncotator/CosmicMutant_count.tsv",
-            "cancer_census_oncogene": "/mnt/beegfs/userdata/j_wang/references/oncotator/cancer_gene_census_hg19_oncogene_IDs.tsv",
-            "cancer_census_tumorsupressor": "/mnt/beegfs/userdata/j_wang/references/oncotator/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv",
+            "DB": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/genome_data/oncotator/oncotator_v1_ds_April052016",
+            "cosmic_mutation": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/code/wgs_wes_pipeline/databases/CosmicMutant_count.tsv",
+            "cancer_census_oncogene": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/code/wgs_wes_pipeline/databases/cancer_gene_census_hg19_oncogene_IDs.tsv",
+            "cancer_census_tumorsupressor": "/mnt/nfs01/home/a_ivashkin@intra.igr.fr/references/code/wgs_wes_pipeline/databases/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv",
         },
 
         "mouse": {
