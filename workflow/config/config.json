@@ -21,7 +21,7 @@
             "index": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/gatk/human_g1k_v37.fasta",
         },
         "mouse": {
-            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/NCBIM37_um.fa",
+            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
         },
     },
 
@@ -163,7 +163,7 @@
             "pileup": "workflow/scripts/01_add_pileup_info_to_oncotator_tsv_files.py",
             "cosmic_t_n": "workflow/scripts/cross_oncotator_TvN_with_COSMIC_pipeline_version.py",
             "extract_tumor_only": "workflow/scripts/oncotator_extract_information_from_MAF_tumor_only.py",
-            "cosmic_t_only": "workflow/scripts/cross_oncotator_tumor_only_with_COSMIC_pipeline_version.py",        
+            "cosmic_t_only": "workflow/scripts/cross_oncotator_tumor_only_with_COSMIC_pipeline_version.py",
         },
     }, 
 }
