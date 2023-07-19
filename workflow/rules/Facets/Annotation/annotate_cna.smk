@@ -15,6 +15,7 @@
 #    # conda:
 #    #    "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
 #    params:
+#        queue = "shortq",
 #        code_dir = metaprism_config["params"]["civic"]["code_dir"],
 #        category = "cna",
 #        a_option = lambda wildcards, input: "-a %s" % input.table_alt
