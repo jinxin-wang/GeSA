@@ -1,6 +1,3 @@
-
-Show Dotfiles Show Owner/Mode
-/mnt/beegfs/scratch/j_sangalang/WES_results/VALID/workflow/
 import os
 import csv
 import errno
