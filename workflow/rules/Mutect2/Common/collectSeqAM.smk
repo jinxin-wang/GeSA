@@ -10,7 +10,8 @@ rule Collect_Sequencing_Artifact_Metrics:
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_summary_metrics.txt"),
     params:
         queue = "mediumq",
-        gatk  = config["gatk"]["app"],
+        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk  = config["gatk"]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
         output_prefix = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact",
     log:
