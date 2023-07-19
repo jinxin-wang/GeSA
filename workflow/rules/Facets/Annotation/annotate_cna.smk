@@ -58,6 +58,7 @@ rule somatic_cna_oncokb:
         # "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
         # "metaprism_py"
     params:
+        queue = "shortq",
         token = metaprism_config["params"]["oncokb"]["token"],
         code_dir = metaprism_config["params"]["oncokb"]["code_dir"],
         category = "cna",
