@@ -70,6 +70,32 @@ tumor_sample_B  normal_sample_B
 $ emacs -nw run.sh
 snakemake -c 'sbatch --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' --jobs 20 --rerun-incomplete --config samples=mouse seq_type=WES mode=TvN
 ```
+
+5. For the CNA annotation, you also need to create two files `samples.tsv` and `tumor_normal_pairs.tsv`:
+* `samples.tsv` should have these columns. You would put both the tumor samples and unmatched normal for FACETS tumor only. Here, we call the unmatched normal as `unmatchedNormal`
+  * `Sample_Id` identifier, unique for each row. Clean id.
+  * `Sample_Type` either `DNA_N` or `DNA_T`.
+  * `MSKCC_Oncotree` the type of tumor form which the sample was biopsied. Used for the rule `somatic_oncokb_maf`. See the MSKCC oncotree online.
+  * `Gender` the gender of the patient, either "Male" or "Female" (case-insensitive).
+
+| Sample_ID  | Sample_Type | MSKCC_Oncotree | Gender |
+| --- | --- | --- | --- |
+| V122  | DNA_T | BRCA | Female |
+| V123  | DNA_T | BRCA | Female |
+| unmatchedNormal  | DNA_N | BRCA | Female |
+
+* `tumor_normal_pairs.tsv` should have these columns.
+  * `DNA_T` identifier of the tumor. Only values matched in `Sample_Id` of `samples.tsv` will be used.
+  * `DNA_N` identifier of the normal. Only values matched in `Sample_Id` of `samples.tsv` will be used.
+  * `DNA_P` identifier of the pair tumor_Vs_normal. Only pairs matched from combinations of `Sample_Id` of `samples.tsv` will be used. Make sure that it is with uppercase (i.e. _Vs_ not _vs_)
+  * `MSKCC_Oncotree` the type of tumor form which the sample was biopsied. Used for the rule somatic_oncokb_maf. See the MSKCC oncotree online.
+  * `Gender` the gender of the patient, either "Male" or "Female" (case-insensitive)
+
+| DNA_T  | DNA_N | DNA_P | MSKCC_Oncotree | Gender |
+| --- | --- | --- | --- | --- |
+| V122  | unmatchedNormal | V122_Vs_unmatchedNormal | BRCA | Female |
+| V123  | unmatchedNormal | V123_Vs_unmatchedNormal | BRCA | Female |
+
 - Step 4. run workflow
 ```
 $ ./run.sh
