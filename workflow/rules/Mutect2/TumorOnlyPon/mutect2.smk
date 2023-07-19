@@ -5,14 +5,15 @@ rule Mutect2_tumor_only_pon:
     input:
         tumor_bam = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
         tumor_bai = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai",
-        panel_of_normal = "PoN/{panel_of_normal}.vcf",
+        panel_of_normal = "PoN/{panel_of_normal}.vcf.gz",
     output:
         VCF   = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz"),
         INDEX = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.tbi"),
         STATS = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.stats"),
     params:
         queue = "mediumq",
-        gatk        = config["gatk"]["app"],
+        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk        = config["gatk"]["app"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
@@ -36,14 +37,15 @@ rule Mutect2_tumor_only_pon:
         
 rule concatenate_mutect2_tumor_only_pon:
     input:
-        vcfs = expand("Mutect2_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_Tp_ON_{mutect_interval}.vcf.gz", mutect_interval=mutect_intervals),
-        panel_of_normal = "PoN/{panel_of_normal}.vcf"
+        vcfs = expand("Mutect2_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_Tp_ON_{mutect_interval}.vcf.gz", mutect_interval = mutect_intervals),
+        panel_of_normal = "PoN/{panel_of_normal}.vcf.gz"
     output:
         concatened_vcf = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz"),
         vcf_liste      = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk = config["gatk"]["app"]
     threads : 1
     resources:
         mem_mb = 40960
@@ -56,13 +58,14 @@ rule concatenate_mutect2_tumor_only_pon:
 rule concatenate_mutect2_tumor_only_pon_stats:
     input:
         vcfs = expand("Mutect2_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_Tp_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals),
-        panel_of_normal = "PoN/{panel_of_normal}.vcf"
+        panel_of_normal = "PoN/{panel_of_normal}.vcf.gz"
     output:
         concatened_stats = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats"),
         stat_liste       = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp_stats.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk = config["gatk"]["app"]
     threads : 4
     resources:
         mem_mb = 40960
@@ -81,7 +84,7 @@ rule filter_mutect_calls_tumor_only_pon:
         Mutect2_vcf = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz",
         Mutect2_stats = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats",
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table" ,
-        panel_of_normal = "PoN/{panel_of_normal}.vcf",
+        panel_of_normal = "PoN/{panel_of_normal}.vcf.gz",
     output:
         VCF   = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz"),
         INDEX = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz.tbi"),
@@ -101,11 +104,13 @@ rule filter_mutect_calls_tumor_only_pon:
         " -R {params.index}"
         " --contamination-table {input.contamination_table}"
         " -O {output.VCF} 2> {log}"
+        " --create-output-variant-index true 2> {log}"
 
 ## A rule to filter VCF on orientation bias, for OxoG and FFPE, from mutect tumor only with PoN 
 rule Filter_By_Orientation_Bias_tumor_only_pon:
     input :
         Mutect2_vcf = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz",
+        Mutect2_idx = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz.tbi",
         pre_adapter_detail_metrics = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt",
     output:
         filtered_vcf       = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_twicefiltered_Tp.vcf.gz",
