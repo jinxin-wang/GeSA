@@ -38,6 +38,8 @@ def get_column_table_sample(wildcards, col):
 #        "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/r.yaml"
 #    output:
 #        touch("logs/setup_r.done")
+#    params:
+#        queue = "shortq",
 #    resources:
 #        queue = "shortq",
 #        mem_mb = 16000,
@@ -65,6 +67,7 @@ rule somatic_cnv_process_vcf:
         # "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/r.yaml"
     threads: 1
     params:
+        queue = "shortq",
         gender = lambda w: get_column_table_sample(w, "Gender"),
         threshold = metaprism_config["params"]["cnv"]["calls_threshold"]
     resources:
@@ -100,6 +103,7 @@ rule somatic_cnv_gene_calls:
         # "/mnt/beegfs/pipelines/MetaPRISM_WES_Pipeline/workflow/envs/python.yaml"
         # "metaprism_py"
     params:
+        queue = "shortq",
         threshold = metaprism_config["params"]["cnv"]["calls_threshold"]
     threads: 1
     resources:
@@ -124,6 +128,8 @@ rule somatic_cnv_gene_calls_filtered:
         temp("facets/calling/somatic_cnv_gene_calls_filtered/{tsample}_Vs_unmatchedNormal.tsv.gz")
     log:
         "logs/calling/somatic_cnv_gene_calls_filtered/{tsample}_Vs_unmatchedNormal.log"
+    params:
+        queue = "shortq",
     threads: 1
     resources:
         queue = "shortq",
