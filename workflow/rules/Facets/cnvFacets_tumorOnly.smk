@@ -20,5 +20,4 @@ rule cnv_facets_tumorOnly:
     resources:
         mem_mb = 50000
     shell:
-        'cd cnv_facets_tumorOnly; {params.cnv_facet} --snp-nprocs {threads} --gbuild {params.ref} --unmatched --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n {params.normal_bam} --out {params.out_pattern}'
- 
+        '[ -d cnv_facets_tumorOnly ] || mkdir cnv_facets_tumorOnly; cd cnv_facets_tumorOnly; {params.cnv_facet} --snp-nprocs {threads} --gbuild {params.ref} --unmatched --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n {params.normal_bam} --out {params.out_pattern}'
