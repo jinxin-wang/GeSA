@@ -6,10 +6,11 @@ from pathlib import Path
 metaprism_config = {
     "algos": [
         "arriba",
-        "fusioninspector",
+        # "fusioninspector",
+        "fusioncatcher",
         "starfusion",
-        #"ericscript",
-        #"pizzly",
+        "ericscript",
+        "pizzly",
     ],
     "cohort": [
         "prism",
@@ -81,7 +82,7 @@ rule target:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder="{algo}",
+        annotation_folder="results/tools/{algo}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: "metaprism_r"
     output:
@@ -163,7 +164,7 @@ rule annotate_fusions_FusionAnnotator_1:
 rule annotate_fusions_FusionAnnotator_2:
     input:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_1.tsv" % D_FOLDER
-        table="fusion_annotation/aggregated_callers.tsv.gz",
+        table="fusion_annotation/aggregated_FusionAnnotator_1.tsv.gz",
         genome_lib_dir=metaprism_config["data"]["resources"]["genome_lib_dir"],
         app=metaprism_config["data"]["fusion_annotator"],
     conda:
