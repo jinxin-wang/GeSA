@@ -30,7 +30,7 @@
     },
 
     "gatk": {
-        "app": "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/gatk",
         "scripts": {
             "reformat_mutect2": "workflow/scripts/reformat_mutect2_vcf_for_oncotator_input_GATK_4_1_8_1.py",
         },
@@ -79,6 +79,15 @@
         "mouse": {
             "facet_ref": "/mnt/beegfs/userdata/i_padioleau/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
         },
+        "unmatched_normal_bam": "/mnt/beegfs/scratch/j_sangalang/WES/Normal_Blood_V6/MR1043_N.nodup.recal.bam",
+        "unmatched_normal_bai": "/mnt/beegfs/scratch/j_sangalang/WES/Normal_Blood_V6/MR1043_N.nodup.recal.bam.bai",
+    }, 
+    
+    "facet_graph_tumorOnly": {
+        "script": "workflow/scripts/facets_graphs_tumorOnly.R",
+        "cval_preProcSample": 25,
+        "cval_procSample": 500,
+        "hetThreshold": 0.1
     }, 
 
 
