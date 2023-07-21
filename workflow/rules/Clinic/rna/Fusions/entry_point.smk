@@ -373,7 +373,7 @@ rule oncokb_postprocess:
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.2_oncokb_postprocess.py"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
-        "fusion_annotation/annotated_filtered_oncokb.tsv.gz"
+        "fusion_annotation/{cohort}/annotated_filtered_oncokb.tsv.gz"
     log:
         "logs/oncokb_postprocess/{cohort}.log"
     conda:
