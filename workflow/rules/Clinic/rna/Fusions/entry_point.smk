@@ -81,9 +81,30 @@ rule target:
         "fusion_annotation/annotated_filtered_union_ann.tsv.gz"
 
 
+rule soft_link:
+    input:
+        "results/tools/{algo}",
+    output:
+        "{cohort}/rna/{algo}",
+    threads: 1
+    resources:
+        mem_mb=512,
+        partition="shortq",
+        time_min=2,
+    log:
+        "logs/soft_link/{algo}.{cohort}"
+    params:
+        "--symbolic --force --relative --verbose"
+    conda:
+        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+    shell:
+        "ln {params} {input} {output} > {log} 2>&1"
+
+
+
 rule aggregate_tables_samples:
     input:
-        annotation_folder="results/tools/{algo}",
+        annotation_folder=f"{coonfig['cohort']}/rna/{{algo}}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: 
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
