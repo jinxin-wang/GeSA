@@ -102,8 +102,8 @@ rule soft_link:
     conda:
         "metaprism_r"
     shell:
-        'mkrir {params.mk} {output} > {log} 2>&1 && '
-        'find {params.find} 2>> {log} | while read SAMPLE_DIR; do '
+        'mkdir {params.mk} {output} > {log} 2>&1 && '
+        'find {input} {params.find} 2>> {log} | while read SAMPLE_DIR; do '
         'ln {params.ln} "${{SAMPLE_DIR}}" "{output}/$(basename ${{SAMPLE_DIR}})-ARN" >> {log} 2>&1 ; '
         'done'
 
