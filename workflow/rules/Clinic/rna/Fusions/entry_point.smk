@@ -76,7 +76,10 @@ wildcard_constraints:
 
 rule target:
     input:
-        "fusion_annotation/{cohort}/annotated_filtered_union_ann.tsv.gz"
+        expand(
+            "fusion_annotation/{cohort}/annotated_filtered_union_ann.tsv.gz",
+            cohort=metaprism_config["cohort"],
+        )
 
 
 rule soft_link:
