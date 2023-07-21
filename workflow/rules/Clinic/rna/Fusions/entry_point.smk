@@ -13,9 +13,7 @@ metaprism_config = {
         "Pizzly",
         "Squid",
     ],
-    "cohort": [
-        "prism",
-    ],
+    "cohort": "prism",
     "data": {
         "fusion_annotator": "/mnt/beegfs/pipelines/MetaPRISM_Public/code/scripts/fusions_analysis/external/FusionAnnotator/FusionAnnotator",
         "resources": {
