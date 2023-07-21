@@ -1,4 +1,5 @@
 import os.path
+import os
 import pandas
 
 from pathlib import Path
@@ -116,7 +117,7 @@ rule aggregate_tables_samples:
     params:
         output_list=lambda wildcards, output: output["output_list"],
         cohort=lambda wildcards: wildcards.cohort,
-        data_dir=lambda wildcards, input: str(input.annotation_folder)[:-len(f"{wildcards.cohort}/rna/{wildcards.algo}")],
+        data_dir=os.getcwd(),
     resources:
         mem_mb=16000,
         partition="shortq",
