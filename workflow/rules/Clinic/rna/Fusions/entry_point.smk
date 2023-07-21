@@ -169,7 +169,7 @@ rule annotate_fusions_FusionAnnotator_2:
         genome_lib_dir=metaprism_config["data"]["resources"]["genome_lib_dir"],
         app=metaprism_config["data"]["fusion_annotator"],
     conda:
-        "../envs/FusionAnnotator.yaml"
+        "metaprism_r"
     output:
         # temp("%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_2.tsv" % D_FOLDER)
         table="fusion_annotation/aggregated_FusionAnnotator_2.tsv"
