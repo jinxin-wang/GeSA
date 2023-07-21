@@ -116,7 +116,7 @@ rule aggregate_tables_samples:
     params:
         output_list=lambda wildcards, output: output["output_list"],
         cohort=lambda wildcards: wildcards.cohort,
-        data_dir=lambda wildcards, input: str(input.annotation_folder)[:-len(f"/rna/{wildcards.algo}")],
+        data_dir=lambda wildcards, input: str(input.annotation_folder)[:-len(f"{params.cohort}/rna/{wildcards.algo}")],
     resources:
         mem_mb=16000,
         partition="shortq",
