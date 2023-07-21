@@ -96,12 +96,16 @@ rule soft_link:
     log:
         "logs/soft_link/{algo}.{cohort}.log"
     params:
-        "--symbolic --force --relative --verbose"
+        ln="--symbolic --force --relative --verbose",
+        find="-type d",
+        mk="--parents --verbose",
     conda:
         "metaprism_r"
     shell:
-        "ln {params} {input} {output} > {log} 2>&1"
-
+        'mkrir {params.mk} {output} > {log} 2>&1 && '
+        'find {params.find} 2>> {log} | while read SAMPLE_DIR; do '
+        'ln {params.ln} "${{SAMPLE_DIR}}" "{output}/$(basename ${{SAMPLE_DIR}})-ARN" >> {log} 2>&1 ; '
+        'done'
 
 
 rule aggregate_tables_samples:
