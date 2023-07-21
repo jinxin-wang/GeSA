@@ -93,7 +93,6 @@ rule aggregate_tables_samples:
         # agg="%s/{cohort}/rna/{algo}/{cohort}_{algo}.tsv.gz" % D_FOLDER
     params:
         output_list=lambda wildcards, output: output["output_list"],
-        data_folder=lambda wildcards, input: input,
         cohort=metaprism_config.get("cohort", "prism"),
     resources:
         mem_mb=16000,
@@ -106,7 +105,7 @@ rule aggregate_tables_samples:
         """python {input.script} \
             --cohort {params.cohort} \
             --algo_folder {wildcards.algo} \
-            --data_folder {params.data_folder} \
+            --data_folder {input.annotation_folder} \
             --output_list {output.output_list} \
             --output_agg {output.agg} &> {log}
         """
