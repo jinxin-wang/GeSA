@@ -104,7 +104,7 @@ rule soft_link:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder=f"{coonfig['cohort']}/rna/{{algo}}",
+        annotation_folder=f"{config['cohort']}/rna/{{algo}}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: 
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
@@ -115,6 +115,7 @@ rule aggregate_tables_samples:
     params:
         output_list=lambda wildcards, output: output["output_list"],
         cohort=metaprism_config.get("cohort", "prism"),
+        data_dir=lambda wildcards, input: str(input.annotation_folder)[:-len(f"/rna/{wildcards.algo}")],
     resources:
         mem_mb=16000,
         partition="shortq",
@@ -126,7 +127,7 @@ rule aggregate_tables_samples:
         """python {input.script} \
             --cohort {params.cohort} \
             --algo_folder {wildcards.algo} \
-            --data_folder {input.annotation_folder} \
+            --data_folder {params.data_dir} \
             --output_list {output.output_list} \
             --output_agg {output.agg} &> {log}
         """
