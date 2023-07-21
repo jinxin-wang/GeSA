@@ -97,7 +97,7 @@ rule soft_link:
     params:
         "--symbolic --force --relative --verbose"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     shell:
         "ln {params} {input} {output} > {log} 2>&1"
 
@@ -108,7 +108,7 @@ rule aggregate_tables_samples:
         annotation_folder="{cohort}/rna/{algo}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: 
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         agg="fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
         output_list="fusion_annotation/{cohort}/{algo}/sample_list.tsv",
@@ -143,7 +143,7 @@ rule aggregate_tables_callers:
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
     conda: 
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER
         agg="fusion_annotation/{cohort}/aggregated_callers.tsv.gz"
@@ -170,7 +170,7 @@ rule annotate_fusions_FusionAnnotator_1:
         table="fusion_annotation/{cohort}/aggregated_callers.tsv.gz",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_1.py",
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # temp("%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_1.tsv" % D_FOLDER)
         table="fusion_annotation/{cohort}/aggregated_FusionAnnotator_1.tsv"
@@ -193,7 +193,7 @@ rule annotate_fusions_FusionAnnotator_2:
         genome_lib_dir=metaprism_config["data"]["resources"]["genome_lib_dir"],
         app=metaprism_config["data"]["fusion_annotator"],
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # temp("%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_2.tsv" % D_FOLDER)
         table="fusion_annotation/{cohort}/aggregated_FusionAnnotator_2.tsv"
@@ -220,7 +220,7 @@ rule annotate_fusions_FusionAnnotator_3:
         annots="fusion_annotation/{cohort}/aggregated_FusionAnnotator_2.tsv",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_3.py"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_FusionAnnotator.tsv.gz" % D_FOLDER
         "fusion_annotation/{cohort}/aggregated_FusionAnnotator.tsv",
@@ -246,7 +246,7 @@ rule annotate_fusions_custom:
         fusions_lists=metaprism_config["data"]["resources"]["fusions_lists"],
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.4_annotate_fusions_custom.R",
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated.tsv.gz" % D_FOLDER
         "fusion_annotation/{cohort}/annotate_fusions_custom.tsv",
@@ -273,7 +273,7 @@ rule filter_fusions:
         fusion="fusion_annotation/{cohort}/annotate_fusions_custom.tsv",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.7_filter_fusions.py",
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     output:
         # fus_filters="%s/{cohort}/rna/fusions/{cohort}_filters.tsv.gz" % D_FOLDER,
         fus_filters="fusion_annotation/{cohort}/filters.tsv.gz",
@@ -313,7 +313,7 @@ rule oncokb_preprocess:
     log:
         "logs/oncokb_preprocess/{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     threads: 1
     resources:
         queue="shortq",
@@ -342,7 +342,7 @@ rule oncokb_annotate:
     log:
         "logs/oncokb_annotate/{sample}.{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     params:
         token=metaprism_config["params"]["oncokb"]["token"],
         tumor_type=get_tumor_type_mskcc_oncotree
@@ -377,7 +377,7 @@ rule oncokb_postprocess:
     log:
         "logs/oncokb_postprocess/{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     threads: 1
     resources:
         queue="shortq",
@@ -408,7 +408,7 @@ checkpoint civic_preprocess:
     log:
         "logs/civic_preprocess/{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     threads: 1
     resources:
         queue="shortq",
@@ -439,7 +439,7 @@ rule civic_annotate:
     log:
         "logs/civic_annotate/{sample}.{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     params:
         tumor_type=get_tumor_type_civic
     threads: 1
@@ -477,7 +477,7 @@ rule civic_postprocess:
     log:
         "logs/civic_postprocess/{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     threads: 1
     resources:
         queue="shortq",
@@ -508,7 +508,7 @@ rule union_ann:
     log:
         "logs/union_ann/{cohort}.log"
     conda:
-        "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
+        "metaprism_r"
     threads: 1
     resources:
         queue="shortq",
