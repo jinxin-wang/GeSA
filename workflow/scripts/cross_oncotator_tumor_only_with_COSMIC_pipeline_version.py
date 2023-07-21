@@ -4,9 +4,9 @@ import os
 MUTATION_FILE = open(sys.argv[1], 'r')
 OUT_FILE = open(sys.argv[2], 'w')
 
-COSMIC_MUTATION = open('/mnt/beegfs/userdata/i_padioleau/genome_data/cosmic/CosmicMutant_count.tsv', 'r')
-ONCOGENES = open('/mnt/beegfs/userdata/i_padioleau/genome_data/cosmic/cancer_gene_census_hg19_oncogene_IDs.tsv', 'r')
-TUMORSUPRESSOR = open('/mnt/beegfs/userdata/i_padioleau/genome_data/cosmic/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv', 'r')
+COSMIC_MUTATION = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/genome_data/cosmic/CosmicMutant_count.tsv', 'r')
+ONCOGENES = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_oncogene_IDs.tsv', 'r')
+TUMORSUPRESSOR = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv', 'r')
 
 good_variant_classification_TSG = ['In_Frame_Del', 'In_Frame_Ins', 'Missense_Mutation', 'Nonsense_Mutation', 'Splice_Site']
 
