@@ -13,7 +13,7 @@ metaprism_config = {
         "Pizzly",
         "Squid",
     ],
-    "cohort": "prism",
+    "cohort": ["prism"],
     "data": {
         "fusion_annotator": "/mnt/beegfs/pipelines/MetaPRISM_Public/code/scripts/fusions_analysis/external/FusionAnnotator/FusionAnnotator",
         "resources": {
@@ -76,7 +76,7 @@ wildcard_constraints:
 
 rule target:
     input:
-        "fusion_annotation/annotated_filtered_union_ann.tsv.gz"
+        "fusion_annotation/{cohort}/annotated_filtered_union_ann.tsv.gz"
 
 
 rule soft_link:
@@ -102,17 +102,17 @@ rule soft_link:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder=f"{metaprism_config['cohort']}/rna/{{algo}}",
+        annotation_folder="{cohort}/rna/{algo}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: 
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
-        agg="fusion_annotation/{algo}/sample_aggregation.tsv",
-        output_list="fusion_annotation/{algo}/sample_list.tsv",
+        agg="fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
+        output_list="fusion_annotation/{cohort}/{algo}/sample_list.tsv",
         # agg="%s/{cohort}/rna/{algo}/{cohort}_{algo}.tsv.gz" % D_FOLDER
     params:
         output_list=lambda wildcards, output: output["output_list"],
-        cohort=metaprism_config.get("cohort", "prism"),
+        cohort=lambda wildcards: wildcards.cohort,
         data_dir=lambda wildcards, input: str(input.annotation_folder)[:-len(f"/rna/{wildcards.algo}")],
     resources:
         mem_mb=16000,
@@ -123,7 +123,7 @@ rule aggregate_tables_samples:
         "logs/aggregate_tables_samples/{algo}.log"
     shell:
         """python {input.script} \
-            --cohort {params.cohort} \
+            --cohort {wildcards.cohort} \
             --algo_folder {wildcards.algo} \
             --data_folder {params.data_dir} \
             --output_list {output.output_list} \
@@ -134,7 +134,7 @@ rule aggregate_tables_samples:
 rule aggregate_tables_callers:
     input:
         agg=expand(
-            "fusion_annotation/{algo}/sample_aggregation.tsv",
+            "fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
             algo=metaprism_config["algos"]
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
@@ -142,10 +142,9 @@ rule aggregate_tables_callers:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER
-        agg="fusion_annotation/aggregated_callers.tsv.gz"
+        agg="fusion_annotation/{cohort}/aggregated_callers.tsv.gz"
     params:
         algos=metaprism_config["algos"],
-        cohort=metaprism_config.get("cohort", "prism"),
     resources:
         mem_mb=30000,
         partition="shortq",
@@ -155,7 +154,7 @@ rule aggregate_tables_callers:
         "logs/aggregate_tables_callers.log"
     shell:
         """Rscript {input.script} \
-            --cohort {params.cohort} \
+            --cohort {wildcards.cohort} \
             --algos {params.algos} \
             --output {output.agg} \
             --log {log}"""
@@ -164,13 +163,13 @@ rule aggregate_tables_callers:
 rule annotate_fusions_FusionAnnotator_1:
     input:
         # table="%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER,
-        table="fusion_annotation/aggregated_callers.tsv.gz",
+        table="fusion_annotation/{cohort}/aggregated_callers.tsv.gz",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_1.py",
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # temp("%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_1.tsv" % D_FOLDER)
-        table="fusion_annotation/aggregated_FusionAnnotator_1.tsv"
+        table="fusion_annotation/{cohort}/aggregated_FusionAnnotator_1.tsv"
     resources:
         mem_mb=16000,
         partition="shortq",
@@ -186,14 +185,14 @@ rule annotate_fusions_FusionAnnotator_1:
 rule annotate_fusions_FusionAnnotator_2:
     input:
         # "%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_1.tsv" % D_FOLDER
-        table="fusion_annotation/aggregated_FusionAnnotator_1.tsv",
+        table="fusion_annotation/{cohort}/aggregated_FusionAnnotator_1.tsv",
         genome_lib_dir=metaprism_config["data"]["resources"]["genome_lib_dir"],
         app=metaprism_config["data"]["fusion_annotator"],
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # temp("%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_2.tsv" % D_FOLDER)
-        table="fusion_annotation/aggregated_FusionAnnotator_2.tsv"
+        table="fusion_annotation/{cohort}/aggregated_FusionAnnotator_2.tsv"
     params:
         ""
     resources:
@@ -212,15 +211,15 @@ rule annotate_fusions_FusionAnnotator_2:
 rule annotate_fusions_FusionAnnotator_3:
     input:
         # fusions="%s/{cohort}/rna/fusions/{cohort}_aggregated_callers.tsv.gz" % D_FOLDER,
-        fusions="fusion_annotation/aggregated_callers.tsv.gz",
+        fusions="fusion_annotation/{cohort}/aggregated_callers.tsv.gz",
         # annots="%s/{cohort}/rna/fusions/{cohort}_aggregated_FusionAnnotator_2.tsv" % D_FOLDER,
-        annots="fusion_annotation/aggregated_FusionAnnotator_2.tsv",
+        annots="fusion_annotation/{cohort}/aggregated_FusionAnnotator_2.tsv",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.3_annotate_fusions_FusionAnnotator_3.py"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_FusionAnnotator.tsv.gz" % D_FOLDER
-        "fusion_annotation/aggregated_FusionAnnotator.tsv",
+        "fusion_annotation/{cohort}/aggregated_FusionAnnotator.tsv",
     resources:
         mem_mb=16000,
         partition="shortq",
@@ -237,7 +236,7 @@ rule annotate_fusions_FusionAnnotator_3:
 rule annotate_fusions_custom:
     input:
         # fusions="%s/{cohort}/rna/fusions/{cohort}_annotated_FusionAnnotator.tsv.gz" % D_FOLDER,
-        fusions="fusion_annotation/aggregated_FusionAnnotator.tsv",
+        fusions="fusion_annotation/{cohort}/aggregated_FusionAnnotator.tsv",
         drivers=metaprism_config["data"]["resources"]["drivers"],
         gencode=metaprism_config["data"]["resources"]["gencode"],
         fusions_lists=metaprism_config["data"]["resources"]["fusions_lists"],
@@ -246,7 +245,7 @@ rule annotate_fusions_custom:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated.tsv.gz" % D_FOLDER
-        "fusion_annotation/annotate_fusions_custom.tsv",
+        "fusion_annotation/{cohort}/annotate_fusions_custom.tsv",
     resources:
         mem_mb=8000,
         partition="shortq",
@@ -267,29 +266,27 @@ rule annotate_fusions_custom:
 rule filter_fusions:
     input:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated.tsv.gz" % D_FOLDER
-        fusion="fusion_annotation/annotate_fusions_custom.tsv",
+        fusion="fusion_annotation/{cohort}/annotate_fusions_custom.tsv",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.7_filter_fusions.py",
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     output:
         # fus_filters="%s/{cohort}/rna/fusions/{cohort}_filters.tsv.gz" % D_FOLDER,
-        fus_filters="fusion_annotation/filters.tsv.gz",
+        fus_filters="fusion_annotation/{cohort}/filters.tsv.gz",
         # fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
-        fus="fusion_annotation/annotated_filtered.tsv.gz",
+        fus="fusion_annotation/{cohort}/annotated_filtered.tsv.gz",
         # sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER
-        sam="fusion_annotation/sample_list.tsv",
+        sam="fusion_annotation/{cohort}/sample_list.tsv",
     resources:
         mem_mb=4000,
         partition="shortq",
         time_min=30
     threads: 1
-    params:
-        cohort=metaprism_config.get("cohort", "prism"),
     log:
         "logs/filter_fusions.log"
     shell:
         """python {input.script} \
-            --cohort {params.cohort} \
+            --cohort {wildcards.cohort} \
             --input {input.fusion} \
             --output_sam {output.sam} \
             --output_fus_filters {output.fus_filters} \
@@ -301,14 +298,14 @@ rule oncokb_preprocess:
     input:
         # fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
         # sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER,
-        fus="fusion_annotation/annotated_filtered.tsv.gz",
-        sam="fusion_annotation/sample_list.tsv",
+        fus="fusion_annotation/{cohort}/annotated_filtered.tsv.gz",
+        sam="fusion_annotation/{cohort}/sample_list.tsv",
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER # TODO: Find origin
         bio=metaprism_config["curated_design"],
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.1_oncokb_preprocess.py",
     output:
         # temp(directory("%s/{cohort}/rna/fusions/oncokb_pre" % D_FOLDER))
-        temp(expand("fusion_annotation/oncokb_pre/{sample}.tsv", sample=SAMPLE))
+        temp(expand("fusion_annotation/{cohort}/oncokb_pre/{sample}.tsv", sample=SAMPLE))
     log:
         "logs/oncokb_preprocess.log"
     conda:
@@ -333,11 +330,11 @@ rule oncokb_preprocess:
 rule oncokb_annotate:
     input:
         # "%s/{cohort}/rna/fusions/oncokb_pre/{sample}.tsv" % D_FOLDER
-        fusions="fusion_annotation/oncokb_pre/{sample}.tsv",
+        fusions="fusion_annotation/{cohort}/oncokb_pre/{sample}.tsv",
         code_dir=metaprism_config["params"]["oncokb"]["code_dir"],
     output:
         # temp("%s/{cohort}/rna/fusions/oncokb/{sample}.tsv" % D_FOLDER)
-        "fusion_annotation/oncokb/{sample}.tsv",
+        "fusion_annotation/{cohort}/oncokb/{sample}.tsv",
     log:
         "logs/oncokb_annotate/{sample}.log"
     conda:
@@ -364,11 +361,11 @@ rule oncokb_postprocess:
     input:
         # fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
         # sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER,
-        fus="fusion_annotation/annotated_filtered.tsv.gz",
-        sam="fusion_annotation/sample_list.tsv",
+        fus="fusion_annotation/{cohort}/annotated_filtered.tsv.gz",
+        sam="fusion_annotation/{cohort}/sample_list.tsv",
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER,
         bio=metaprism_config["curated_design"],
-        okb=expand("fusion_annotation/oncokb/{sample}.tsv", sample=SAMPLE),
+        okb=expand("fusion_annotation/{cohort}/oncokb/{sample}.tsv", sample=SAMPLE),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.2_oncokb_postprocess.py"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
@@ -398,12 +395,12 @@ checkpoint civic_preprocess:
         #  fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
         #  sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER,
         #  bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER
-        fus="fusion_annotation/annotated_filtered.tsv.gz",
-        sam="fusion_annotation/sample_list.tsv",
+        fus="fusion_annotation/{cohort}/annotated_filtered.tsv.gz",
+        sam="fusion_annotation/{cohort}/sample_list.tsv",
         bio=metaprism_config["curated_design"],
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.1_civic_preprocess.py",
     output:
-        temp(expand("fusion_annotation/civic_pre/{sample}.tsv", sample=SAMPLE))
+        temp(expand("fusion_annotation/{cohort}/civic_pre/{sample}.tsv", sample=SAMPLE))
     log:
         "logs/civic_preprocess.log"
     conda:
@@ -428,7 +425,7 @@ checkpoint civic_preprocess:
 rule civic_annotate:
     input:
         # "%s/{cohort}/rna/fusions/civic_pre/{sample}.tsv" % D_FOLDER
-        fusion="fusion_annotation/civic_pre/{sample}.tsv",
+        fusion="fusion_annotation/{cohort}/civic_pre/{sample}.tsv",
         code_dir=metaprism_config["params"]["civic"]["code_dir"],
         civic=metaprism_config["params"]["civic"]["database"],
         rules=metaprism_config["params"]["civic"]["rules_clean"],
@@ -463,16 +460,16 @@ rule civic_postprocess:
         # fus="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered.tsv.gz" % D_FOLDER,
         # sam="%s/{cohort}/rna/fusions/sample_list.tsv" % D_FOLDER,
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER,
-        fus="fusion_annotation/annotated_filtered.tsv.gz",
-        sam="fusion_annotation/sample_list.tsv",
+        fus="fusion_annotation/{cohort}/annotated_filtered.tsv.gz",
+        sam="fusion_annotation/{cohort}/sample_list.tsv",
         bio=metaprism_config["curated_design"],
         civ=expand(
-            "fusion_annotation/civic_pre/{sample}.tsv", sample=SAMPLE
+            "fusion_annotation/{cohort}/civic_pre/{sample}.tsv", sample=SAMPLE
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.2_civic_postprocess.py",
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_civic.tsv.gz" % D_FOLDER
-        "fusion_annotation/annotated_filtered_civic.tsv.gz"
+        "fusion_annotation/{cohort}/annotated_filtered_civic.tsv.gz"
     log:
         "logs/civic_postprocess.log"
     conda:
@@ -498,12 +495,12 @@ rule union_ann:
     #     civ="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_civic.tsv.gz" % D_FOLDER,
     #     okb="%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER,
     input:
-        civ="fusion_annotation/annotated_filtered_civic.tsv.gz",
-        okb="fusion_annotation/annotated_filtered_oncokb.tsv.gz",
+        civ="fusion_annotation/{cohort}/annotated_filtered_civic.tsv.gz",
+        okb="fusion_annotation/{cohort}/annotated_filtered_oncokb.tsv.gz",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.10_concatenate_fus_annotations.py",
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_union_ann.tsv.gz" % D_FOLDER
-        "fusion_annotation/annotated_filtered_union_ann.tsv.gz"
+        "fusion_annotation/{cohort}/annotated_filtered_union_ann.tsv.gz"
     log:
         "logs/union_ann.log"
     conda:
