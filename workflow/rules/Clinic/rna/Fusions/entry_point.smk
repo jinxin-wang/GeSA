@@ -435,7 +435,7 @@ rule civic_annotate:
         rules=metaprism_config["params"]["civic"]["rules_clean"],
     output:
         # "%s/{cohort}/rna/fusions/civic/{sample}.tsv" % D_FOLDER
-        "fusion_annotation/civic/{sample}.tsv"
+        "fusion_annotation/{cohort}/civic/{sample}.tsv"
     log:
         "logs/civic_annotate/{sample}.{cohort}.log"
     conda:
