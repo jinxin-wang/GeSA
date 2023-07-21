@@ -104,7 +104,7 @@ rule soft_link:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder=f"{config['cohort']}/rna/{{algo}}",
+        annotation_folder=f"{metaprism_config['cohort']}/rna/{{algo}}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: 
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
