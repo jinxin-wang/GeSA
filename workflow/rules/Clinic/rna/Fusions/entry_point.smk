@@ -90,7 +90,7 @@ rule soft_link:
         partition="shortq",
         time_min=2,
     log:
-        "logs/soft_link/{algo}.{cohort}"
+        "logs/soft_link/{algo}.{cohort}.log"
     params:
         "--symbolic --force --relative --verbose"
     conda:
@@ -120,7 +120,7 @@ rule aggregate_tables_samples:
         time_min=30
     threads: 1
     log:
-        "logs/aggregate_tables_samples/{algo}.log"
+        "logs/aggregate_tables_samples/{algo}.{cohort}.log"
     shell:
         """python {input.script} \
             --cohort {wildcards.cohort} \
@@ -151,7 +151,7 @@ rule aggregate_tables_callers:
         time_min=60
     threads: 1
     log:
-        "logs/aggregate_tables_callers.log"
+        "logs/aggregate_tables_callers/{cohort}.log"
     shell:
         """Rscript {input.script} \
             --cohort {wildcards.cohort} \
@@ -176,7 +176,7 @@ rule annotate_fusions_FusionAnnotator_1:
         time_min=60
     threads: 1
     log:
-        "logs/annotate_fusions_FusionAnnotator_1.log"
+        "logs/annotate_fusions_FusionAnnotator_1/{cohort}.log"
     shell:
         """python {input.script} --input {input.table} \
             --output {output.table} &> {log}"""
@@ -201,7 +201,7 @@ rule annotate_fusions_FusionAnnotator_2:
         time_min=60
     threads: 1
     log:
-        "logs/annotate_fusions_FusionAnnotator_2.log"
+        "logs/annotate_fusions_FusionAnnotator_2/{cohort}.log"
     shell:
         """{input.app} --genome_lib_dir {input.genome_lib_dir} \
             --annotate {input.table} \
@@ -226,7 +226,7 @@ rule annotate_fusions_FusionAnnotator_3:
         time_min=60
     threads: 1
     log:
-        "logs/annotate_fusions_FusionAnnotator_3.log"
+        "logs/annotate_fusions_FusionAnnotator_3/{cohort}.log"
     shell:
         """python {input.script} --input_fusions {input.fusions} \
             --input_annots {input.annots} \
@@ -252,7 +252,7 @@ rule annotate_fusions_custom:
         time_min=15
     threads: 1
     log:
-        "logs/annotate_fusions_custom.log"
+        "logs/annotate_fusions_custom/{cohort}.log"
     shell:
         """Rscript {input.script} \
             --input {input.fusions} \
@@ -283,7 +283,7 @@ rule filter_fusions:
         time_min=30
     threads: 1
     log:
-        "logs/filter_fusions.log"
+        "logs/filter_fusions/{cohort}.log"
     shell:
         """python {input.script} \
             --cohort {wildcards.cohort} \
@@ -307,7 +307,7 @@ rule oncokb_preprocess:
         # temp(directory("%s/{cohort}/rna/fusions/oncokb_pre" % D_FOLDER))
         temp(expand("fusion_annotation/{cohort}/oncokb_pre/{sample}.tsv", sample=SAMPLE))
     log:
-        "logs/oncokb_preprocess.log"
+        "logs/oncokb_preprocess/{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     threads: 1
@@ -336,7 +336,7 @@ rule oncokb_annotate:
         # temp("%s/{cohort}/rna/fusions/oncokb/{sample}.tsv" % D_FOLDER)
         "fusion_annotation/{cohort}/oncokb/{sample}.tsv",
     log:
-        "logs/oncokb_annotate/{sample}.log"
+        "logs/oncokb_annotate/{sample}.{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     params:
@@ -371,7 +371,7 @@ rule oncokb_postprocess:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
         "fusion_annotation/annotated_filtered_oncokb.tsv.gz"
     log:
-        "logs/oncokb_postprocess.log"
+        "logs/oncokb_postprocess/{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     threads: 1
@@ -402,7 +402,7 @@ checkpoint civic_preprocess:
     output:
         temp(expand("fusion_annotation/{cohort}/civic_pre/{sample}.tsv", sample=SAMPLE))
     log:
-        "logs/civic_preprocess.log"
+        "logs/civic_preprocess/{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     threads: 1
@@ -433,7 +433,7 @@ rule civic_annotate:
         # "%s/{cohort}/rna/fusions/civic/{sample}.tsv" % D_FOLDER
         "fusion_annotation/civic/{sample}.tsv"
     log:
-        "logs/civic_annotate/{sample}.log"
+        "logs/civic_annotate/{sample}.{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     params:
@@ -471,7 +471,7 @@ rule civic_postprocess:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_civic.tsv.gz" % D_FOLDER
         "fusion_annotation/{cohort}/annotated_filtered_civic.tsv.gz"
     log:
-        "logs/civic_postprocess.log"
+        "logs/civic_postprocess/{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     threads: 1
@@ -502,7 +502,7 @@ rule union_ann:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_union_ann.tsv.gz" % D_FOLDER
         "fusion_annotation/{cohort}/annotated_filtered_union_ann.tsv.gz"
     log:
-        "logs/union_ann.log"
+        "logs/union_ann/{cohort}.log"
     conda:
         "/mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r"
     threads: 1
