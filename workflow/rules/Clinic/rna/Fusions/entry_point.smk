@@ -86,7 +86,7 @@ rule soft_link:
     input:
         "results/tools/{algo}",
     output:
-        "{cohort}/rna/{algo}",
+        directory("{cohort}/rna/{algo}"),
     threads: 1
     resources:
         mem_mb=512,
