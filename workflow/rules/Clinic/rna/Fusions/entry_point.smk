@@ -82,7 +82,7 @@ rule target:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder="results/tools/{algo}",
+        annotation_folder="tools/{algo}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: "metaprism_r"
     output:
