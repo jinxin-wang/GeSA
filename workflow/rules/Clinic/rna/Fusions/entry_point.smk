@@ -138,7 +138,8 @@ rule aggregate_tables_callers:
     input:
         agg=expand(
             "fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
-            algo=metaprism_config["algos"]
+            algo=metaprism_config["algos"],
+            allow_missing=True
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
     conda: 
@@ -368,7 +369,7 @@ rule oncokb_postprocess:
         sam="fusion_annotation/{cohort}/sample_list.tsv",
         # bio="%s/{cohort}/clinical/curated/bio_{cohort}_in_design_curated.tsv" % D_FOLDER,
         bio=metaprism_config["curated_design"],
-        okb=expand("fusion_annotation/{cohort}/oncokb/{sample}.tsv", sample=SAMPLE),
+        okb=expand("fusion_annotation/{cohort}/oncokb/{sample}.tsv", sample=SAMPLE, allow_missing=True),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.8.2_oncokb_postprocess.py"
     output:
         # "%s/{cohort}/rna/fusions/{cohort}_annotated_filtered_oncokb.tsv.gz" % D_FOLDER
@@ -467,7 +468,7 @@ rule civic_postprocess:
         sam="fusion_annotation/{cohort}/sample_list.tsv",
         bio=metaprism_config["curated_design"],
         civ=expand(
-            "fusion_annotation/{cohort}/civic_pre/{sample}.tsv", sample=SAMPLE
+            "fusion_annotation/{cohort}/civic_pre/{sample}.tsv", sample=SAMPLE, allow_missing=True
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.9.2_civic_postprocess.py",
     output:
