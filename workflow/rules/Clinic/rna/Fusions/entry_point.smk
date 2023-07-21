@@ -5,12 +5,13 @@ from pathlib import Path
 
 metaprism_config = {
     "algos": [
-        "arriba",
+        "Arriba",
         # "fusioninspector",
-        "fusioncatcher",
-        "starfusion",
-        "ericscript",
-        "pizzly",
+        "Fusioncatcher",
+        "Star-Fusion",
+        "EricScript",
+        "Pizzly",
+        "Squid",
     ],
     "cohort": [
         "prism",
@@ -82,7 +83,7 @@ rule target:
 
 rule aggregate_tables_samples:
     input:
-        annotation_folder="tools/{algo}",
+        annotation_folder="results/tools/{algo}",
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.1_aggregate_tables_samples.py",
     conda: "metaprism_r"
     output:
