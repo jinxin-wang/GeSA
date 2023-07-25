@@ -149,6 +149,7 @@ rule aggregate_tables_callers:
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
         gencode='/mnt/beegfs/database/bioinfo/Meta-Prism/gencode.v27.annotation.gff3.gene.tsv',
         hgnc="/mnt/beegfs/database/bioinfo/Meta-Prism/hgnc_all_symbols_03012022.tsv",
+        update_gene_symbol_script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/update_gene_symbols.py",
     conda: 
         "metaprism_r"
     output:
@@ -171,6 +172,7 @@ rule aggregate_tables_callers:
             --output {output.agg} \
             --gencode {input.gencode} \
             --hgnc {input.hgnc} \
+            --update_gene_symbols {input.update_gene_symbol_script} \
             --log {log.inner} > {log.cmd} 2>&1 """
 
 
