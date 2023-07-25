@@ -115,7 +115,7 @@ rule aggregate_tables_samples:
     conda: 
         "metaprism_r"
     output:
-        agg="fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
+        agg="fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv.gz",
         output_list="fusion_annotation/{cohort}/{algo}/sample_list.tsv",
         # agg="%s/{cohort}/rna/{algo}/{cohort}_{algo}.tsv.gz" % D_FOLDER
     params:
@@ -142,11 +142,13 @@ rule aggregate_tables_samples:
 rule aggregate_tables_callers:
     input:
         agg=expand(
-            "fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv",
+            "fusion_annotation/{cohort}/{algo}/sample_aggregation.tsv.gz",
             algo=metaprism_config["algos"],
             allow_missing=True
         ),
         script=f"{metaprism_config['metaprism_pipeline_prefix']}/workflow/scripts/00.2_aggregate_tables_callers.R",
+        gencode='/mnt/beegfs/database/bioinfo/Meta-Prism/gencode.v27.annotation.gff3.gene.tsv',
+        hgnc="/mnt/beegfs/database/bioinfo/Meta-Prism/hgnc_all_symbols_03012022.tsv",
     conda: 
         "metaprism_r"
     output:
@@ -160,13 +162,16 @@ rule aggregate_tables_callers:
         time_min=60
     threads: 1
     log:
-        "logs/aggregate_tables_callers/{cohort}.log"
+        inner="logs/aggregate_tables_callers/{cohort}.log",
+        cmd="logs/aggregate_tables_callers/{cohort}.cmd.log",
     shell:
         """Rscript {input.script} \
             --cohort {wildcards.cohort} \
             --algos {params.algos} \
             --output {output.agg} \
-            --log {log}"""
+            --gencode {input.gencode} \
+            --hgnc {input.hgnc} \
+            --log {log.inner} > {log.cmd} 2>&1 """
 
 
 rule annotate_fusions_FusionAnnotator_1:
