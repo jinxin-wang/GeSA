@@ -1,8 +1,7 @@
-Bug:
+Run this pipeline:
 
-Working directory is detected as not in the Meta-Prism repository:
+```
+snakemake -s entry_point.smk --use-conda
+```
 
-> -reading aggregated RNA table ... Error in setwd_to_data() : 
->   Please set the working directory to a location in the repository MetaPRISM
-> Calls: main ... get_filepath_rna_fus -> get_filepaths -> setwd_to_data
-> Execution halted
+It will launch MatePrism_RNASeq pipeline, which will launch nf-core RNAFusion pipeline.
