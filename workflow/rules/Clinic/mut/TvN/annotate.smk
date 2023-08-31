@@ -486,11 +486,11 @@ rule somatic_maf_last_filtering:
         maf_civ="aggregate/somatic_maf/somatic_calls_civic_prefinal.maf.gz",
         maf_okb="aggregate/somatic_maf/somatic_calls_oncokb_prefinal.maf.gz"
     output:
-        filters="aggregate/somatic_maf/somatic_calls_filters.tsv.gz",
-        maf    ="aggregate/somatic_maf/somatic_calls.maf.gz",
-        maf_ann="aggregate/somatic_maf/somatic_calls_union_ann.maf.gz",
-        maf_civ="aggregate/somatic_maf/somatic_calls_civic.maf.gz",
-        maf_okb="aggregate/somatic_maf/somatic_calls_oncokb.maf.gz"
+        filters = "aggregate/somatic_maf/somatic_calls_filters.tsv.gz",
+        maf     = "aggregate/somatic_maf/somatic_calls.maf.gz",
+        maf_ann = "aggregate/somatic_maf/somatic_calls_union_ann.maf.gz",
+        maf_civ = "aggregate/somatic_maf/somatic_calls_civic.maf.gz",
+        maf_okb = "aggregate/somatic_maf/somatic_calls_oncokb.maf.gz"
     conda:
         "metaprism_python"
     log:

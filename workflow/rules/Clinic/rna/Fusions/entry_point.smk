@@ -6,12 +6,16 @@ rule launch_rnafusion_pipeline:
         directory("results/nf-core/tools")
     handover: True
     params:
-        "--keep-incomplete --rerun-incomplete"
+        "--keep-incomplete --rerun-incomplete",
+    threads: 4,
+    resources:
+        queue = "longq",
+        mem_mb= 10240,
     conda:
         "/mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake"
     shell:
-        "snakemake "
-        "{parmams} "
-        "--profile {input.profile} "
-        "-s {input.snakefile} "
-        "{output} "
+        "snakemake"
+        "  {params} "
+        "  --profile {input.profile} "
+        "  -s {input.snakefile} "
+        "  {output} "
