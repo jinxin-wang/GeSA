@@ -3,18 +3,18 @@ rule aggregate_alterations_across_modalities:
         cna = "aggregate/somatic_cna/somatic_calls_union_ann.tsv.gz" ,
         fus = "fusions/tcga_annotated_filtered_union_ann.tsv.gz",
         mut = "aggregate/somatic_maf/somatic_calls_union_ann.maf.gz",
-        gen      = config["data"]["resources"]["cancer_genes"],
+        gen        = config["data"]["resources"]["cancer_genes"],
         target_bed = config["data"]["resources"]["target_bed"],
         drug       = config["data"]["resources"]["drug"],
     conda: "metaprism_main"
     log:
         "logs/aggregate_alterations_across_modalities.log",
     output:
-        best="alterations/aggregated_alterations.tsv",
-        all ="alterations/aggregated_alterations_all.tsv",
+        best = "alterations/aggregated_alterations.tsv",
+        all  = "alterations/aggregated_alterations_all.tsv",
     resources:
-        queue="shortq",
-        mem_mb=8000,
+        queue = "shortq",
+        mem_mb= 8000,
     threads: 1
     shell:
         """
