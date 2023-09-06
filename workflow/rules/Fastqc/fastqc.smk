@@ -13,7 +13,7 @@ rule fastqc_raw:
         adapters = config["fastqc"]["adapters"]
     threads : 16
     resources:
-        mem_mb = 51200
+        mem_mb = 25600
     shell:
         '{params.fastqc} -t {threads} -a {params.adapters} -o fastq_QC_raw/ {input.fastq} 2> {log}'
 
@@ -32,6 +32,6 @@ rule fastqc_clean:
         adapters = config["fastqc"]["adapters"]
     threads : 16
     resources:
-        mem_mb = 51200
+        mem_mb = 25600
     shell:
         '{params.fastqc} -t {threads} -a {params.adapters} -o fastq_QC_clean/ {input} 2> {log}'
