@@ -9,7 +9,7 @@ rule Collect_Sequencing_Artifact_Metrics:
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"),
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_summary_metrics.txt"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         gatk  = config["gatk"]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
         output_prefix = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact",
@@ -17,9 +17,9 @@ rule Collect_Sequencing_Artifact_Metrics:
         "logs/filter_Mutect2/{tsample}_artifact.log"
     threads : 4
     resources:
-        mem_mb = 51200
+        mem_mb = 25600
     shell:
-        "{params.gatk} --java-options \"-Xmx40g  -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" CollectSequencingArtifactMetrics"
+        "{params.gatk} --java-options \"-Xmx20g  -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" CollectSequencingArtifactMetrics"
         " -I {input.tumor_bam}"
         " --FILE_EXTENSION \".txt\""
         " -R {params.index}"
