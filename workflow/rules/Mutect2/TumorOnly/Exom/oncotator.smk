@@ -50,7 +50,7 @@ rule index_exom_mutect2_tumor_only:
     threads : 1
     conda: "pipeline_GATK_2.1.4_V2"
     resources:
-        mem_mb = 1000
+        mem_mb = 10240
     shell:
         # '{params.gatk} IndexFeatureFile -F {input.exom_Mutect2} 2> {log}' 
         '{params.gatk} IndexFeatureFile -I {input.exom_Mutect2} 2> {log}'
