@@ -8,12 +8,12 @@ rule extract_exom_mutect2:
     log:
         "logs/Mutect2_TvN_exom/{tsample}_Vs_{nsample}_TvN.vcf.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         bcftools = config["bcftools"]["app"],
         exom_bed = config["bcftools"][config["samples"]]["exom_bed"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.bcftools} view -l 9 -R {params.exom_bed} -o {output.exom_Mutect2} {input.Mutect2_vcf} 2> {log}'
 
@@ -30,7 +30,7 @@ rule sort_exom_mutect2:
         vcfsort = config["vcfsort"]["app"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'bgzip -d {input.Mutect2_vcf} && '
         '{params.vcfsort} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom_unsorted.vcf > Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf && '
@@ -64,11 +64,11 @@ rule get_variant_bed_exom:
     log:
         "logs/variant_bed_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.bed.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         vcf2bed = config["vcf2bed"]["app"]
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'zcat {input.Mutect2_vcf} | python2 {params.vcf2bed} - > {output.BED} 2> {log}'
 
@@ -83,12 +83,12 @@ rule samtools_mpileup_exom:
     log:
         "logs/pileup_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.pileup.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"],
         genome_fasta = config["gatk"][config["samples"]]["genome_fasta"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.samtools} mpileup -a -B -l {input.BED} -f {params.genome_fasta} {input.BAM} | gzip - > {output.PILEUP} 2> {log}'
 
@@ -100,7 +100,7 @@ rule oncotator_exom:
     output:
         MAF = temp("oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF")
     params:
-        queue = "mediumq",
+        queue = "shortq",
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
         oncotator = config["oncotator"]["app"],
@@ -108,7 +108,7 @@ rule oncotator_exom:
         "logs/oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF"
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.oncotator} --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.Mutect2_vcf} {output.MAF} {params.ref} 2> {log}'
 
@@ -126,7 +126,7 @@ rule oncotator_reformat_TvN_exom:
         oncotator_extract_TvN = config["oncotator"]["scripts"]["extract_tumor_vs_normal"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'python2.7 {params.oncotator_extract_TvN} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
@@ -144,7 +144,7 @@ rule oncotator_with_pileup_TvN_exom:
         oncotator_cross_pileup = config["oncotator"]["scripts"]["pileup"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'python {params.oncotator_cross_pileup} {input.pileup} {input.tsv} {output.tsv}'
 
