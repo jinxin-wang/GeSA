@@ -14,8 +14,9 @@ rule facets_snp_pilleup:
     resources:
         mem_mb = 10240
     shell:
-        '{params.snp_pileup} -g --min-map-quality=55 --min-base-quality=20 --max-depth=200 --min-read-counts=15,15 {params.gnomad_ref} {output.CSV} {input.NORMAL_BAM} {input.TUMOR_BAM}'
-		
+        # '{params.snp_pileup} -g --min-map-quality=55 --min-base-quality=20 --max-depth=200 --min-read-counts=15,15 {params.gnomad_ref} {output.CSV} {input.NORMAL_BAM} {input.TUMOR_BAM}'
+	'{params.snp_pileup} -g --min-map-quality=55 --min-base-quality=20 --min-read-counts=5,5 {params.gnomad_ref} {output.CSV} {input.NORMAL_BAM} {input.TUMOR_BAM}'
+
 #A rule to draw facets graphs
 rule facet_graph:
     input:
@@ -26,7 +27,7 @@ rule facet_graph:
     log:
         "logs/facets/{tsample}_Vs_{nsample}_facets_graph.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         R = config["R"]["app"],
         facet_graph = config["R"]["scripts"]["facet_graph"],
     threads : 1
