@@ -44,7 +44,7 @@ rule concatenate_haplotypecaller:
         "logs/haplotype_caller/{nsample}_germline_variants.vcf.log"
     shell :
         "ls -1a haplotype_caller_tmp/{wildcards.nsample}_germline_variants_ON_*gz > haplotype_tmp_list/{wildcards.nsample}_haplotype_tmp_list.txt &&"
-        "{params.gatk}  --java-options \"-Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.vcf_liste} -O {output.concatened_vcf} 2> {log}"
+        "{params.gatk}  --java-options \"-Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.vcf_liste} -O {output.concatened_vcf} 2> {log}"
 
 ## Filter somatic variant caller from GATK
 rule HaplotypeCaller_filtering:
