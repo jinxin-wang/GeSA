@@ -11,7 +11,7 @@ rule Mutect2:
         INDEX = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
         STATS = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         tumor_group = "{tsample}",
         norm_group  = "{nsample}",
         gatk        = config["gatk"]["app"],
@@ -20,13 +20,13 @@ rule Mutect2:
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
     log:
         "logs/Mutect2_TvN/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.log"
-    threads : 16
+    threads : 8
     resources:
-        mem_mb = 51200
+        mem_mb = 25600
     shell: 
         "read readGroup_{wildcards.tsample} < <(samtools view -H {input.tumor_bam} | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
         "read readGroup_{wildcards.nsample} < <(samtools view -H {input.norm_bam}  | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
-        "{params.gatk} --java-options \"-Xmx40g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" Mutect2"
+        "{params.gatk} --java-options \"-Xmx20g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" Mutect2"
         " --dont-use-soft-clipped-bases true "
         " --native-pair-hmm-threads {threads} "
         " -L {params.interval}"
@@ -50,12 +50,12 @@ rule concatenate_mutect2:
         gatk = config["gatk"]["app"]
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 10240
     log:
         "logs/vcftools/{tsample}_Vs_{nsample}_TvN.vcf.log"
     shell :
         "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_ON_*gz > Mutect2_TvN_tmp_list/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_mutect2_tmp.list && "
-        "{params.gatk}  --java-options \"-Xmx40g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.vcf_liste} -O {output.concatened_vcf} 2> {log}"
+        "{params.gatk}  --java-options \"-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.vcf_liste} -O {output.concatened_vcf} 2> {log}"
  
 ## Concatenation of Mutect2 stats
 rule concatenate_mutect2_stats:
@@ -69,12 +69,12 @@ rule concatenate_mutect2_stats:
         gatk = config["gatk"]["app"]
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 10240
     log:
         "logs/vcftools/{tsample}_Vs_{nsample}_TvN.vcf.log"
     shell :
         "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_ON_*stats > Mutect2_TvN_tmp_list/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_mutect2_tmp_stats.list &&"
-        "{params.gatk}  --java-options \"-Xmx40g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeMutectStats --stats {output.stat_liste} -O {output.concatened_stats} 2> {log}"
+        "{params.gatk}  --java-options \"-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeMutectStats --stats {output.stat_liste} -O {output.concatened_stats} 2> {log}"
 
 ## include: "../Common/collectSeqAM.smk"
 ## include: "../Common/estiContamination.smk"
@@ -89,7 +89,7 @@ rule filter_mutect_calls:
         VCF   = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz"),
         INDEX = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.tbi"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         gatk  = config["gatk"]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
@@ -97,9 +97,9 @@ rule filter_mutect_calls:
         "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 25600
     shell:
-        "{params.gatk} --java-options \"-Xmx40g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls "
+        "{params.gatk} --java-options \"-Xmx20g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls "
         " -V {input.Mutect2_vcf} "
         " -R {params.index} "
         " --contamination-table {input.contamination_table} "
@@ -115,16 +115,16 @@ rule Filter_By_Orientation_Bias:
         filtered_vcf       = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
         filtered_vcf_index = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
     params:
-        queue = "mediumq",
+        queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         gatk  = config["gatk"]["app"],
     log:
         "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 25600
     shell:
-        "{params.gatk} --java-options \"-Xmx40g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
+        "{params.gatk} --java-options \"-Xmx20g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
         " -V {input.Mutect2_vcf}"
         " -AM G/T -AM C/T"
         " -P {input.pre_adapter_detail_metrics}"
