@@ -34,7 +34,7 @@ elif config["paired"] == True:
         log:
             "logs/fastp/{sample}_fastp.html.log"
         params:
-            queue = "longq",
+            queue = "mediumq",
             fastp = config["fastp"]["app"],
             adapters = config["fastp"]["adapters"]
         threads : 32
