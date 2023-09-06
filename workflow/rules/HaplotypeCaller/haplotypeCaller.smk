@@ -69,11 +69,11 @@ rule HaplotypeCaller_filtering:
         "logs/haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.log"
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell:
-        "{params.gatk} --java-options \" -Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" SelectVariants -V {input.VCF} -select-type SNP -O {output.VCF_SNP} 2>> {log} &&"
-        " {params.gatk} --java-options \" -Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" SelectVariants -V {input.VCF} -select-type MIXED -select-type INDEL -O {output.VCF_INDEL} 2>> {log} &&"
-        " {params.gatk} --java-options \" -Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" VariantFiltration -V {output.VCF_SNP} -filter \"QD < 2.0\" --filter-name \"QD2\" -filter \"QUAL < 30.0\" --filter-name \"QUAL30\" -filter \"SOR > 3.0\" --filter-name \"SOR3\" -filter \"FS > 60.0\" --filter-name \"FS60\" -filter \"MQ < 40.0\" --filter-name \"MQ40\" -filter \"MQRankSum < -12.5\" --filter-name \"MQRankSum-12.5\" -filter \"ReadPosRankSum < -8.0\" --filter-name \"ReadPosRankSum-8\" -O {output.VCF_SNP_FILTERED} 2>> {log} &&"
-        " {params.gatk} --java-options \" -Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" VariantFiltration -V {output.VCF_INDEL} -filter \"QD < 2.0\" --filter-name \"QD2\" -filter \"QUAL < 30.0\" --filter-name \"QUAL30\" -filter \"FS > 200.0\" --filter-name \"FS200\" -filter \"ReadPosRankSum < -20.0\" --filter-name \"ReadPosRankSum-20\" -O {output.VCF_INDEL_FILTERED} 2>> {log} && "
-        " {params.gatk} --java-options \" -Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.VCF_INDEL_FILTERED} -I {output.VCF_SNP_FILTERED} -O {output.VCF_FILTERED} 2>> {log}"
+        "{params.gatk} --java-options \" -Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" SelectVariants -V {input.VCF} -select-type SNP -O {output.VCF_SNP} 2>> {log} &&"
+        " {params.gatk} --java-options \" -Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" SelectVariants -V {input.VCF} -select-type MIXED -select-type INDEL -O {output.VCF_INDEL} 2>> {log} &&"
+        " {params.gatk} --java-options \" -Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" VariantFiltration -V {output.VCF_SNP} -filter \"QD < 2.0\" --filter-name \"QD2\" -filter \"QUAL < 30.0\" --filter-name \"QUAL30\" -filter \"SOR > 3.0\" --filter-name \"SOR3\" -filter \"FS > 60.0\" --filter-name \"FS60\" -filter \"MQ < 40.0\" --filter-name \"MQ40\" -filter \"MQRankSum < -12.5\" --filter-name \"MQRankSum-12.5\" -filter \"ReadPosRankSum < -8.0\" --filter-name \"ReadPosRankSum-8\" -O {output.VCF_SNP_FILTERED} 2>> {log} &&"
+        " {params.gatk} --java-options \" -Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" VariantFiltration -V {output.VCF_INDEL} -filter \"QD < 2.0\" --filter-name \"QD2\" -filter \"QUAL < 30.0\" --filter-name \"QUAL30\" -filter \"FS > 200.0\" --filter-name \"FS200\" -filter \"ReadPosRankSum < -20.0\" --filter-name \"ReadPosRankSum-20\" -O {output.VCF_INDEL_FILTERED} 2>> {log} && "
+        " {params.gatk} --java-options \" -Xmx8g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.VCF_INDEL_FILTERED} -I {output.VCF_SNP_FILTERED} -O {output.VCF_FILTERED} 2>> {log}"
         
