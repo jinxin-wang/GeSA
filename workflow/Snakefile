@@ -169,7 +169,7 @@ rule all:
         expand("annovar/{sample}.avinput", sample = NSAMPLE if config["samples"] == "human" else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
-        expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
+        # expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
         expand(MUTECT2),
         expand(ONCOTATOR),
         expand(ONCOTATOR_EXOM),
