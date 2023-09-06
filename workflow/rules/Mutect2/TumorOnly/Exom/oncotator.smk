@@ -101,7 +101,7 @@ rule oncotator_tumor_only_exom:
     output:
         MAF="oncotator_T_exom/{tsample}_tumor_only_annotated_T_exom.TCGAMAF"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
         oncotator = config["oncotator"]["app"],
