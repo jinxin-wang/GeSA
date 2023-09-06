@@ -8,12 +8,12 @@ rule extract_exom_mutect2_tumor_only:
     log:
         "logs/Mutect2_T_exom/{tsample}_tumor_only_T.vcf.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         bcftools = config["bcftools"]["app"],
         exom_bed = config["bcftools"][config["samples"]]["exom_bed"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.bcftools} view -l 9 -R {params.exom_bed} -o {output.exom_Mutect2} {input.Mutect2_vcf} 2> {log}'
  
@@ -30,7 +30,7 @@ rule sort_exom_mutect2_tumor_only:
         vcfsort = config["vcfsort"]["app"],
     threads : 1
     resources:
-        mem_mb = 5000
+        mem_mb = 10240
     shell:
         'bgzip -d {input.Mutect2_vcf} 2> {log} && '
         '{params.vcfsort} Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom_unsorted.vcf > Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom.vcf  2>> {log} && '
@@ -65,7 +65,7 @@ rule get_variant_bed_tumor_only_exom:
     log:
         "logs/variant_bed_T_exom/{tsample}_tumor_only_T_exom.bed.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         vcf2bed = config["vcf2bed"]["app"]
     threads : 1
     resources:
@@ -84,12 +84,12 @@ rule samtools_mpileup_tumor_only_exom:
     log:
         "logs/pileup_T_exom/{tsample}_tumor_only_T_exom.pileup.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"],
         genome_fasta = config["gatk"][config["samples"]]["genome_fasta"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.samtools} mpileup -a -B -l {input.BED} -f {params.genome_fasta} {input.BAM} | gzip - > {output.PILEUP} 2> {log}'
 
@@ -109,7 +109,7 @@ rule oncotator_tumor_only_exom:
         "logs/oncotator_T_exom/{tsample}_tumor_only_annotated_T_exom.TCGAMAF"
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         '{params.oncotator} --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.Mutect2_vcf} {output.MAF} {params.ref} 2> {log}'
 
@@ -127,7 +127,7 @@ rule oncotator_reformat_tumor_only_exom:
         oncotator_extract_Tonly = config["oncotator"]["scripts"]["extract_tumor_only"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'python2.7 {params.oncotator_extract_Tonly} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
@@ -145,7 +145,7 @@ rule oncotator_with_pileup_tumor_only_exom:
         oncotator_cross_pileup = config["oncotator"]["scripts"]["pileup"],
     threads : 1
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         'python {params.oncotator_cross_pileup} {input.pileup} {input.tsv} {output.tsv}'
 
