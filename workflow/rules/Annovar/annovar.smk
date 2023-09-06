@@ -7,7 +7,7 @@ rule annovar:
         txt     = "annovar/{sample}.%s_multianno.txt"%config["annovar"][config["samples"]]["ref"],
         vcf     = "annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"]]["ref"],
     params:
-        queue    = "mediumq",
+        queue    = "shortq",
         annovar  = config["annovar"]["app"],
         DB       = config["annovar"][config["samples"]]["DB"],
         ref      = config["annovar"][config["samples"]]["ref"],
