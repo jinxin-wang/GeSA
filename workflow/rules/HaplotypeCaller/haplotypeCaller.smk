@@ -39,7 +39,7 @@ rule concatenate_haplotypecaller:
         gatk = config["gatk"]["app"],
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     log:
         "logs/haplotype_caller/{nsample}_germline_variants.vcf.log"
     shell :
