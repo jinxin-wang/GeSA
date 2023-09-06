@@ -7,7 +7,7 @@ rule get_variant_bed:
     log:
         "logs/variant_bed_TvN/{tsample}_Vs_{nsample}_TvN.bed.log"
     params:
-        queue   = "mediumq",
+        queue   = "shortq",
         vcf2bed = config["vcf2bed"]["app"],
     threads : 1
     resources:
@@ -26,12 +26,12 @@ rule samtools_mpileup:
     log:
         "logs/pileup_TvN/{tsample}_Vs_{nsample}_TvN.pileup.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"],
         genome_ref_fasta = config["gatk"][config["samples"]]["genome_fasta"],
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell:
         '{params.samtools} mpileup -a -B -l {input.BED} -f {params.genome_ref_fasta} {input.BAM} | gzip - > {output.PILEUP} 2> {log}'
 
@@ -52,7 +52,7 @@ rule split_Mutect2:
         "logs/Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.log"
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell: 
         '{params.bcftools} view -l 9 -R {params.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log} &&'
         ' python {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'
@@ -64,7 +64,7 @@ rule oncotator:
     output:
         MAF = temp("oncotator_TvN_tmp/{tsample}_Vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         oncotator = config["oncotator"]["app"],
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
