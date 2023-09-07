@@ -3,9 +3,9 @@ rule annovar:
     input:
         vcf = "haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz"
     output:
-        avinput = "annovar/{sample}.avinput",
-        txt     = "annovar/{sample}.%s_multianno.txt"%config["annovar"][config["samples"]]["ref"],
-        vcf     = "annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"]]["ref"],
+        avinput = temp("annovar/{sample}.avinput"),
+        txt     = "annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"],
+        vcf     = temp("annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"]]["ref"]),
     params:
         queue    = "shortq",
         annovar  = config["annovar"]["app"],
@@ -26,5 +26,5 @@ rule annovar:
         " -remove "
         " -protocol {params.protocol} "
         " -operation {params.operation} "
-        " -nastring . -vcfinput 2> {log} "
-
+        " -nastring . -vcfinput && "
+        " gzip {output.txt} 2> {log} "
