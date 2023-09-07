@@ -34,7 +34,6 @@ NSAMPLE = []
 
 ## Collecting information on files to produce
 FACETS     = []
-CNV_FACETS = []
 
 ANNOVAR   = []
 MUTECT2   = []
@@ -160,7 +159,7 @@ rule all:
         expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE),
         expand(FACETS),
         expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE),
-        expand("annovar/{sample}.avinput", sample = NSAMPLE if config["samples"] == "human" else []),
+        expand("annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"], sample = NSAMPLE if config["samples"] == "human" else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
         expand(MUTECT2),
