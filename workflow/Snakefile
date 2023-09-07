@@ -43,8 +43,6 @@ ONCOTATOR_EXOM = []
 
 def build_TvN_targets(tsample, nsample):
     FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
-    CNV_FACETS.append("cnv_facets/" + tsample + "_Vs_" + nsample + ".vcf.gz")
-
     MUTECT2.append("Mutect2_TvN/" + tsample + "_Vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
 
     if config["samples"] == "human":
@@ -71,8 +69,6 @@ def build_Tp_targets(tsample, PoN):
 
 def build_TvNp_targets(tsample, nsample, PoN):
     FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
-    CNV_FACETS.append("cnv_facets/" + tsample + "_Vs_" + nsample + ".vcf.gz")
-
     MUTECT2.append("Mutect2_TvNp/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_twicefiltered_TvNp.vcf.gz")
 
     if config["samples"] == "human":
@@ -162,14 +158,11 @@ rule all:
         expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ),
         expand('fastq_QC_clean/{sample}_fastqc.html', sample =  FASTQ),
         expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE),
-        # expand("BQSR/{sample}_BQSR_report.pdf", sample = TSAMPLE + NSAMPLE),
         expand(FACETS),
-        # expand(CNV_FACETS),
         expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE),
         expand("annovar/{sample}.avinput", sample = NSAMPLE if config["samples"] == "human" else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
-        # expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
         expand(MUTECT2),
         expand(ONCOTATOR),
         expand(ONCOTATOR_EXOM),
@@ -195,7 +188,6 @@ include: "rules/BQSR/BQSR.smk"
 ######## Facets ########
 if TUMOR_ONLY == False: 
     include: "rules/Facets/facets.smk"
-    include: "rules/Facets/cnvFacets.smk"
 
 ######## HaplotypeCaller and Annovar ########
 
@@ -210,9 +202,6 @@ include: "rules/Annovar/annovar.smk"
 
 ## check mapping stats, with GATK CollectHsMetrics
 include: "rules/HsMetrics/hsMetrics.smk"
-
-## check mapping coverage with msodepth
-include: "rules/Msodepth/msodepth.smk"
 
 ## check mapping metrics with samtools flagstat
 include: "rules/Flagstat/flagstat.smk"
