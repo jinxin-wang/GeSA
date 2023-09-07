@@ -84,6 +84,7 @@
 
     "R": {
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/Rscript",
+        "Rscript4.3": "/mnt/beegfs/userdata/j_wang/.conda/envs/facets/bin/Rscript",
         "scripts": {
             "facet_graph": "workflow/scripts/facets_graphs.R",
         },
