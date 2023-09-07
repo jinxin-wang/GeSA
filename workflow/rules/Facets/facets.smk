@@ -28,10 +28,10 @@ rule facet_graph:
         "logs/facets/{tsample}_Vs_{nsample}_facets_graph.log"
     params:
         queue = "shortq",
-        R = config["R"]["app"],
+        R = config["R"]["Rscript4.3"],
         facet_graph = config["R"]["scripts"]["facet_graph"],
     threads : 1
     resources:
-        mem_mb = 102400
+        mem_mb = 10240
     shell:
         '{params.R} {params.facet_graph} {input.CSV}'
