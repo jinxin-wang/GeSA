@@ -117,7 +117,7 @@ rule oncotator_reformat_TvN_exom:
     input:
         maf = "oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF"
     output:
-        maf = "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF",
+        maf = "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF.gz",
         tsv = temp("oncotator_TvN_tsv_exom/{tsample}_Vs_{nsample}_TvN_exom.tsv"),
     log:
         "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.log"
@@ -128,7 +128,8 @@ rule oncotator_reformat_TvN_exom:
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.oncotator_extract_TvN} {input.maf} {output.maf} {output.tsv} 2> {log}'
+        "python2.7 {params.oncotator_extract_TvN} {input.maf} {output.maf} {output.tsv} && "
+        " gzip {output.maf} 2> {log}"
 
 ## A rule to cross oncotator output on tumor vs normal samples with pileup information
 rule oncotator_with_pileup_TvN_exom:
@@ -153,7 +154,7 @@ rule oncotator_with_COSMIC_TvN_exom:
     input:
         tsv = "oncotator_TvN_tsv_pileup_exom/{tsample}_Vs_{nsample}_TvN_with_pileup_exom.tsv",
     output:
-        tsv = "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv",
+        tsv = "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv.gz",
     log:
         "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.log"
     params:
@@ -166,5 +167,6 @@ rule oncotator_with_COSMIC_TvN_exom:
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.oncotator_cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}'
+        "python2.7 {params.oncotator_cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} && "
+        " gzip {output.tsv} 2> {log}"
 
