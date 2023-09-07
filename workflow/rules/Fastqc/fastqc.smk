@@ -4,14 +4,14 @@ rule fastqc_raw:
         fastq='DNA_samples/{sample}.fastq.gz'
     output:
         'fastq_QC_raw/{sample}_fastqc.html',
-        'fastq_QC_raw/{sample}_fastqc.zip'
+        temp('fastq_QC_raw/{sample}_fastqc.zip')
     log:
         "logs/fastq_QC_raw/{sample}_fastqc.html.log"
     params:    
         queue = "shortq",
         fastqc = config["fastqc"]["app"],
         adapters = config["fastqc"]["adapters"]
-    threads : 16
+    threads : 8
     resources:
         mem_mb = 25600
     shell:
@@ -23,14 +23,14 @@ rule fastqc_clean:
         fastq_clean="DNA_samples_clean/{sample}.fastq.gz",
     output:
         'fastq_QC_clean/{sample}_fastqc.html',
-        'fastq_QC_clean/{sample}_fastqc.zip'
+        temp('fastq_QC_clean/{sample}_fastqc.zip')
     log:
         "logs/fastq_QC_clean/{sample}_fastqc.html.log"
     params:    
         queue = "shortq",
         fastqc = config["fastqc"]["app"],
         adapters = config["fastqc"]["adapters"]
-    threads : 16
+    threads : 8
     resources:
         mem_mb = 25600
     shell:
