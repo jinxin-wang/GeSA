@@ -1,4 +1,4 @@
-rule compr_with_gz_abstract:
+rule compr_with_gzip_abstract:
     input:
         "input_file_name",
     output:
