@@ -168,3 +168,16 @@ rule oncotator_with_COSMIC_TvN_exom:
     shell:
         'python2.7 {params.oncotator_cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}'
 
+include: "rules/data/utils/gz.smk"
+
+use rule compr_with_gzip_abstract as oncotator_reformat_exom_gzip_TvN with:
+    input:
+        "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF",
+    output:
+        "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF.gz",
+
+use rule compr_with_gzip_abstract as COSMIC_exom_gzip_TvN with:
+    input:
+        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv",
+    output:
+        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv.gz",
