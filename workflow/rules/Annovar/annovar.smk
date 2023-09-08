@@ -4,7 +4,7 @@ rule annovar:
         vcf = "haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz"
     output:
         avinput = temp("annovar/{sample}.avinput"),
-        txt     = "annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"],
+        txt     = temp("annovar/{sample}.%s_multianno.txt"%config["annovar"][config["samples"]]["ref"]),
         vcf     = temp("annovar/{sample}.%s_multianno.vcf"%config["annovar"][config["samples"]]["ref"]),
     params:
         queue    = "shortq",
@@ -26,5 +26,12 @@ rule annovar:
         " -remove "
         " -protocol {params.protocol} "
         " -operation {params.operation} "
-        " -nastring . -vcfinput && "
-        " gzip {output.txt} 2> {log} "
+        " -nastring . -vcfinput 2> {log} "
+
+include: "rules/data/utils/gz.smk"
+
+use rule compr_with_gzip_abstract as annovar_gzip with:
+    input:
+        "annovar/{sample}.%s_multianno.txt"%config["annovar"][config["samples"]]["ref"],
+    output:
+        "annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"],
