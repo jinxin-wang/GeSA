@@ -8,7 +8,5 @@ rule compr_with_gzip_abstract:
     threads : 1
     resources:
         mem_mb = 10240
-    log:
-        lambda wildcards, output: "logs/%s.log"%output , 
     shell :
-        " gzip -c {input} > {output}  2> {log} "
+        " gzip -c {input} > {output} "

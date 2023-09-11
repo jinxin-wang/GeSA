@@ -4,6 +4,7 @@
     "seq_type": "WGS",
     "paired": True,
     "remove_duplicates": True,
+    "sam2fastq": False,
 
     "fastp": {
         "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastp",

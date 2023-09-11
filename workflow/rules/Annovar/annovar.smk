@@ -28,7 +28,10 @@ rule annovar:
         " -operation {params.operation} "
         " -nastring . -vcfinput 2> {log} "
 
-include: "rules/data/utils/gz.smk"
+
+
+from snakemake.utils import min_version
+min_version("6.0")
 
 use rule compr_with_gzip_abstract as annovar_gzip with:
     input:

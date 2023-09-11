@@ -37,19 +37,24 @@ FACETS     = []
 
 ANNOVAR   = []
 MUTECT2   = []
-ONCOTATOR = []
-ONCOTATOR_EXOM = []
+
+ONCOTATOR_COSMIC      = []
+ONCOTATOR_EXOM_COSMIC = []
+
+ONCOTATOR_MAF      = []
+ONCOTATOR_EXOM_MAF = []
 
 def build_TvN_targets(tsample, nsample):
     FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_TvN/" + tsample + "_Vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
 
     if config["samples"] == "human":
-        ONCOTATOR.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
-
+        ONCOTATOR_MAF.append("oncotator_TvN_maf/" + tsample + "_Vs_" + nsample + "_TvN_selection.TCGAMAF")
+        ONCOTATOR_COSMIC.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
         if config["seq_type"] == "WGS":
-            ONCOTATOR_EXOM.append("oncotator_TvN_tsv_COSMIC_exom/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC_exom.tsv.gz")
-
+            ONCOTATOR_EXOM_MAF.append("oncotator_TvN_maf/" + tsample + "_Vs_" + nsample + "_TvN_selection.TCGAMAF.gz")
+            ONCOTATOR_EXOM_COSMIC.append("oncotator_TvN_tsv_COSMIC_exom/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC_exom.tsv.gz")
+            
     elif config["samples"] == "mouse":
         ANNOVAR.append("annovar_mutect2_TvN/" + tsample + "_Vs_" + nsample + ".avinput")
 
@@ -163,12 +168,17 @@ rule all:
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
         expand(MUTECT2),
-        expand(ONCOTATOR),
-        expand(ONCOTATOR_EXOM),
+        expand(ONCOTATOR_MAF),
+        expand(ONCOTATOR_EXOM_MAF),
+        expand(ONCOTATOR_COSMIC),
+        expand(ONCOTATOR_EXOM_COSMIC),
         expand(ANNOVAR),
 
 
-include: "rules/Sam2fq/sam2fq.smk"
+include: "rules/data/utils/gz.smk"
+
+if config["sam2fastq"]:
+    include: "rules/Sam2fq/sam2fq.smk"
 
 ######## clean fastq files with fastp ########
 include: "rules/Fastp/fastp.smk"
