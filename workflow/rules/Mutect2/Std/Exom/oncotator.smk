@@ -32,9 +32,9 @@ rule sort_exom_mutect2:
     resources:
         mem_mb = 51200
     shell:
-        'gzip -d {input.Mutect2_vcf} && '
+        'bgzip -d {input.Mutect2_vcf} && '
         '{params.vcfsort} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom_unsorted.vcf > Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf && '
-        'gzip Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
+        'bgzip Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
 
 # A rule to extract exom variant from a whole genome mutect2
 rule index_exom_mutect2:
