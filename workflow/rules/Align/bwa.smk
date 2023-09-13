@@ -7,11 +7,11 @@ rule bwa_map:
     log:
         "logs/bam/{sample}.bam.log"
     params:
-        queue = "longq",
+        queue = "mediumq",
         bwa = config["bwa"]["app"],
         index = config["bwa"][config["samples"]]["index"],
         samtools = config["samtools"]["app"],
-    threads: 32
+    threads: 24
     resources:
         mem_mb = 102400
     shell:

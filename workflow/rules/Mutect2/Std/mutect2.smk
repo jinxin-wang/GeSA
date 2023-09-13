@@ -15,6 +15,7 @@ rule Mutect2:
         tumor_group = "{tsample}",
         norm_group  = "{nsample}",
         gatk        = config["gatk"]["app"],
+        samtools    = config["samtools"]["app"],
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
@@ -24,8 +25,8 @@ rule Mutect2:
     resources:
         mem_mb = 25600
     shell: 
-        "read readGroup_{wildcards.tsample} < <(samtools view -H {input.tumor_bam} | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
-        "read readGroup_{wildcards.nsample} < <(samtools view -H {input.norm_bam}  | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
+        "read readGroup_{wildcards.tsample} < <({params.samtools} view -H {input.tumor_bam} | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
+        "read readGroup_{wildcards.nsample} < <({params.samtools} view -H {input.norm_bam}  | grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
         "{params.gatk} --java-options \"-Xmx20g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" Mutect2"
         " --dont-use-soft-clipped-bases true "
         " --native-pair-hmm-threads {threads} "
