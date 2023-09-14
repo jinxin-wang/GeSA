@@ -55,7 +55,7 @@ rule split_Mutect2:
         mem_mb = 10240
     shell: 
         '{params.bcftools} view -l 9 -R {params.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log} &&'
-        ' python {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'
+        'python2.7 {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'
 
 # A rule to annotate mutect2 tumor versus normal results with oncotator  
 rule oncotator:
