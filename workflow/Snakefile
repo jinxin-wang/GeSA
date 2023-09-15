@@ -59,6 +59,7 @@ def build_TvN_targets(tsample, nsample):
         ANNOVAR.append("annovar_mutect2_TvN/" + tsample + "_Vs_" + nsample + ".avinput")
 
 def build_Tp_targets(tsample, PoN):
+    FACETS.append("facets_Tp/" + tsample + "_PON_" + Pon + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_Tp/" + tsample + "_PON_" + Pon + "_twicefiltered_Tp.vcf.gz")
     
     if config["samples"] == "human":
@@ -88,11 +89,13 @@ def build_Tonly_targets(tsample):
     MUTECT2.append("Mutect2_T/" + tsample+ "_tumor_only_T.vcf.gz")
 
     if config["samples"] == "human":
-        ONCOTATOR.append("oncotator_T_tsv_COSMIC/" + tsample + "_tumor_only_T_with_COSMIC.tsv.gz")
+        ONCOTATOR_COSMIC.append("oncotator_T_tsv_COSMIC/" + tsample + "_tumor_only_T_with_COSMIC.tsv.gz")
+        ONCOTATOR_MAF.append("oncotator_T_maf/" + tsample + "_tumor_only_T_selection.TCGAMAF.gz")
 
         if config["seq_type"] == "WGS":
-            ONCOTATOR_EXOM.append("oncotator_T_tsv_COSMIC_exom/" + tsample + "_tumor_only_T_with_COSMIC_exom.tsv.gz")
-
+            ONCOTATOR_EXOM_COSMIC.append("oncotator_T_tsv_COSMIC_exom/" + tsample + "_tumor_only_T_with_COSMIC_exom.tsv.gz")
+            ONCOTATOR_EXOM_MAF.append("oncotator_T_maf_exom/" + tsample + "_tumor_only_T_selection_exom.TCGAMAF.gz")
+            
     elif config["samples"] == "mouse":
         ANNOVAR.append("annovar_mutect2_T/" + tsample  + ".avinput")
             

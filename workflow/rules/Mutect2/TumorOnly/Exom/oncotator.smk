@@ -169,3 +169,14 @@ rule oncotator_with_COSMIC_tumor_only_exom:
     shell:
         'python2.7 {params.oncotator_cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}'
 
+use rule compr_with_gzip_abstract as oncotator_reformat_exom_gzip_Tonly with:
+    input:
+        "oncotator_T_maf_exom/{tsample}_tumor_only_T_selection_exom.TCGAMAF",
+    output:
+        "oncotator_T_maf_exom/{tsample}_tumor_only_T_selection_exom.TCGAMAF.gz",
+
+use rule compr_with_gzip_abstract as COSMIC_exom_gzip_Tonly with:
+    input:
+        "oncotator_T_tsv_COSMIC_exom/{tsample}_tumor_only_T_with_COSMIC_exom.tsv"
+    output:
+        "oncotator_T_tsv_COSMIC_exom/{tsample}_tumor_only_T_with_COSMIC_exom.tsv.gz"

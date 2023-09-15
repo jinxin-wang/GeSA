@@ -46,6 +46,7 @@ rule split_Mutect2_tumor_only:
         interval_vcf          = temp("Mutect2_T_oncotator_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz")
     params:
         queue = "shortq",
+        python  = config["python"]["2.7"],
         bcftools = config["bcftools"]["app"],
         reformat = config["gatk"]["scripts"]["reformat_mutect2"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed"
@@ -56,7 +57,7 @@ rule split_Mutect2_tumor_only:
         mem_mb = 10240
     shell:
         '{params.bcftools} view -l 9 -R {params.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log}  &&' 
-        ' python {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'  
+        '{params.python} {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'  
  
 # A rule to annotate mutect2 tumor only results with oncotator 
 rule oncotator_tumor_only:
@@ -106,13 +107,14 @@ rule oncotator_reformat_tumor_only:
     log:
         "logs/oncotator/{tsample}_tumor_only_T_selection.log"
     params:
-        queue = "shortq",
+        queue   = "shortq",
         extract = config["oncotator"]["scripts"]["extract_tumor_only"],
+        python  = config["python"]["2.7"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}'
+        '{params.python} {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
 ## A rule to simplify oncotator output on tumor only samples
 rule oncotator_with_pileup_tumor_only:
@@ -152,3 +154,14 @@ rule oncotator_with_COSMIC_tumor_only:
     shell:
         'python2.7 {params.cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}'
 
+use rule compr_with_gzip_abstract as oncotator_reformat_gzip_Tonly with:
+    input:
+        "oncotator_T_maf/{tsample}_tumor_only_T_selection.TCGAMAF",
+    output:
+        "oncotator_T_maf/{tsample}_tumor_only_T_selection.TCGAMAF.gz",
+
+use rule compr_with_gzip_abstract as COSMIC_gzip_Tonly with:
+    input:
+        "oncotator_T_tsv_COSMIC/{tsample}_tumor_only_T_with_COSMIC.tsv"
+    output:
+        "oncotator_T_tsv_COSMIC/{tsample}_tumor_only_T_with_COSMIC.tsv.gz"
