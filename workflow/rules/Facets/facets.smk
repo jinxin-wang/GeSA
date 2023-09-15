@@ -30,8 +30,8 @@ rule facet_graph:
         queue = "shortq",
         R = config["R"]["Rscript4.3"],
         facet_graph = config["R"]["scripts"]["facet_graph"],
-    threads : 1
+    threads : 4
     resources:
-        mem_mb = 10240
+        mem_mb = 40960
     shell:
         '{params.R} {params.facet_graph} {input.CSV}'
