@@ -1,0 +1,16 @@
+sampleId,R1,R2,protocol,Line
+ST3733,/odin/kdi/dataset/2078396/archive/ST3733_N_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3733_N_S1_L001_R2_001.fastq.gz,Normal,1
+ST3733,/odin/kdi/dataset/2078396/archive/ST3733_T_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3733_T_S1_L001_R2_001.fastq.gz,Tumor,1
+ST3733,/odin/kdi/dataset/2078396/archive/ST3733_N_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3733_N_S1_L002_R2_001.fastq.gz,Normal,2
+ST3733,/odin/kdi/dataset/2078396/archive/ST3733_T_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3733_T_S1_L002_R2_001.fastq.gz,Tumor,2
+ST3735,/odin/kdi/dataset/2078396/archive/ST3735_N_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3735_N_S1_L001_R2_001.fastq.gz,Normal,1
+ST3735,/odin/kdi/dataset/2078396/archive/ST3735_N_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3735_N_S1_L002_R2_001.fastq.gz,Normal,2
+ST3735,/odin/kdi/dataset/2078396/archive/ST3735_T_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3735_T_S1_L001_R2_001.fastq.gz,Tumor,1
+ST3735,/odin/kdi/dataset/2078396/archive/ST3735_T_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3735_T_S1_L002_R2_001.fastq.gz,Tumor,2
+ST3740,/odin/kdi/dataset/2078396/archive/ST3740_N_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3740_N_S1_L001_R2_001.fastq.gz,Normal,1
+ST3740,/odin/kdi/dataset/2078396/archive/ST3740_T_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3740_T_S1_L001_R2_001.fastq.gz,Tumor,1
+ST3740,/odin/kdi/dataset/2078396/archive/ST3740_N_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3740_N_S1_L002_R2_001.fastq.gz,Normal,2
+ST3740,/odin/kdi/dataset/2078396/archive/ST3740_T_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3740_T_S1_L002_R2_001.fastq.gz,Tumor,2
+ST3741,/odin/kdi/dataset/2078396/archive/ST3741_T_S1_L001_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3741_T_S1_L001_R2_001.fastq.gz,Tumor,1
+ST3742,/odin/kdi/dataset/2078396/archive/ST3742_N_S1_L002_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3742_N_S1_L002_R2_001.fastq.gz,Normal,2
+ST3742,/odin/kdi/dataset/2078396/archive/ST3742_N_S1_L003_R1_001.fastq.gz,/odin/kdi/dataset/2078396/archive/ST3742_N_S1_L003_R1_001.fastq.gz,Normal,3
