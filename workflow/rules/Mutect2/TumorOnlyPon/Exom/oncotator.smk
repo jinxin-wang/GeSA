@@ -28,13 +28,14 @@ rule sort_exom_mutect2_tumor_only_pon:
     params:
         queue = "shortq",
         vcfsort = config["vcfsort"]["app"],
+        bgzip   = config["bgzip"]["app"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'bgzip -d {input.Mutect2_vcf} && '
+        '{params.bgzip} -d {input.Mutect2_vcf} && '
         '{params.vcfsort} Mutect2_Tp_exom/{wildcards.tsample}_PON_{wildcards.panel_of_normal}_twicefiltered_Tp_exom_unsorted.vcf > Mutect2_Tp_exom/{wildcards.tsample}_PON_{wildcards.panel_of_normal}_twicefiltered_Tp_exom.vcf && '
-        'bgzip Mutect2_Tp_exom/{wildcards.tsample}_PON_{wildcards.panel_of_normal}_twicefiltered_Tp_exom.vcf'
+        '{params.bgzip} Mutect2_Tp_exom/{wildcards.tsample}_PON_{wildcards.panel_of_normal}_twicefiltered_Tp_exom.vcf'
 
 # A rule to generate a bed from mutect2 vcf, on tumor only with panel of normal
 rule index_exom_mutect2_tumor_only_pon:

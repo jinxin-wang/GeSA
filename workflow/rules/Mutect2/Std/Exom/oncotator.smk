@@ -28,13 +28,14 @@ rule sort_exom_mutect2:
     params:
         queue = "shortq",
         vcfsort = config["vcfsort"]["app"],
+        bgzip   = config["bgzip"]["app"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'gzip -d {input.Mutect2_vcf} && '
+        '{params.bgzip} -d {input.Mutect2_vcf} && '
         '{params.vcfsort} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom_unsorted.vcf > Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf && '
-        'gzip Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
+        '{params.bgzip} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
 
 # A rule to extract exom variant from a whole genome mutect2
 rule index_exom_mutect2:

@@ -26,15 +26,16 @@ rule sort_exom_mutect2_tumor_only:
     log:
         "logs/Mutect2_T_exom/{tsample}_tumor_only_T_sort.log"
     params:
-        queue = "shortq",
+        queue   = "shortq",
         vcfsort = config["vcfsort"]["app"],
+        bgzip   = config["bgzip"]["app"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'bgzip -d {input.Mutect2_vcf} 2> {log} && '
+        '{params.bgzip} -d {input.Mutect2_vcf} 2> {log} && '
         '{params.vcfsort} Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom_unsorted.vcf > Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom.vcf  2>> {log} && '
-        'bgzip Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom.vcf 2>> {log} '
+        '{params.bgzip} Mutect2_T_exom/{wildcards.tsample}_tumor_only_twicefiltered_T_exom.vcf 2>> {log} '
         
 # A rule to generate a bed from mutect2 vcf, on tumor only 
 rule index_exom_mutect2_tumor_only:
