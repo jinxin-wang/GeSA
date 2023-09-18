@@ -4,7 +4,7 @@ import os
 MUTATION_FILE = open(sys.argv[1], 'r')
 OUT_FILE = open(sys.argv[2], 'w')
 
-COSMIC_MUTATION = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/genome_data/cosmic/CosmicMutant_count.tsv', 'r')
+COSMIC_MUTATION = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/CosmicMutant_count.tsv', 'r')
 ONCOGENES = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_oncogene_IDs.tsv', 'r')
 TUMORSUPRESSOR = open('/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv', 'r')
 
