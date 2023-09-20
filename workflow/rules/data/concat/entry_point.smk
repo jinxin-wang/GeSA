@@ -1,10 +1,11 @@
 import os
 
-if os.path.isfile(config["sample_sheet"]):
-    include: "generate_concat_bash.smk"
+if config["do_concat"]: 
+    if os.path.isfile(config["sample_sheet"]):
+        include: "concat_samplesheet.smk"
     
-elif config["do_concat"]: #  and os.path.isdir(config["raw_fastq_dir"]):
-    include: "concat_fastq_from_src_dir.smk"
+    elif os.path.isdir(config["raw_fastq_dir"]):
+        include: "concat_src_dir.smk"
 
 checkpoint softlink_to_concat_fastq:
     input:

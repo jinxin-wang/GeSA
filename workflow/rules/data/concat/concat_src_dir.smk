@@ -1,6 +1,6 @@
 #### suppose a such source directory in scratch:
 ####   {data_dir}/{sample_name}/{file_name}[1,2].fq.gz
-rule concat_bash_from_dir:
+rule concat_src_dir:
     input:
         raw_fastq_dir    = config["raw_fastq_dir"],
         concat_fastq_dir = config["concat_fastq_dir"],
