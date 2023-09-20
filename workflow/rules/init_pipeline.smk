@@ -27,6 +27,7 @@ FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
 
 TSAMPLE = []
 NSAMPLE = []
+SAMPLES = []
 
 ## Collecting information on files to produce
 FACETS     = []
@@ -164,3 +165,5 @@ if config["mode"] == "T":
             TSAMPLE, = glob_wildcards("bam/{tsample,.+}.nodup.recal.bam")
         for tsample in TSAMPLE:
             build_Tonly_targets(tsample)
+
+SAMPLES = list(set(TSAMPLE + NSAMPLE))
