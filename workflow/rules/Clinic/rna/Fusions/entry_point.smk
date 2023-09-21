@@ -1,25 +1,58 @@
-rule launch_rnafusion_pipeline:
-    input:
-        profile="/mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web/",
-        snakefile="/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/Snakefile",
-    output:
-        "results/annotate/calls_fusions_civic_oncokb.tsv.gz"
-    handover: True
-    params:
-        "--keep-incomplete --rerun-incomplete",
-    threads: 4,
-    resources:
-        queue = "longq",
-        mem_mb= 10240,
-    conda:
-        "/mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake"
-    shell:
-        "snakemake"
-        "  {params} "
-        "  --profile {input.profile} "
-        "  -s {input.snakefile} "
-        "  {output} "
+from snakemake.utils import min_version
+min_version("6.0")
 
-rule rnafusion_annotation_targets:
+include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/common.smk"
+
+##### Target rules #####
+
+def get_input_rule_all(w):
+    inputs = []
+
+    # +++++++++++++++++++++++
+    #### IRODS
+    # +++++++++++++++++++++++
+    # inputs += expand('%s/data/fastq/{sample}_R{stream}.fastq.gz' % R_FOLDER, sample=samples,stream=streams)
+    # +++++++++++++++++++++++
+    # +++++++++++++++++++++++
+    ### NF-CORE
+    # +++++++++++++++++++++++
+    # Fusions
+    # inputs.append(f"{R_FOLDER}/nf-core/tools")
+    # Quality controls
+    inputs.append(f"{R_FOLDER}/nf-core/MultiQC")
+    # Nextflow final report
+    inputs.append(f"{R_FOLDER}/nf-core/Reports")
+    # +++++++++++++++++++++++
+    #### AGGREGATE
+    # +++++++++++++++++++++++
+    # inputs += expand("%s/aggregate/{algo}.tsv.gz" % R_FOLDER, algo=algos)
+    # inputs.append("%s/aggregate/calls_fusions_raw_all.tsv.gz" % R_FOLDER)
+    # if config["general"]["update_gene_symbols"]:
+    #     inputs.append("%s/aggregate/calls_fusions_updated_symbols_all.tsv.gz" % R_FOLDER)
+    # +++++++++++++++++++++++
+    #### FILTER
+    # +++++++++++++++++++++++
+    inputs.append("%s/filter/calls_fusions_all.tsv.gz" % R_FOLDER)
+    inputs.append("%s/filter/calls_fusions.tsv.gz" % R_FOLDER)
+    inputs.append("%s/filter/upset_filters_wt_breakpoints.pdf" % R_FOLDER)
+    inputs.append("%s/filter/upset_filters_wo_breakpoints.pdf" % R_FOLDER)
+    # +++++++++++++++++++++++
+    #### ANNOTATE
+    # +++++++++++++++++++++++
+    inputs.append("%s/annotate/calls_fusions_civic.tsv.gz" % R_FOLDER)
+    inputs.append("%s/annotate/calls_fusions_oncokb.tsv.gz" % R_FOLDER)
+    inputs.append("%s/annotate/calls_fusions_civic_oncokb.tsv.gz" % R_FOLDER)
+
+    return inputs
+
+rule all:
     input:
-        "results/annotate/calls_fusions_civic_oncokb.tsv.gz"
+        get_input_rule_all
+
+##### Modules #####
+
+# include: "rules/fastq.smk"
+include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/nf-core.smk"
+include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/aggregate.smk"
+include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/filter.smk"
+include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/annotate.smk"

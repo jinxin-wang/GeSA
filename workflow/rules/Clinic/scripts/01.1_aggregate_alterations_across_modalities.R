@@ -557,43 +557,13 @@ save_table <- function(table, output){
 
 
 main <- function(args){
-
-  df_bio <- NULL
-  df_cln <- NULL
-  df_cna <- NULL
-  df_fus <- NULL
-  df_msi <- NULL
-  df_mut <- NULL
-  df_tmb <- NULL
-
-  if (file.exist(args$bio)) {
-    df_bio <- load_table(args$bio) 
-  } 
-
-  if (file.exist(args$cln)) {
-    df_cln <- load_table(args$cln) %>% rename(Tumor_Type=Project_TCGA_More)
-  }
-
-  if (file.exist(args$cna)) {
-    df_cna <- load_table(args$cna, guess_max=1e5)
-  }
-
-  if (file.exist(args$fus)) {
-    df_fus <- load_table(args$fus, guess_max=1e5)
-  } 
-
-  if (file.exist(args$msi)) {
-    df_msi <- load_table(args$msi, guess_max=1e5)
-  }
-
-  if (file.exist(args$mut)) {
-    df_mut <- load_table(args$mut, guess_max=1e5)
-  }
-
-  if (file.exist(args$tmb)) {
-    df_tmb <- load_table(args$tmb, guess_max=1e5)
-  } 
-
+  df_bio <- load_table(args$bio) 
+  df_cln <- load_table(args$cln) %>% rename(Tumor_Type=Project_TCGA_More)
+  df_cna <- load_table(args$cna, guess_max=1e5)
+  df_fus <- load_table(args$fus, guess_max=1e5)
+  df_msi <- load_table(args$msi, guess_max=1e5)
+  df_mut <- load_table(args$mut, guess_max=1e5)
+  df_tmb <- load_table(args$tmb, guess_max=1e5)
   df_exp_arv7 <- load_table(args$exp_arv7, guess_max=1e5)
   df_gen <- load_table(args$gen, guess_max=1e5)
 
@@ -764,31 +734,31 @@ main <- function(args){
 if (getOption('run.main', default=TRUE)) {
   parser <- ArgumentParser(description='Aggregate alterations.')
   parser$add_argument("--bio", type="character", help="Path to input curated biospecimen table.",
-                      default=NULL)
+                      default="../../data/tcga/clinical/curated/bio_tcga_in_design_curated.tsv")
   parser$add_argument("--cln", type="character", help="Path to input curated clincal table.",
-                      default=NULL)
+                      default="../../data/tcga/clinical/curated/cln_tcga_in_design_curated.tsv")
   parser$add_argument("--cna", type="character", help="Path to input annotated CNAs table.",
-                      default="../../../data/tcga/wes/somatic_cna/somatic_calls_union_ann.tsv.gz")
+                      default="../../data/tcga/wes/somatic_cna/somatic_calls_union_ann.tsv.gz")
   parser$add_argument("--fus", type="character", help="Path to input annotated fusions table.",
-                      default="../../../data/tcga/rna/fusions/tcga_annotated_filtered_union_ann.tsv.gz")
+                      default="../../data/tcga/rna/fusions/tcga_annotated_filtered_union_ann.tsv.gz")
   parser$add_argument("--msi", type="character", help="Path to input table of MSI.",
-                      default=NULL)
+                      default="../../data/tcga/wes/somatic_msi/somatic_msi.tsv")
   parser$add_argument("--mut", type="character", help="Path to input annotated mutations table.",
-                      default="../../../data/tcga/wes/somatic_maf/somatic_calls_union_ann.maf.gz")
+                      default="../../data/tcga/wes/somatic_maf/somatic_calls_union_ann.maf.gz")
   parser$add_argument("--tmb", type="character", help="Path to input table of TMB.",
-                      default=NULL)
+                      default="../../data/tcga/wes/summary/somatic_maf.tsv")
   parser$add_argument("--exp_arv7", type="character", nargs="*", help="Path to table of AR-V7 expression.",
                       default=NULL)
   parser$add_argument("--gen", type="character", help="Path to input list of genes to be considered.",
-                      default="../../../data/resources/curated/cancer_genes_curated.tsv")
+                      default="../../data/resources/curated/cancer_genes_curated.tsv")
   parser$add_argument("--target_bed", type="character", help="Path to target bed file.",
-                      default="../../../data/resources/target_files/all_targets_intersect_padded_10n.bed")
+                      default="../../data/resources/target_files/all_targets_intersect_padded_10n.bed")
   parser$add_argument('--drug', type="character", help='Path to table of drugs.',
-                      default="../../../data/resources/drug_tables/Table_Drugs_v7.xlsx")
+                      default="../../data/resources/drug_tables/Table_Drugs_v7.xlsx")
   parser$add_argument("--output_best", type="character", help="Paths to output aggregated table",
-                      default="../../../results/combined_alterations/alterations/aggregated_alterations_tcga.tsv")
+                      default="../../results/combined_alterations/alterations/aggregated_alterations_tcga.tsv")
   parser$add_argument("--output_all", type="character", help="Paths to output aggregated table",
-                      default="../../../results/combined_alterations/alterations/aggregated_alterations_tcga_all.tsv")
+                      default="../../results/combined_alterations/alterations/aggregated_alterations_tcga_all.tsv")
   parser$add_argument('--log', type="character", help='Path to log file.')
   args <- parser$parse_args()
 
