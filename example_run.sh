@@ -66,7 +66,8 @@ fi
 
 FASTQ_SAMPLES_BASE_DIR="/mnt/beegfs/scratch/j_wang/01_RawData/19_XPCtox/F23A430001132-01_HOMnifuR_20230823163641"
 FASTQ_SAMPLES_RELA_DIR="soapnuke/clean/batch_03"
-FASTQ_SAMPLES_DIR="/mnt/beegfs/scratch/j_wang/01_RawData/19_XPCtox/F23A430001132-01_HOMnifuR_20230823163641/soapnuke/clean/batch_03"
+# FASTQ_SAMPLES_DIR="/mnt/beegfs/scratch/j_wang/01_RawData/19_XPCtox/F23A430001132-01_HOMnifuR_20230823163641/soapnuke/clean/batch_03"
+FASTQ_SAMPLES_DIR="${FASTQ_SAMPLES_BASE_DIR}/${FASTQ_SAMPLES_RELA_DIR}"
 
 CONCAT_SAMPLES_DIR="/mnt/beegfs/scratch/j_wang/02_ConcatData/19_XPCtox/F23A430001132-01_HOMnifuR_20230823163641/soapnuke/clean/batch_03"
 
