@@ -49,24 +49,48 @@ def do_concat(fastq_list, concat_dir, sample_id, read12):
     os.system(concat_cmd)
     logging.info("concat %s R%s done."%(sample_id, read12))
 
+def do_softlink(fastq_file, concat_dir, sample_id, read12):
 
-if config["do_concat"]:
-    if os.path.isfile(config["sample_sheet"]):
-        include: "concat_samplesheet.smk"
+    softlink_cmd = f"ln -s {fastq_file} {concat_dir}/{sample_id}_{read12}.fastq.gz"
     
-    elif os.path.isdir(config["raw_fastq_dir"]):
-        include: "concat_src_dir.smk"
+    logging.info(f"softlink %s R%s: \n%s"%(sample_id, read12, softlink_cmd))
+    os.system(softlink_cmd)
+    logging.info("softlink %s R%s done."%(sample_id, read12))
 
-rule softlink_to_concat_fastq:
+
+configfile: "workflow/config/concat.yaml"
+    
+# rule softlink_to_concat_fastq:
+#     input:
+#         fastq = expand(config["concat_fastq_dir"] + "/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
+#     output:
+#         targets = expand("DNA_samples/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
+#     params:
+#         queue = "shortq",
+#     threads: 1
+#     resources: 
+#         mem_mb = 5120
+#     shell:
+#         "ln -s {input.fastq} DNA_samples/ ;"
+
+
+samples_df = pd.read_csv(config["sample_list"], sep="\t", header=None)
+SAMPLES = []
+
+for col_idx in range(len(samples_df.columns)):
+    SAMPLES = list(set(samples_df.iloc[:, col_idx].tolist() + SAMPLES))
+
+print(config["raw_fastq_dir"])
+
+# if config["do_concat"]:
+if os.path.isfile(config["sample_sheet"]):
+    include: "concat_samplesheet.smk"
+    
+elif os.path.isdir(config["raw_fastq_dir"]):
+    include: "concat_src_dir.smk"
+else:
+    raise Exception("Missing rample sheet table or raw fastq directory.")
+    
+rule concat_targets:
     input:
         fastq = expand(config["concat_fastq_dir"] + "/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
-    output:
-        targets = expand("DNA_samples/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
-    params:
-        queue = "shortq",
-    threads: 1
-    resources: 
-        mem_mb = 5120
-    shell:
-        "ln -s {input.fastq} DNA_samples/ ;"
-

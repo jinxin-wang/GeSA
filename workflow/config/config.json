@@ -13,6 +13,7 @@
     "concat_fastq_dir": "",
     "concat_r1_pattern": "*1.fq.gz",
     "concat_r2_pattern": "*2.fq.gz",
+    "reads_patterns": ["*fq.gz", "*fastq.gz"],
     "reads": ["1", "2"], 
     
     "sample_sheet": "",

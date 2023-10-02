@@ -48,6 +48,7 @@ rule split_Mutect2:
         bcftools = config["bcftools"]["app"],
         reformat = config["gatk"]["scripts"]["reformat_mutect2"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
+        python   = config["python"]["2.7"],
     log:
         "logs/Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.log"
     threads : 1
@@ -55,7 +56,7 @@ rule split_Mutect2:
         mem_mb = 10240
     shell: 
         '{params.bcftools} view -l 9 -R {params.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log} &&'
-        'python2.7 {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'
+        '{params.python} {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'
 
 # A rule to annotate mutect2 tumor versus normal results with oncotator  
 rule oncotator:
@@ -86,6 +87,7 @@ rule concatenate_oncotator:
         tmp_list             = temp("oncotator_TvN_tmp/{tsample}_Vs_{nsample}_TvN_oncotator_tmp.list"),
     params:
         queue = "shortq",
+        python= config["python"]["2.7"],
         merge = config["oncotator"]["scripts"]["merge_oncotator"],
     threads : 1
     resources:
@@ -94,7 +96,7 @@ rule concatenate_oncotator:
         "logs/merge_oncotator/{tsample}_Vs_{nsample}_TvN.vcf.log"
     shell :
         "ls -1a oncotator_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_ON_*_annotated_TvN.TCGAMAF > oncotator_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_oncotator_tmp.list && "
-        "python2.7  {params.merge} {output.tmp_list} {output.concatened_oncotator} 2> {log}"
+        "{params.python} {params.merge} {output.tmp_list} {output.concatened_oncotator} 2> {log}"
         
 ## A rule to simplify oncotator output on tumor vs normal samples
 rule oncotator_reformat_TvN:
@@ -107,12 +109,13 @@ rule oncotator_reformat_TvN:
         "logs/oncotator/{tsample}_Vs_{nsample}_TvN_selection.log"
     params:
         queue   = "shortq",
+        python  = config["python"]["2.7"],
         extract = config["oncotator"]["scripts"]["extract_tumor_vs_normal"]
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        "python2.7 {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}"
+        "{params.python} {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}"
 
 ## A rule to cross oncotator output on tumor vs normal samples with pileup information
 rule oncotator_with_pileup_TvN:
@@ -125,12 +128,13 @@ rule oncotator_with_pileup_TvN:
         "logs/oncotator/{tsample}_Vs_{nsample}_TvN_with_pileup.log"
     params:
         queue = "shortq",
+        python  = config["python"]["2.7"],
         oncotator_cross_pileup = config["oncotator"]["scripts"]["pileup"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'python {params.oncotator_cross_pileup} {input.pileup} {input.tsv} {output.tsv}'
+        '{params.python} {params.oncotator_cross_pileup} {input.pileup} {input.tsv} {output.tsv}'
 
 ## A rule to cross oncotator output on tumor vs normal samples with COSMIC information
 rule oncotator_with_COSMIC_TvN:
@@ -142,6 +146,7 @@ rule oncotator_with_COSMIC_TvN:
         "logs/oncotator/{tsample}_Vs_{nsample}_TvN_with_COSMIC.log"
     params:
         queue = "shortq",
+        python= config["python"]["2.7"],        
         cross_cosmic    = config["oncotator"]["scripts"]["cosmic_t_n"],
         cosmic_mutation = config["oncotator"][config["samples"]]["cosmic_mutation"],
         cancer_census_oncogene = config["oncotator"][config["samples"]]["cancer_census_oncogene"],
@@ -150,7 +155,7 @@ rule oncotator_with_COSMIC_TvN:
     resources:
         mem_mb = 10240
     shell:
-        "python2.7 {params.cross_cosmic} {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}"
+        "{params.python} {params.cross_cosmic} {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}"
 
 
 use rule compr_with_gzip_abstract as oncotator_reformat_gzip_TvN with:

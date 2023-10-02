@@ -6,10 +6,10 @@ include: "rules/init_pipeline.smk"
 
 include: "rules/data/utils/gz.smk"
 
-include: "rules/data/concat/entry_point.smk"
+# include: "rules/data/concat/entry_point.smk"
 
-if config["do_clinic"]:
-    include: "rule/Clinic/entry_point.smk"
+# if config["do_clinic"]:
+#     include: "rule/Clinic/entry_point.smk"
     
 if config["sam2fastq"]:
     include: "rules/Sam2fq/sam2fq.smk"

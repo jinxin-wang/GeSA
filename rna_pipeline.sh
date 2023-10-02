@@ -1,0 +1,594 @@
+#!/usr/bin/bash
+
+set -e
+
+#######################################################
+####                 PATH CONVENTION               #### 
+#######################################################
+
+## Convention: Path should not terminated by /
+
+BACKUP_PWD="/mnt/glustergv0/U981/NIKOLAEV/${USER^^}"
+SCRATCH_PWD="/mnt/beegfs/scratch/${USER}"
+
+FASTQS_DIR="01_RawData"
+CONCATS_DIR="02_ConcatData"
+WORKING_DIR="03_Projects"
+
+BACKUP_FASTQ_PWD="${BACKUP_PWD}/${FASTQS_DIR}"
+BACKUP_CONCAT_PWD="${BACKUP_PWD}/${CONCATS_DIR}"
+BACKUP_WORKING_PWD="${BACKUP_PWD}/${WORKING_DIR}"
+
+SCRATCH_FASTQ_PWD="${SCRATCH_PWD}/${FASTQS_DIR}"
+SCRATCH_CONCAT_PWD="${SCRATCH_PWD}/${CONCATS_DIR}"
+SCRATCH_WORKING_PWD="${SCRATCH_PWD}/${WORKING_DIR}"
+
+#### #### #### #### #### #### #### #### ####
+####       default global variables     ####
+#### #### #### #### #### #### #### #### ####
+
+TODAY=`date +%Y%m%d`
+
+#### project name: [01_BCC|04_XP_SKIN|05_XP_INTERNAL|17_UV_MMR|19_XPCtox|20_POLZ|21_DEN|23_|....]
+PROJECT_NAME=
+
+######################################## raw data directories ########################################
+DO_DOWNLOAD=false
+# RAW_SAMPLES_ROOT_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}"
+
+###################### do concatenation of fastq raw data read 1 and 2 ####################################
+DO_CONCAT=false
+# CONCAT_SAMPLES_ROOT_DIR="${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}"
+
+###################### do genome routine analysis ##########################
+DO_PIPELINE=false
+# ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Genome_Sequencing_Analysis"
+ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final"
+NFCORE_VERSION="1.2"
+
+#### snakemake settings
+APP_SNAKEMAKE="/mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake"
+SNAKEMAKE_JOBS_NUM=20
+
+#### samples: [human|mouse], default: human
+HUMAN="human"
+MOUSE="mouse"
+
+######################################## do check md5sum of fastq raw data file ######################################
+DO_MD5SUM=false
+#### md5sum file path
+MD5SUM_FILE="md5sum.txt"
+
+########################################    do oncokb and civic annotation    ########################################
+DO_CLINIC=false
+
+######################################## do backup of fastq raw data ########################################
+DO_BACKUP_FASTQ=false
+
+######################################## do backup of concatenated fastq raw data ####################################
+DO_BACKUP_CONCAT=false
+
+######################################## do backup of bam file #######################################################
+DO_BACKUP_BAM=false
+
+######################################## do backup of all analysis results ########################################
+DO_BACKUP_RESULTS=false
+
+######################################## do clean up working space ########################################
+DO_CLEAN_UP=false
+
+#### script exec in interactive mode
+INTERACT=false
+
+function enable_all_backup {
+    DO_BACKUP_FASTQ=true ;
+    DO_BACKUP_CONCAT=true ;
+    DO_BACKUP_RESULTS=true ;
+}
+
+function enable_all_tasks {
+    DO_DOWNLOAD=true ;
+    DO_MD5SUM=true ;
+    DO_CONCAT=true ;
+    DO_PIPELINE=true ;
+    DO_CLINIC=true ;
+    enable_all_backup ;
+}
+
+function disable_all_tasks {
+    DO_DOWNLOAD=false ;
+    DO_PIPELINE=false ;
+    DO_MD5SUM=false ;
+    DO_CONCAT=false ;
+    DO_CLINIC=false ;
+    DO_BACKUP_FASTQ=false ; 
+    DO_BACKUP_CONCAT=false ; 
+    DO_BACKUP_BAM=false ; 
+    DO_BACKUP_RESULTS=false ;
+    DO_CLEAN_UP=false ;
+}
+
+#### args parse and build variables ####
+
+#### default analysis results directory: 
+DATE=${TODAY}
+SAMPLES=${HUMAN}
+
+## Download settings
+FASTQ_SAMPLES_DIR=
+
+## concat settings
+FASTQ_SAMPLE_LIST="config/variant_call_list_TvN.tsv"
+FASTQ_DATA_SHEET="config/sample_sheet.tsv"
+CONCAT_SAMPLES_DIR=
+
+## md5sum checking settings
+
+## pipeline settings
+NFCORE_SAMPLE_SHEET="config/sample_sheet.csv"
+
+## oncokb and civic settings
+
+## backup settings
+
+function help {
+    echo "Usage: weather [ -c | --city1 ]
+                         [ -d | --city2 ]
+                         [ -h | --help  ]"
+    exit 0
+}
+
+SHORT_OPTS=a,i,h
+
+LONG_OPTS=download,md5check,concat,pipeline,clinic,backup,backupFASTQ,backupCONCAT,backupBAM,backupRESULTS,interact,unlock,help
+LONG_OPTS=${LONG_OPTS},project-name:,date:,downloadDB:,rawDIR:,concatDIR:,workDIR:,pipelineDIR:,backupDIR:
+CONCAT_OPTS=concat-sample-list:,concat-src:,concat-to:
+LONG_OPTS=${LONG_OPTS},${CONCAT_OPTS}
+
+OPTS=$(getopt -a -n run_pipeline --options ${SHORT_OPTS} --longoptions ${LONG_OPTS} -- "$@")
+
+eval set -- "$OPTS"
+
+while true ; do
+    case "$1" in
+	-a | --all )
+	    enable_all_backup ; shift ;;
+	--project-name )
+	    PROJECT_NAME=$2 ; shift 2 ;;
+        --date ) 
+	    DATE=$2 ; shift 2 ;;
+	--download )
+	    DO_DOWNLOAD=true ; shift ;;
+	--download-DB )
+	    DO_DOWNLOAD=true ; shift 2 ;;
+	--download-to )
+	    DO_DOWNLOAD=true ; 
+	    FASTQ_SAMPLES_DIR=$2 ;
+	    shift 2 ;;
+	--md5check )
+	    DO_MD5SUM=true ; shift ;;
+	--md5check-file )
+	    DO_MD5SUM=true ; shift 2 ;;
+	--concat )
+	    DO_CONCAT=true ; shift ;;
+	--concat-sample-list )
+	    DO_CONCAT=true ;
+	    FASTQ_SAMPLE_LIST=$2 ;
+	    shift 2 ;;	    
+	--concat-src )
+	    DO_CONCAT=true ;
+	    FASTQ_SAMPLES_DIR=$2 ;
+	    shift 2 ;;  
+	--concat-to )
+	    DO_CONCAT=true ;
+	    CONCAT_SAMPLES_DIR=$2 ;
+	    shift 2 ;;  
+	--pipeline )
+	    DO_PIPELINE=true ; shift ;;  
+	--pipeline-branch )
+	    DO_PIPELINE=true ; shift 2 ;;  
+	--clinic )
+	    DO_CLINIC=true ; shift ;;  
+	--backup )
+	    enable_all_backup ; shift ;; 
+	--backupFASTQ )
+	    DO_BACKUP_FASTQ=true ; shift ;; 
+	--backupCONCAT )
+	    DO_BACKUP_CONCAT=true ; shift ;; 
+	--backupBAM )
+	    DO_BACKUP_BAM=true ; shift ;; 
+	--backupRESULTS )
+	    DO_BACKUP_RESULTS=true ; shift ;;
+	-i | --interact )
+	    INTERACT=true ; shift ;;
+	--unlock )
+	    DO_UNLOCK=true ; shift ;;
+	-h | --help )
+	    help; exit 0 ;;
+	-- ) shift; break ;; 
+	* ) break ;; 
+    esac
+done
+
+RESULT_BATCH_NAME="${DATE}_${SAMPLES}_RNAfusion"
+
+if [ -z ${CONCAT_SAMPLES_DIR} ] || [ ! -d ${CONCAT_SAMPLES_DIR} ] ; then
+    CONCAT_SAMPLES_DIR="${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
+fi
+
+#######################################
+#### init pipelline work directory ####
+#######################################
+
+CURRENT_DIR="$PWD"
+WORKING_DIR="${SCRATCH_WORKING_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
+echo "[info] pipeline working directory: ${WORKING_DIR}"
+mkdir -p ${WORKING_DIR}
+
+function ln2workflow {
+    #### if workflow is not ln to src, then create a softlink
+    if [ ! -d workflow ] ; then
+	if [ ${INTERACT} == true ] ; then
+	    echo "Directory of pipeline is ${ANALYSIS_PIPELINE_SRC_DIR} : [y/n] "
+	    read line
+	    if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+		echo "Please specify the directory of pipeline: "
+		read ANALYSIS_PIPELINE_SRC_DIR
+	    fi
+	fi
+	echo "[info] softlink to pipeline directory ${ANALYSIS_PIPELINE_SRC_DIR} " ;
+	ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow .
+    fi
+}
+
+if [ ${DO_PIPELINE} == true ] ; then
+
+    ln2workflow
+    
+    #### copy the script run.sh to working directory if not in working directory
+    if [ ${PWD} != ${WORKING_DIR} ] ; then 
+	echo "[info] copy the script to working directory"
+	cp $0 ${WORKING_DIR}
+    fi
+    
+    cd ${WORKING_DIR}
+
+    #### if variant call table is given, then cp to current dir, otherwise create an empty table
+    if [ -f variant_call_list_${MODE}.tsv ] ; then
+	echo "[info] variant call table is ready: "
+	cat variant_call_list_${MODE}.tsv ;
+    elif [ ${INTERACT} == true ] ; then
+	    echo "Please provide the variant call table location: "
+	    read VAR_TABLE
+	    cp ${VAR_TABLE} variant_call_list_${MODE}.tsv ;
+    fi
+
+    cd ${CURRENT_DIR}
+fi
+
+#########################################
+####         Download Raw Data       ####
+#########################################
+
+if [ ${DO_DOWNLOAD} == true ] ; then
+
+    ln2workflow
+    
+    if [ ${INTERACT} == true ] ; then
+	echo "Downloading from the database ${DATABASE} , [y/n] "
+	read line
+	if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    echo "${DATABASE} OK"
+	else
+	    echo "Please specifiy the database [iRODS|Amazon S3|EGA|BGI GeneAn]: please choose the number"
+	    echo "1. iRODS"
+	    echo "2. Amazon S3"
+	    echo "3. EGA"
+	    echo "4. BGI GeneAn"
+	    read line
+	    case line in
+		"1" )
+		    DATABASE="iRODS" ;;
+		"2" )
+		    DATABASE="S3" ;;
+		"3" )
+		    DATABASE="EGA" ;;
+		"4" )
+		    DATABASE="GeneAn" ;;
+		* )
+		    echo "Non-supported Database. exit"
+		    exit -1
+	    esac
+	fi
+    fi
+    
+    if [ ${INTERACT} == true ] ; then
+	echo "Downloading to the directory ${FASTQ_SAMPLES_DIR} , [y/n] "
+	read line
+	if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    echo "OK"
+	else
+	    echo "Please specifiy the directory: "
+	    read FASTQ_SAMPLES_DIR
+	fi
+    fi
+    
+    echo "downloading raw data to ${FASTQ_SAMPLES_DIR} "
+    module load java ;
+    mkdir -p ${FASTQ_SAMPLES_DIR} ;
+    mkdir -p logs/slurm/ ; 
+    CONFIG_OPTIONS=" PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_PATH} "
+    ${APP_SNAKEMAKE} \
+	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
+	-s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/download/entry_point.smk \
+	--config ${CONFIG_OPTIONS} ;    
+fi
+
+#########################################
+####         verify md5sum code      ####
+#########################################
+
+MD5SUM_LOG=${MD5SUM_FILE/.txt/.log}
+
+function check_md5sum_file {
+    ## if md5sum file doesn't exist, search in raw fastq data directory.
+    ## user need to choose the correct one
+    if [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
+	for md5 in `find ${FASTQ_SAMPLES_DIR} -name "*md5*txt" ` ; do
+	    echo "[INTERVENE] Is ${md5} the md5sum file ? [y/n]" ; 
+	    read line ;
+	    if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+		echo "OK"
+		MD5SUM_FILE=${md5} ;
+		break ;
+	    fi
+	done
+    fi
+
+    ## if not found, specify the location
+    if  [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
+	echo "[INTERVENE] Please specify the md5sum file location: " ;
+	read MD5SUM_FILE ;
+    fi
+
+    ## exist if all failed.
+    if  [ ! -f ${MD5SUM_FILE} ] ; then
+	echo "[ERROR] Unable to find the md5 file. Please check!"
+	exit -1
+    fi
+}
+
+if [ ${DO_MD5SUM} == true ] ; then
+
+    tmpfile=".failed.tmp"
+
+    if [ -f ${MD5SUM_LOG} ] ; then
+	echo "[info] md5sum had been verified previously. Ignore"
+    else
+	echo "[info] verify md5sum"
+	check_md5sum_file ;
+	md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
+    fi
+    
+    grep "FAILED" ${MD5SUM_LOG} > ${tmpfile}
+        
+    if [ -s ${tmpfile} ] ; then
+	echo "WARNING: Please check the samples, some files did NOT match md5sum" ; 
+	cat ${tmpfile} ;
+	exit -1
+    fi
+
+    rm -f ${tmpfile}
+fi
+
+###########################################
+####       concat raw fastq files      ####
+###########################################
+
+if [ ${DO_CONCAT} == true ] ; then
+
+    ln2workflow
+    
+    if [ ${INTERACT} == true ] ; then
+	## if concat after download, then there is no need to verify the raw data location
+	if [ ${DO_DOWNLOAD} == false ] ; then
+	    echo "1. data sheet"
+	    echo "2. raw data directory"
+	    read line
+	    case line in
+		"1" ) 
+		    echo "fastq data sheet is ${FASTQ_DATA_SHEET} ? [y/n]" ;
+		    read line ;
+		    if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+			echo "Please set the location for the fastq data sheet: " ;
+			read FASTQ_DATA_SHEET ;
+		    fi ;;
+		"2" )
+		    echo "Raw data location is ${FASTQ_SAMPLES_DIR} ? [y/n]" ;
+		    read line ;
+		    if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+			echo "Please set the directory for the raw fastq files:" ;
+			read FASTQ_SAMPLES_DIR ;
+		    fi ;;
+		 *  ) ;;
+	    esac
+	else
+	    echo ""
+	fi
+	
+	echo "Concat data location is ${CONCAT_SAMPLES_DIR} ? [y/n]" ;
+	read line ;
+	if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+	    echo "Please set the directory for the concatenated fastq files: "
+	    read CONCAT_SAMPLES_DIR ;
+	fi
+    fi
+
+    if [ ! -f ${FASTQ_SAMPLE_LIST} ] && [ -d ${FASTQ_SAMPLES_DIR} ] ; then
+	echo "generating sample list: " ;
+	mkdir -p config/ ; 
+	tmp_dir=$PWD ; 
+	cd ${FASTQ_SAMPLES_DIR} ;
+	for sn in *R ; do
+	    echo $sn >> $tmp_dir/${FASTQ_SAMPLE_LIST} ;
+	done
+	cd $tmp_dir
+	cat ${FASTQ_SAMPLE_LIST} ;
+    fi
+    
+    if [ -f ${FASTQ_DATA_SHEET}  ] ; then
+	CONFIG_OPTIONS=" sample_list=${FASTQ_SAMPLE_LIST} sample_sheet=${FASTQ_DATA_SHEET} "
+    elif [ -d ${FASTQ_SAMPLES_DIR} ] ; then
+	CONFIG_OPTIONS=" sample_list=${FASTQ_SAMPLE_LIST} raw_fastq_dir=${FASTQ_SAMPLES_DIR} "
+    fi
+    
+    if [ ${INTERACT} == true ] ; then
+	echo "Is the sample list correct ? [y/n] " ;
+	cat ${FASTQ_SAMPLE_LIST} ;
+	read line
+	if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+	    echo "Please set the sample list location: " ;
+	    read FASTQ_SAMPLE_LIST ;
+	fi
+    fi
+	
+    if [ ! -d "${CONCAT_SAMPLES_DIR}" ] ; then
+	echo "create concat target directory: ${CONCAT_SAMPLES_DIR}"
+	mkdir -p ${CONCAT_SAMPLES_DIR} ;
+    fi
+    
+    CONFIG_OPTIONS=" ${CONFIG_OPTIONS} concat_fastq_dir=${CONCAT_SAMPLES_DIR} " ; 
+
+    # cd "${FASTQ_SAMPLES_DIR}" ; 
+    # ## replace all the special character '-' by '_' in the sample names
+    # for sn in * ; do
+    # 	if grep -q "-" <<< "$sn"; then
+    # 	    echo "[info] mv $sn ${sn//-/_} ; "
+    # 	    mv $sn ${sn//-/_} ; 
+    # 	fi
+    # done
+    # cd "${CURRENT_DIR}"
+
+    if [ -d ${CONCAT_SAMPLES_DIR} ] && [ -f ${FASTQ_SAMPLE_LIST} ] && [ -d workflow ] ; then
+	echo "[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode" ;
+	module load java ;
+	mkdir -p logs/slurm/ ; 
+	${APP_SNAKEMAKE} \
+	    -s  ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/concat/entry_point.smk \
+	    --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+	    --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
+	    --config ${CONFIG_OPTIONS} ;
+    fi
+fi
+
+### nf-core  ####
+function nfcore_load_module {
+    module load java/12.0.2
+    module load singularity/3.4.1
+    module load nextflow/22.10.5
+}
+    
+function nfcore1.2 {
+
+    # conda init bash ;
+    # conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/shared_install/cf86d417625a66c2fd24c9995cffb88e_
+
+    echo -e "trace.overwrite = true\ndag.overwrite = true" > config/nextflow.config
+    
+    nextflow -config config/nextflow.config \
+	     run /mnt/beegfs/pipelines/nf-core-rnafusion/1.2.0/main.nf \
+	     -resume \
+	     --read_length 150 \
+	     -name nfcore-pipeline-${TODAY} \
+	     --plaintext_email \
+	     --monochrome_logs \
+	     --fastp_trim \
+	     --fusioninspector_filter \
+	     --reference_release 97 \
+	     --genome GRCh38 \
+	     --arriba  --ericscript  --pizzly  --star_fusion \
+	     --max_time '720.h' --max_cpus '20' --max_memory '128.GB' \
+	     --arriba_ref '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/arriba' \
+	     --ericscript_ref '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/ericscript/ericscript_db_homosapiens_ensembl84' \
+	     --fasta '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.all.fa' \
+	     --fusioncatcher_ref '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/fusioncatcher' \
+	     --gtf '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.gtf' \
+	     --star_index '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/star-index_150bp' \
+	     --star_fusion_ref '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/ctat_genome_lib_build_dir' \
+	     --transcript '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.cdna.all.fa.gz' \
+	     --databases '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/databases' \
+	     --profile 'singularity' \
+	     --input ${NFCORE_SAMPLE_SHEET} \
+	     --reads "${local_fastq_dir}/*_R[1-2].fastq.gz" \
+	     --genomes_base '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded' \
+	     --outdir 'results/nf-core' \
+	     --custom_config_base 'config/nextflow.config' \
+	     --custom_config_version '1.2.0' &
+}
+
+function nfcore2.3 {
+    echo "TODO nfcore 2.3"
+}
+
+echo "[info] do pipeline: ${DO_PIPELINE} "
+if [ ${DO_PIPELINE} == true ] ; then 
+
+    local_fastq_dir="results/data/fastq"
+    
+    source ~/.bashrc
+    conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/shared_install/cf86d417625a66c2fd24c9995cffb88e_
+    echo "conda env ativated"
+
+    cd ${WORKING_DIR} 
+
+    mkdir -p config ${local_fastq_dir} ;
+    if [ ! "$(ls ${local_fastq_dir})" ] ; then 
+	ln -s ${CONCAT_SAMPLES_DIR}/*gz ${local_fastq_dir} ;
+    fi
+    
+    for fastq in `ls ${local_fastq_dir}/*` ; do
+	echo "rename $fastq "
+	if [ $fastq != ${fastq/_1.fastq/_R1.fastq} ] ; then
+	    mv $fastq ${fastq/_1.fastq/_R1.fastq} 
+	fi
+	if [ $fastq != ${fastq/_1.fastq/_R2.fastq} ] ; then
+	    mv $fastq ${fastq/_2.fastq/_R2.fastq} 
+	fi
+    done
+
+    cd ${local_fastq_dir}
+    r1_list=`ls *_R1.fastq.gz`
+    r2_list=`ls *_R2.fastq.gz`
+    cd ${WORKING_DIR}
+
+    if [ ! -f ${NFCORE_SAMPLE_SHEET} ] ; then 
+	for r1 in ${r1_list} ; do
+	    echo "${r1/_R1.fastq.gz/},${local_fastq_dir}/${r1},${local_fastq_dir}/${r1/_R1.fastq.gz/_R2.fastq.gz},forward" >> ${NFCORE_SAMPLE_SHEET}
+	done
+    fi
+
+    echo "sample_sheet.csv: "
+    cat ${NFCORE_SAMPLE_SHEET}
+
+    if [ "$(ls ${local_fastq_dir})" ] && [ -f ${NFCORE_SAMPLE_SHEET} ] ; then
+	if [  ${NFCORE_VERSION} == "1.2" ] ; then
+            echo "Looding modules for nfore "
+	    nfcore_load_module
+	    echo "starting nfcore ${NFCORE_VERSION} "
+	    nfcore1.2
+	elif [  ${NFCORE_VERSION} == "2.3" ] ; then
+	    nfcore2.3
+	fi
+    fi 
+    cd "${CURRENT_DIR}"
+fi
+
+
+
+#### civic and oncoKB ####
+
+
+### backup results #### 
+
+
