@@ -104,12 +104,52 @@ input:
 output:
         temp("bam/{sample}.nodup.recal.beforeReformat.bam")
 ```
-#### - Specifications of Input Files
+__________________________________________________________________________________________________________________________________________________________
 
-#### - Ouput Files
-#### - Genome Reference
-#### - Packages and Versions
-### 3. Issues and TODO
+## A rule to remove duplicated readswith picard, will run only if REMOVE_DUPLICATES is set to True in the configuation file
 
+-->  rule remove_duplicate:
+
+- input files :
+
+```
+            "bam/{sample}.bam"
+```
+
+- output files :
+
+```
+            bam = temp("bam/{sample}.nodup.bam"),
+            metrics = "remove_duplicate_metrics/{sample}.nodup.metrics"
+```
+
+-->  rule remove_duplicate:
+
+- input files :
+
+```
+
+```
+
+- output files :
+
+```
+
+```
+
+
+-->  rule remove_duplicate:
+
+- input files :
+
+```
+
+```
+
+- output files :
+
+```
+
+```
 
 

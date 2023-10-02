@@ -165,8 +165,8 @@ rule all:
         # expand("BQSR/{sample}_BQSR_report.pdf", sample = TSAMPLE + NSAMPLE),
         expand(FACETS),
         expand(CNV_FACETS),
-        expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = TSAMPLE + NSAMPLE),
-        expand("annovar/{sample}.avinput", sample = TSAMPLE + NSAMPLE if config["samples"] == "human" else []),
+        expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE),
+        expand("annovar/{sample}.avinput", sample = NSAMPLE if config["samples"] == "human" else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
         expand("mapping_QC/mosdepth/{sample}.mosdepth.global.dist.txt", sample = TSAMPLE + NSAMPLE),
@@ -202,9 +202,9 @@ if TUMOR_ONLY == False:
 ## Call germline SNPs and indels via local re-assembly of haplotypes
 include: "rules/HaplotypeCaller/haplotypeCaller.smk"
     
-if TUMOR_ONLY == False:
-    ## Annovar on Haplotype caller 
-    include: "rules/Annovar/annovar.smk"
+# if TUMOR_ONLY == False:
+## Annovar on Haplotype caller 
+include: "rules/Annovar/annovar.smk"
     
 ######## Mapping QC ########
 
