@@ -8,7 +8,7 @@ rule get_variant_bed_tumor_only:
     log:
         "logs/variant_bed_T/{tsample}_tumor_only_T.bed.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         vcf2bed = config["vcf2bed"]["app"],
     threads : 1
     resources:
@@ -27,12 +27,12 @@ rule samtools_mpileup_tumor_only:
     log:
         "logs/pileup_T/{tsample}_tumor_only_T.pileup.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"],
         genome_ref_fasta = config["gatk"][config["samples"]]["genome_fasta"],
-    threads : 2
+    threads : 4
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell:
         '{params.samtools} mpileup -a -B -l {input.BED} -f {params.genome_ref_fasta} {input.BAM} | gzip - > {output.PILEUP} 2> {log}'
  
@@ -46,6 +46,7 @@ rule split_Mutect2_tumor_only:
         interval_vcf          = temp("Mutect2_T_oncotator_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz")
     params:
         queue = "shortq",
+        python  = config["python"]["2.7"],
         bcftools = config["bcftools"]["app"],
         reformat = config["gatk"]["scripts"]["reformat_mutect2"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed"
@@ -53,10 +54,10 @@ rule split_Mutect2_tumor_only:
         "logs/Mutect2_T_oncotator_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.log"
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell:
         '{params.bcftools} view -l 9 -R {params.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log}  &&' 
-        ' python {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'  
+        '{params.python} {params.reformat} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'  
  
 # A rule to annotate mutect2 tumor only results with oncotator 
 rule oncotator_tumor_only:
@@ -66,7 +67,7 @@ rule oncotator_tumor_only:
         MAF = temp("oncotator_T_tmp/{tsample}_tumor_only_ON_{interval}_annotated_T.TCGAMAF")
     params:
         oncotator = config["oncotator"]["app"],
-        queue = "mediumq",
+        queue = "shortq",
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
     log:
@@ -106,13 +107,14 @@ rule oncotator_reformat_tumor_only:
     log:
         "logs/oncotator/{tsample}_tumor_only_T_selection.log"
     params:
-        queue = "shortq",
+        queue   = "shortq",
         extract = config["oncotator"]["scripts"]["extract_tumor_only"],
+        python  = config["python"]["2.7"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}'
+        '{params.python} {params.extract} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
 ## A rule to simplify oncotator output on tumor only samples
 rule oncotator_with_pileup_tumor_only:
@@ -152,3 +154,14 @@ rule oncotator_with_COSMIC_tumor_only:
     shell:
         'python2.7 {params.cross_cosmic}  {input.tsv} {output.tsv} {params.cosmic_mutation} {params.cancer_census_oncogene} {params.cancer_census_tumorsupressor} 2> {log}'
 
+use rule compr_with_gzip_abstract as oncotator_reformat_gzip_Tonly with:
+    input:
+        "oncotator_T_maf/{tsample}_tumor_only_T_selection.TCGAMAF",
+    output:
+        "oncotator_T_maf/{tsample}_tumor_only_T_selection.TCGAMAF.gz",
+
+use rule compr_with_gzip_abstract as COSMIC_gzip_Tonly with:
+    input:
+        "oncotator_T_tsv_COSMIC/{tsample}_tumor_only_T_with_COSMIC.tsv"
+    output:
+        "oncotator_T_tsv_COSMIC/{tsample}_tumor_only_T_with_COSMIC.tsv.gz"

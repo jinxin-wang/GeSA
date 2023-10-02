@@ -6,7 +6,7 @@ rule collect_Hs_metrics:
     output:
         "mapping_QC/HsMetrics/{sample}_HsMetrics.tsv"
     params:
-        queue    = "mediumq",
+        queue    = "shortq",
         gatk     = config["gatk"]["app"],
         bait     = config["gatk"][config["samples"]][config["seq_type"]]["hsmetrics_bait"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["hsmetrics_interval"],
@@ -14,9 +14,9 @@ rule collect_Hs_metrics:
         "logs/mapping_QC/{sample}_HsMetrics.log"
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 10240
     shell:
-        "{params.gatk} --java-options \"-Xmx40g  -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" CollectHsMetrics"
+        "{params.gatk} --java-options \"-Xmx8g  -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" CollectHsMetrics"
         " -TI {params.interval}"
         " -BI {params.bait}"
         " -I {input.bam}"

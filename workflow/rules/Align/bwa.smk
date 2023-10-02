@@ -11,7 +11,7 @@ rule bwa_map:
         bwa = config["bwa"]["app"],
         index = config["bwa"][config["samples"]]["index"],
         samtools = config["samtools"]["app"],
-    threads: 32
+    threads: 24
     resources:
         mem_mb = 102400
     shell:

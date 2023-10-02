@@ -10,7 +10,7 @@ if config["remove_duplicates"] == True :
         resources:
             mem_mb = 81920
         params:
-            queue = "mediumq",
+            queue = "shortq",
             gatk  = config["gatk"]["app"],
         log:
             "logs/remove_duplicate_metrics/{sample}.nodup.log"
@@ -28,7 +28,7 @@ rule indexbam_before_recal:
         samtools = config["samtools"]["app"]
     threads : 8
     resources:
-        mem_mb = 40960
+        mem_mb = 10240
     log:
         "logs/bam/{sample}.bam.bai.log"
     shell:
@@ -94,11 +94,11 @@ rule reformat_bam:
     log:
         "logs/bam_reformat/{sample}_reformat.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"]
-    threads: 16
+    threads: 8
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     shell:
         "{params.samtools} view -@ {threads} -b -h -o {output} {input.bam}"
         
@@ -111,9 +111,9 @@ rule indexbam_after_recal:
     params:
         queue = "shortq",
         samtools = config["samtools"]["app"]
-    threads : 16
+    threads : 8
     resources:
-        mem_mb = 51200
+        mem_mb = 10240
     log:
         "logs/bam/{sample}.bam.bai.log"
     shell:
@@ -127,7 +127,7 @@ rule base_recalibrator_pass2:
     output:
         "BQSR/{sample}_BQSR_pass2.table"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         gatk  = config["gatk"]["app"],
         target_interval = config["gatk"][config["samples"]]["target_interval"],
         index           = config["gatk"][config["samples"]]["genome_fasta"],

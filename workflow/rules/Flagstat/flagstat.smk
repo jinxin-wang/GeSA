@@ -8,10 +8,10 @@ rule samtools_flagstat:
     log:
         "logs/mapping_QC/{sample}.flagstat.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"]
-    threads : 16
+    threads : 8
     resources:
-        mem_mb = 51200
+        mem_mb = 25600
     shell:
         "{params.samtools} flagstat -@ {threads} {input.bam} > {output} 2> {log}"
