@@ -1,0 +1,233 @@
+from datetime import datetime
+
+COLUMN_DATASETS = config["iRODS"]["DATASETS_COLN"]
+
+# def query_datasets(index, pname, conditions):
+#     meta_qu_cmd = f"imeta qu -C projectName like {pname} {conditions} | grep collection "
+#     logging.info(f"Query meta informations of sample No.{index} : {meta_qu_cmd}")
+#     collections = os.popen(meta_qu_cmd).read()
+#     logging.info(f"Recieve: {collections}")
+#     return collections
+
+def query_datasets(index, conditions):
+    meta_qu_cmd = f"imeta qu -C {conditions} | grep collection "
+    logging.info(f"Query meta informations of sample No.{index} : {meta_qu_cmd}")
+    collections = os.popen(meta_qu_cmd).read()
+    logging.info(f"Recieve: {collections}")
+    return collections
+
+def query_by_key(df, df_key, ds_key, pname):
+    for idx, row in df.iterrows():
+        bilan_key   = row[df_key]
+        conditions  = f" projectName like {pname} and {ds_key} like {bilan_key} "
+        collections = query_datasets(index = idx, conditions = conditions)
+        datasets    = set([ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ])
+        df.at[idx, COLUMN_DATASETS] = df.at[idx, COLUMN_DATASETS] | datasets
+    return df
+
+def query_by_keys(df, df_key, ds_key, df_gp_keys, ds_gp_keys, pname):
+    for idx, row in df.iterrows():
+        bilan_gp_keys= row[df_gp_keys]
+        conditions   = " ".join([ f" and {dk} like {bk} " for dk, bk in zip(ds_gp_keys, bilan_gp_keys) ])
+        conditions   = f" projectName like {pname} " + conditions
+        collections  = query_datasets(index = idx, conditions = conditions)
+        datasets     = set([ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ])
+        df.at[idx, COLUMN_DATASETS] = df.at[idx, COLUMN_DATASETS] | datasets
+    return df
+
+def download_datasets(datasets, save_to_dir):
+    if len(datasets) > 0 :
+        logging.info(f"download to directory: {save_to_dir}")
+        os.system(f"mkdir -p {save_to_dir}")
+        for irods_abs_path in datasets :
+            dataset_id = irods_abs_path.split("/")[-1]
+            target_path= Path(save_to_dir).joinpath(dataset_id)
+            if not target_path.is_dir() or not any(target_path.iterdir()):
+                download_cmd = f"iget -rvK {irods_abs_path} {save_to_dir}"
+                logging.info(f"Download command: {download_cmd}")
+                os.system(download_cmd)
+            else:
+                logging.info(f"{irods_abs_path} had already been downloaded to {save_to_dir}.")
+        return False
+    return True
+
+def download_by_key(df, df_key, ds_key, pname, spath, sub_dir):
+    for idx, row in df.iterrows():
+        bilan_key   = row[df_key]
+        conditions  = f" projectName like {pname} and {ds_key} like {bilan_key} "
+        collections = query_datasets(index = idx, conditions = conditions)
+        datasets    = [ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ]
+        save_to_dir = Path(f"{str(spath)}/{sub_dir}/{bilan_key}")
+        download_datasets(datasets  = datasets, save_to_dir = save_to_dir)
+
+def download_by_keys(df, df_key, ds_key, df_gp_keys, ds_gp_keys, pname, spath, sub_dir):
+    for idx, row in df.iterrows():
+        bilan_gp_keys= row[df_gp_keys]
+        conditions   = " ".join([ f" and {dk} like {bk} " for dk, bk in zip(ds_gp_keys, bilan_gp_keys) ])
+        conditions   = f" projectName like {pname} " + conditions
+        collections  = query_datasets(index = idx, conditions = conditions)
+        datasets     = [ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ]
+        save_to_dir  = Path(f"{str(spath)}/{sub_dir}/{row[df_key]}")
+        download_datasets(datasets = datasets, save_to_dir = save_to_dir)
+
+# rule irods_download:
+#     input:
+#         bilan = config["iRODS"]["sample_bilan"],
+#     output:
+#         storage_path = directory(config["STORAGE_PATH"]),
+#     params:
+#         queue        = "shortq",
+#         project_names= config["PROJECT_NAMES"],
+#         bilan_key    = config["iRODS"]["BILAN_KEY"],
+#         dataset_key  = config["iRODS"]["DATASET_KEY"],
+#         bilan_group_keys   = config["iRODS"]["bilan_group_keys"],
+#         dataset_group_keys = config["iRODS"]["dataset_group_keys"],
+#     threads: 4
+#     resources:
+#         mem_mb = 10240
+#     log:
+#         out = f"logs/download/irods/irods_download.log"
+#     run:
+#         #### require python3                                                                                                                                                                                 
+#         if sys.version_info.major < 3:
+#             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+        
+#         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+        
+#         bilan = str(input.bilan)
+#         exten = bilan.strip().split(".")[-1]
+#         bilan_df  = None
+#         timestamp = datetime.now().strftime("%Y%m%d")
+#         sub_dir   = f"iRODS_Download_{timestamp}"
+
+#         if exten == "tsv" : 
+#             logging.info(f"identify the format of input file is tsv: {input.bilan}")
+#             bilan_df = pd.read_table(bilan, sep="\t")
+#         elif exten == "csv" : 
+#             logging.info(f"identify the format of input file is csv: {input.bilan}")
+#             bilan_df = pd.read_table(bilan, sep=";")
+#         else:
+#             logging.warning(f"Unable to identify the format of input file: {input.bilan}")
+#             raise Exception(f"Unable to identify the format of input file: {input.bilan}")
+
+#         not_found_by_key = [ download_by_key(df = bilan_df,
+#                                              df_key = params.bilan_key,
+#                                              ds_key = params.dataset_key,
+#                                              pname  = project_name,
+#                                              spath  = output.storage_path,
+#                                              sub_dir= sub_dir)
+#                              for project_name in params.project_names if len(project_name.strip()) > 0 ]
+
+#         if len(params.bilan_group_keys) > 0 and len(params.dataset_group_keys) > 0 :
+#             not_found_by_keys= [ download_by_keys(df = bilan_df,
+#                                                   df_key = params.bilan_key,
+#                                                   ds_key = params.dataset_key,
+#                                                   df_gp_keys = params.bilan_group_keys,
+#                                                   ds_gp_keys = params.dataset_group_keys,
+#                                                   pname  = project_name,
+#                                                   spath  = output.storage_path,
+#                                                   sub_dir= sub_dir)
+#                                  for project_name in params.project_names if len(project_name.strip()) > 0 ]
+
+rule irods_query_datasets:
+    input:
+        bilan = config["iRODS"]["sample_bilan"],
+    output:
+        bilan = config["iRODS"]["datasets_bilan"],
+    params:
+        queue        = "shortq",
+        project_names= config["PROJECT_NAMES"],
+        bilan_key    = config["iRODS"]["BILAN_KEY"],
+        dataset_key  = config["iRODS"]["DATASET_KEY"],
+        bilan_group_keys   = config["iRODS"]["bilan_group_keys"],
+        dataset_group_keys = config["iRODS"]["dataset_group_keys"],
+    threads: 4
+    resources:
+        mem_mb = 10240
+    log:
+        out = f"logs/download/irods/irods_download.log"
+    run:
+        #### require python3                                                                                                                                                                                 
+        if sys.version_info.major < 3:
+            logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+        
+        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+        
+        bilan = str(input.bilan)
+        exten = bilan.strip().split(".")[-1]
+        bilan_df  = None
+        timestamp = datetime.now().strftime("%Y%m%d")
+        sub_dir   = f"iRODS_Download_{timestamp}"
+
+        if exten == "tsv" : 
+            logging.info(f"identify the format of input file is tsv: {input.bilan}")
+            bilan_df = pd.read_table(bilan, sep="\t")
+        elif exten == "csv" : 
+            logging.info(f"identify the format of input file is csv: {input.bilan}")
+            bilan_df = pd.read_table(bilan, sep=";")
+        else:
+            logging.warning(f"Unable to identify the format of input file: {input.bilan}")
+            raise Exception(f"Unable to identify the format of input file: {input.bilan}")
+
+        bilan_df[COLUMN_DATASETS] = [ set([]) for i in range(len(bilan_df.index)) ]
+
+        for project_name in params.project_names:
+            if len(project_name.strip()) > 0 :
+                bilan_df = query_by_key(df = bilan_df, pname  = project_name,
+                                        df_key = params.bilan_key,
+                                        ds_key = params.dataset_key)
+                             
+
+            if len(project_name.strip()) > 0 and len(params.bilan_group_keys) > 0 and len(params.dataset_group_keys) > 0 :
+                bilan_df = query_by_keys(df = bilan_df, pname  = project_name,
+                                                  df_key = params.bilan_key,
+                                                  ds_key = params.dataset_key,
+                                                  df_gp_keys = params.bilan_group_keys,
+                                                  ds_gp_keys = params.dataset_group_keys)
+                                 
+        bilan_df.to_csv(output.bilan, sep="\t", index=False)
+
+rule irods_download_datasets:
+    input:
+        bilan = config["iRODS"]["datasets_bilan"],
+    output:
+        storage_path = directory(config["STORAGE_PATH"]),
+    params:
+        queue        = "shortq",
+        project_names= config["PROJECT_NAMES"],
+        bilan_key    = config["iRODS"]["BILAN_KEY"],
+        dataset_key  = config["iRODS"]["DATASET_KEY"],
+        bilan_group_keys   = config["iRODS"]["bilan_group_keys"],
+        dataset_group_keys = config["iRODS"]["dataset_group_keys"],
+    threads: 4
+    resources:
+        mem_mb = 10240
+    log:
+        out = f"logs/download/irods/irods_download.log"
+    run:
+        #### require python3                                                                                                                                                                                 
+        if sys.version_info.major < 3:
+            logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+        
+        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+        
+        bilan = str(input.bilan)
+        exten = bilan.strip().split(".")[-1]
+        bilan_df  = None
+        timestamp = datetime.now().strftime("%Y%m%d")
+        sub_dir   = f"iRODS_Download_{timestamp}"
+
+        if exten == "tsv" : 
+            logging.info(f"identify the format of input file is tsv: {input.bilan}")
+            bilan_df = pd.read_table(bilan, sep="\t")
+        elif exten == "csv" : 
+            logging.info(f"identify the format of input file is csv: {input.bilan}")
+            bilan_df = pd.read_table(bilan, sep=";")
+        else:
+            logging.warning(f"Unable to identify the format of input file: {input.bilan}")
+            raise Exception(f"Unable to identify the format of input file: {input.bilan}")
+
+        for idx, row in bilan_df.iterrows():
+            save_to_dir = Path(f"{str(output.storage_path)}/{sub_dir}/{row[params.bilan_key]}")
+            download_datasets(datasets = row[COLUMN_DATASETS], save_to_dir = save_to_dir)
+

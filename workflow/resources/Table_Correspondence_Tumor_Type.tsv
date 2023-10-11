@@ -1,0 +1,593 @@
+Project_TCGA_More	Histological_Type	Primary_Site	MSKCC_Oncotree	Molecular	Civic_Disease	Note
+ACC	Adrenal cortical carcinoma	Adrenal gland	ACC		Adrenal Carcinoma|Adrenocortical Carcinoma|Solid Tumor|Cancer	
+ACC		Adrenal gland	ACC		Adrenal Carcinoma|Adrenocortical Carcinoma|Solid Tumor|Cancer	
+ANUS - Not_TCGA	Squamous cell carcinoma, NOS	Anus and anal canal	ANSC		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Carcinoma, NOS	Bladder	BLCA		Bladder Carcinoma|Urinary Bladder Cancer|Solid Tumor|Cancer	
+BLCA	Adenocarcinoma, NOS	Bladder	BLAD		Bladder Carcinoma|Urinary Bladder Cancer|Solid Tumor|Cancer	
+BLCA	Papillary adenocarcinoma, NOS	Bladder	BLAD		Bladder Carcinoma|Urinary Bladder Cancer|Solid Tumor|Cancer	
+BLCA	Papillary transitional cell carcinoma	Bladder	BLCA		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma, micropapillary	Bladder	BLCA		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma	Bladder	BLCA		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma, NOS	Bladder	BLCA		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma	Upper urothelial tract	UTUC		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma, NOS	Upper urothelial tract	UTUC		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Papillary transitional cell carcinoma	Upper urothelial tract	UTUC		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma	Other and unspecified urinary organs	UCU		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma	Ureter	UCU		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma, NOS	Other and unspecified urinary organs	UCU		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Transitional cell carcinoma, NOS	Ureter	UCU		Bladder Carcinoma|Bladder Urothelial Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Transitional Cell Carcinoma|Solid Tumor|Cancer	
+BLCA	Urachal adenocarcinoma	Other and unspecified urinary organs	UA		Solid Tumor|Cancer	Not CiViC
+BLCA - Not_TCGA	Squamous cell carcinoma, NOS	Bladder	BLSC		Bladder Carcinoma|Invasive Bladder Transitional Cell Carcinoma|Urinary Bladder Cancer|Solid Tumor|Cancer	
+BLCA - Not_TCGA	Clear cell adenocarcinoma, NOS	Bladder	Other		Bladder Carcinoma|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Urethral clear cell adenocarcinoma	Other and unspecified urinary organs	UAD		Bladder Carcinoma|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Mixed neuroendocrine and transitional cell carcinoma	Bladder	SCBC		Bladder Carcinoma|Neuroendocrine Tumor|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Neuroendocrine carcinoma, NOS	Bladder	SCBC		Bladder Carcinoma|Ureter Small Cell Carcinoma|Neuroendocrine Tumor|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Sarcomatoid carcinoma	Bladder	SCB		Bladder Carcinoma|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Small cell neuroendocrine carcinoma	Bladder	SCBC		Bladder Carcinoma|Ureter Small Cell Carcinoma|Neuroendocrine Tumor|Solid Tumor|Cancer	Not urothelial
+BLCA - Not_TCGA	Urachal carcinoma	Bladder	URCA		Solid Tumor|Cancer	Not CiViC
+BLCA - Not_TCGA	Urachal mucinous adenocarcinoma	Bladder	URCA		Solid Tumor|Cancer	Not CiViC
+BRCA	Adenocarcinoma, NOS	Breast	BRCNOS	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Adenocarcinoma, NOS	Breast	BRCNOS	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Adenocarcinoma, NOS	Breast	BRCNOS	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Adenocarcinoma, NOS	Breast	BRCNOS		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Adenoid cystic carcinoma	Breast	ACYC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Adenoid cystic carcinoma	Breast	ACYC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Apocrine adenocarcinoma	Breast	IDC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Apocrine adenocarcinoma	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Basal cell carcinoma, NOS	Breast	BCC	TNBC	Basal Cell Carcinoma|Cancer|Solid Tumor|Cancer	
+BRCA	Basal cell carcinoma, NOS	Breast	BCC		Basal Cell Carcinoma|Solid Tumor|Cancer	
+BRCA	Carcinoma, NOS	Breast	BRCNOS	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Carcinoma, NOS	Breast	BRCNOS		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Cribriform carcinoma, NOS	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Ductal carcinoma, micropapillary	Breast	IDC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Ductal carcinoma, micropapillary	Breast	IDC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Ductal carcinoma, micropapillary	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Infiltrating duct and lobular carcinoma	Breast	ILC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct and lobular carcinoma	Breast	ILC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct and lobular carcinoma	Breast	ILC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct and lobular carcinoma	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Infiltrating duct carcinoma, NOS	Breast	IDC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct carcinoma, NOS	Breast	IDC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct carcinoma, NOS	Breast	IDC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct carcinoma, NOS	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Infiltrating duct mixed with other types of carcinoma	Breast	IDC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct mixed with other types of carcinoma	Breast	IDC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct mixed with other types of carcinoma	Breast	IDC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating duct mixed with other types of carcinoma	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular mixed with other types of carcinoma	Breast	ILC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular mixed with other types of carcinoma	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular carcinoma, NOS	Breast	ILC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular carcinoma, NOS	Breast	ILC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular carcinoma, NOS	Breast	ILC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Infiltrating lobular carcinoma, NOS	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Inflammatory breast cancer	Breast	IBC		Breast Cancer|Breast Carcinoma|Inflammatory Breast Carcinoma|Triple-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Intraductal carcinoma, noninfiltrating, NOS	Breast	BRCA	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Intraductal carcinoma, noninfiltrating, NOS	Breast	BRCA	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Intraductal carcinoma, noninfiltrating, NOS	Breast	BRCA	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Intraductal carcinoma, noninfiltrating, NOS	Breast	BRCA		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Intraductal papillary adenocarcinoma with invasion	Breast	IDC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Intraductal papillary adenocarcinoma with invasion	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Large cell neuroendocrine carcinoma	Breast	BRCA	TNBC	Neuroendocrine Tumor|Solid Tumor|Cancer	
+BRCA	Large cell neuroendocrine carcinoma	Breast	BRCA		Neuroendocrine Tumor|Solid Tumor|Cancer	
+BRCA	Lobular carcinoma, NOS	Breast	ILC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Lobular carcinoma, NOS	Breast	ILC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Lobular carcinoma, NOS	Breast	ILC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Lobular carcinoma, NOS	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Medullary carcinoma, NOS	Breast	IDC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Medullary carcinoma, NOS	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Metaplastic carcinoma, NOS	Breast	MBC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Metaplastic carcinoma, NOS	Breast	MBC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Metaplastic carcinoma, NOS	Breast	MBC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Metaplastic carcinoma, NOS	Breast	MBC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Mucinous adenocarcinoma	Breast	IMMC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous adenocarcinoma	Breast	IMMC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous adenocarcinoma	Breast	IMMC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous adenocarcinoma	Breast	IMMC		Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous carcinoma	Breast	IMMC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous carcinoma	Breast	IMMC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous carcinoma	Breast	IMMC	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Mucinous carcinoma	Breast	IMMC		Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA		Breast	BRCA	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA		Breast	BRCA	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA		Breast	BRCA	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA		Breast	BRCA		Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Paget's disease and infiltrating duct carcinoma of breast	Breast	PD	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Paget's disease and infiltrating duct carcinoma of breast	Breast	PD	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Paget's disease and infiltrating duct carcinoma of breast	Breast	PD	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Paget's disease and infiltrating duct carcinoma of breast	Breast	PD		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Papillary carcinoma, NOS	Breast	SPC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Papillary carcinoma, NOS	Breast	SPC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Phyllodes tumor, malignant	Breast	PT	HER2_minus_HR_plus	Sarcoma|Solid Tumor|Cancer	
+BRCA	Phyllodes tumor, malignant	Breast	PT		Sarcoma|Solid Tumor|Cancer	
+BRCA	Pleomorphic carcinoma	Breast	ILC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Pleomorphic carcinoma	Breast	ILC	HER2_plus	Breast Cancer|Breast Carcinoma|Her2-receptor Positive Breast Cancer|Solid Tumor|Cancer	
+BRCA	Pleomorphic carcinoma	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Poorly differentiated lobular carcinoma	Breast	ILC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+BRCA	Secretory carcinoma of breast	Breast	JSCB	TNBC	Breast Cancer|Breast Carcinoma|Triple-receptor Negative Breast Cancer|Breast Secretory Carcinoma|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Squamous cell carcinoma, NOS	Breast	MSCC		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+BRCA	Tubular adenocarcinoma	Breast	IDC	HER2_minus_HR_plus	Breast Cancer|Breast Carcinoma|Estrogen-receptor Positive Breast Cancer|Her2-receptor Negative Breast Cancer|Solid Tumor|Cancer	
+BRCA	Tubular adenocarcinoma	Breast	IDC		Breast Cancer|Breast Carcinoma|Solid Tumor|Cancer	
+CESC	Adenocarcinoma, endocervical type	Cervix uteri	CEAD		Cervical Cancer|Cervix Carcinoma|Cervical Adenocarcinoma|Solid Tumor|Cancer	
+CESC	Adenocarcinoma, NOS	Cervix uteri	CEAD		Cervical Cancer|Cervix Carcinoma|Cervical Adenocarcinoma|Solid Tumor|Cancer	
+CESC	Adenosquamous carcinoma	Cervix uteri	CEAS		Cervical Cancer|Cervix Carcinoma|Cervical Adenocarcinoma|Solid Tumor|Cancer	
+CESC	Basaloid squamous cell carcinoma	Cervix uteri	CESC		Cervical Cancer|Cervix Carcinoma|Cervical Squamous Cell Carcinoma|Solid Tumor|Cancer	
+CESC	Endometrioid adenocarcinoma, NOS	Cervix uteri	CEEN		Cervical Cancer|Cervix Carcinoma|Cervical Adenocarcinoma|Solid Tumor|Cancer	
+CESC	Mucinous adenocarcinoma, endocervical type	Cervix uteri	CEMU		Cervical Cancer|Cervix Carcinoma|Cervical Adenocarcinoma|Solid Tumor|Cancer	
+CESC	Papillary squamous cell carcinoma	Cervix uteri	CESC		Cervical Cancer|Cervix Carcinoma|Cervical Squamous Cell Carcinoma|Solid Tumor|Cancer	
+CESC	Squamous cell carcinoma, keratinizing, NOS	Cervix uteri	CESC		Cervical Cancer|Cervix Carcinoma|Cervical Squamous Cell Carcinoma|Solid Tumor|Cancer	
+CESC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Cervix uteri	CESC		Cervical Cancer|Cervix Carcinoma|Cervical Squamous Cell Carcinoma|Solid Tumor|Cancer	
+CESC	Squamous cell carcinoma, NOS	Cervix uteri	CESC		Cervical Cancer|Cervix Carcinoma|Cervical Squamous Cell Carcinoma|Solid Tumor|Cancer	
+CHOL	Cholangiocarcinoma	Gallbladder	EHCH		Cholangiocarcinoma|Solid Tumor|Cancer	
+CHOL	Cholangiocarcinoma	Liver and intrahepatic bile ducts	IHCH		Cholangiocarcinoma|Intrahepatic Cholangiocarcinoma|Solid Tumor|Cancer	
+CHOL	Cholangiocarcinoma	Other and unspecified parts of biliary tract	EHCH		Cholangiocarcinoma|Solid Tumor|Cancer	
+CHOL		Liver and intrahepatic bile ducts	IHCH		Cholangiocarcinoma|Intrahepatic Cholangiocarcinoma|Solid Tumor|Cancer	
+COAD	Adenocarcinoma with mixed subtypes	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma with neuroendocrine differentiation	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma, intestinal type	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma, intestinal type	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma, NOS	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma, NOS	Rectosigmoid junction	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+COAD	Adenocarcinoma, NOS	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+COAD	Adenosquamous carcinoma	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Carcinoma, NOS	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Mucinous adenocarcinoma	Colon	MACR		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Colon Mucinous Adenocarcinoma|Solid Tumor|Cancer	
+COAD	Mucinous adenocarcinoma	Rectosigmoid junction	MACR		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+COAD		Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Papillary adenocarcinoma, NOS	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+COAD	Poorly differentiated adenocarcinoma	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Bones, joints and articular cartilage	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Brain	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Breast	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Colon	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Connective, subcutaneous and other soft tissues	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Heart, mediastinum, and pleura	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Lymph nodes	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Other and unspecified major salivary glands	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Retroperitoneum and peritoneum	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Small intestine	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Stomach	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Testis	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC	Malignant lymphoma, large B-cell, diffuse, NOS	Thyroid gland	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+DLBC		Hematopoietic and reticuloendothelial systems	DLBCLNOS		Diffuse Large B-cell Lymphoma|Cancer	
+ESCA	Adenocarcinoma, NOS	Esophagus	ESCA		Esophageal Cancer|Esophageal Carcinoma|Esophagus Squamous Cell Carcinoma|Solid Tumor|Cancer	
+ESCA	Adenocarcinoma, NOS	Stomach	STAD		Stomach Cancer|Stomach Carcinoma|Solid Tumor|Cancer	
+ESCA	Basaloid squamous cell carcinoma	Esophagus	ESCC		Esophageal Cancer|Esophageal Carcinoma|Esophagus Squamous Cell Carcinoma|Solid Tumor|Cancer	
+ESCA	Mucinous adenocarcinoma	Esophagus	ESCA		Esophageal Cancer|Esophageal Carcinoma|Esophagus Adenocarcinoma|Solid Tumor|Cancer	
+ESCA	Squamous cell carcinoma, keratinizing, NOS	Esophagus	ESCC		Esophageal Cancer|Esophageal Carcinoma|Esophagus Squamous Cell Carcinoma|Solid Tumor|Cancer	
+ESCA	Squamous cell carcinoma, NOS	Esophagus	ESCC		Esophageal Cancer|Esophageal Carcinoma|Esophagus Squamous Cell Carcinoma|Solid Tumor|Cancer	
+ESCA	Squamous cell carcinoma, NOS	Stomach	ESCC		Esophageal Cancer|Esophageal Carcinoma|Esophagus Squamous Cell Carcinoma|Solid Tumor|Cancer	
+ESCA	Tubular adenocarcinoma	Esophagus	ESCA		Esophageal Cancer|Esophageal Carcinoma|Esophagus Adenocarcinoma|Solid Tumor|Cancer	
+GBM	Glioblastoma	Brain	GB		High Grade Glioma|Solid Tumor|Cancer	
+GBM	Glioblastoma, NOS	Brain	GBM		Glioma|High Grade Glioma|Malignant Astrocytoma|Glioblastoma|Solid Tumor|Cancer	
+GBM		Brain	GBM		Glioma|High Grade Glioma|Malignant Astrocytoma|Glioblastoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Nasal cavity and middle ear	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Oropharynx	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Other and ill-defined sites in lip, oral cavity and pharynx	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Other and unspecified major salivary glands	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Other and unspecified parts of tongue	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Palate	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNAC - Not_TCGA	Adenoid cystic carcinoma	Parotid gland	ACYC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+HNSC	Basaloid squamous cell carcinoma	Base of tongue	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Basaloid squamous cell carcinoma	Floor of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Basaloid squamous cell carcinoma	Larynx	LXSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Basaloid squamous cell carcinoma	Other and unspecified parts of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Basaloid squamous cell carcinoma	Tonsil	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Carcinoma, NOS	Oropharynx	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Base of tongue	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Floor of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Gum	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Larynx	LXSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Lip	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Oropharynx	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Other and unspecified parts of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Other and unspecified parts of tongue	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Palate	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, keratinizing, NOS	Tonsil	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Base of tongue	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Hypopharynx	HPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Larynx	LXSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Tonsil	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Accessory sinuses	SNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Base of tongue	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Bones, joints and articular cartilage	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Floor of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Gum	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Hypopharynx	HPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Larynx	LXSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Lip	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Nasal cavity and middle ear	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Oropharynx	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Other and ill-defined sites in lip, oral cavity and pharynx	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Other and unspecified parts of mouth	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Other and unspecified parts of tongue	OCSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Palate	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Parotid gland	HNSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Tonsil	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, NOS	Unknown	HNSCUP		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Solid Tumor|Cancer	
+HNSC	Squamous cell carcinoma, spindle cell	Oropharynx	OPHSC		Head And Neck Cancer|Head And Neck Carcinoma|Head And Neck Squamous Cell Carcinoma|Oropharynx Cancer|Oral Squamous Cell Carcinoma|Solid Tumor|Cancer	
+KICH	Renal cell carcinoma, chromophobe type	Kidney	CHRCC		Renal Carcinoma|Renal Cell Carcinoma|Chromophobe Renal Cell Carcinoma|Solid Tumor|Cancer	
+KIRC	Clear cell adenocarcinoma, NOS	Kidney	CCRCC		Renal Carcinoma|Renal Cell Carcinoma|Clear Cell Renal Cell Carcinoma|Solid Tumor|Cancer	
+KIRC	Clear cell carcinoma	Kidney	CCRCC		Renal Carcinoma|Renal Cell Carcinoma|Clear Cell Renal Cell Carcinoma|Solid Tumor|Cancer	
+KIRC	Clear cell renal cell carcinoma	Kidney	CCRCC		Renal Carcinoma|Renal Cell Carcinoma|Clear Cell Renal Cell Carcinoma|Solid Tumor|Cancer	
+KIRC	Renal cell carcinoma, NOS	Kidney	RCC		Renal Carcinoma|Renal Cell Carcinoma|Clear Cell Renal Cell Carcinoma|Solid Tumor|Cancer	
+KIRP	Papillary adenocarcinoma, NOS	Kidney	PRCC		Renal Carcinoma|Renal Cell Carcinoma|Papillary Renal Cell Carcinoma|Solid Tumor|Cancer	
+LAML	Acute myeloid leukemia, NOS	Hematopoietic and reticuloendothelial systems	AML		Acute Myeloid Leukemia|Cancer	
+LGG	Astrocytoma, anaplastic	Brain	ASTR		Glioma|High Grade Glioma|Malignant Astrocytoma|Solid Tumor|Cancer	
+LGG	Astrocytoma, NOS	Brain	ASTR		Glioma|Malignant Astrocytoma|Solid Tumor|Cancer	
+LGG	Mixed glioma	Brain	GNOS		Glioma|Solid Tumor|Cancer	
+LGG		Brain	GNOS		Glioma|Solid Tumor|Cancer	
+LGG	Glioblastoma, NOS	Brain	GNOS		Glioma|Solid Tumor|Cancer	
+LGG	Oligodendroglioma, anaplastic	Brain	ODG		Glioma|High Grade Glioma|Oligodendroglioma|Solid Tumor|Cancer	
+LGG	Oligodendroglioma, NOS	Brain	ODG		Glioma|Oligodendroglioma|Solid Tumor|Cancer	
+LIHC	Clear cell adenocarcinoma, NOS	Liver and intrahepatic bile ducts	HCC		Hepatocellular Carcinoma|Solid Tumor|Cancer	
+LIHC	Combined hepatocellular carcinoma and cholangiocarcinoma	Liver and intrahepatic bile ducts	HCC		Hepatocellular Carcinoma|Cholangiocarcinoma|Solid Tumor|Cancer	
+LIHC	Hepatocellular carcinoma, clear cell type	Liver and intrahepatic bile ducts	HCC		Hepatocellular Carcinoma|Solid Tumor|Cancer	
+LIHC	Hepatocellular carcinoma, fibrolamellar	Liver and intrahepatic bile ducts	FLC		Hepatocellular Carcinoma|Fibrolamellar Carcinoma|Solid Tumor|Cancer	
+LIHC	Hepatocellular carcinoma, NOS	Liver and intrahepatic bile ducts	HCC		Hepatocellular Carcinoma|Solid Tumor|Cancer	
+LIHC	Hepatocellular carcinoma, spindle cell variant	Liver and intrahepatic bile ducts	HCC		Hepatocellular Carcinoma|Solid Tumor|Cancer	
+LUAD	Acinar cell carcinoma	Bronchus and lung	SGTTL		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Lung Acinar Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Adenocarcinoma with mixed subtypes	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Adenocarcinoma with neuroendocrine differentiation	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Adenocarcinoma, NOS	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Bronchiolo-alveolar adenocarcinoma	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Bronchiolo-alveolar Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Bronchiolo-alveolar carcinoma, mucinous	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Bronchiolo-alveolar Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Bronchiolo-alveolar carcinoma, non mucinous	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Bronchiolo-alveolar Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Clear cell adenocarcinoma, NOS	Bronchus and lung	CCLC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Ductal carcinoma, micropapillary	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Mucinous adenocarcinoma	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD		Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Other	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Papillary adenocarcinoma, NOS	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Poorly differentiated adenocarcinoma	Bronchus and lung	NSCLCPD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Signet ring cell carcinoma	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUAD	Solid carcinoma, NOS	Bronchus and lung	LUAD		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUNE - Not_TCGA	Large cell neuroendocrine carcinoma	Bronchus and lung	LUNE		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Neuroendocrine Tumor|Solid Tumor|Cancer	
+LUAD	Large cell carcinoma, NOS	Bronchus and lung	LCLC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Solid Tumor|Cancer	
+LUNE - Not_TCGA	Neuroendocrine tumor, grade II	Bronchus and lung	LNET		Neuroendocrine Tumor|Solid Tumor|Cancer	
+LUNE - Not_TCGA	Small cell neuroendocrine carcinoma	Bronchus and lung	SCLC		Lung Cancer|Lung Carcinoma|Lung Small Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Basaloid squamous cell carcinoma	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Clear cell adenocarcinoma, NOS	Bronchus and lung	CCLC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+LUSC	Papillary squamous cell carcinoma	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Poorly differentiated squamous cell carcinoma	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Squamous cell carcinoma, keratinizing, NOS	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Squamous cell carcinoma, large cell, nonkeratinizing, NOS	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Squamous cell carcinoma, NOS	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+LUSC	Squamous cell carcinoma, small cell, nonkeratinizing	Bronchus and lung	LUSC		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Squamous Cell Carcinoma|Solid Tumor|Cancer	
+MESO	Epithelioid mesothelioma, malignant	Bronchus and lung	PLEMESO		Malignant Mesothelioma|Malignant Pleural Mesothelioma|Solid Tumor|Cancer	
+MESO	Epithelioid mesothelioma, malignant	Heart, mediastinum, and pleura	PLEMESO		Malignant Mesothelioma|Malignant Pleural Mesothelioma|Solid Tumor|Cancer	
+MESO	Fibrous mesothelioma, malignant	Heart, mediastinum, and pleura	PLMESO		Malignant Mesothelioma|Malignant Pleural Mesothelioma|Solid Tumor|Cancer	
+MESO	Mesothelioma, biphasic, malignant	Heart, mediastinum, and pleura	PLBMESO		Malignant Mesothelioma|Malignant Pleural Mesothelioma|Solid Tumor|Cancer	
+MESO	Mesothelioma, malignant	Heart, mediastinum, and pleura	PLMESO		Malignant Mesothelioma|Malignant Pleural Mesothelioma|Solid Tumor|Cancer	
+MESO	Mesothelioma, malignant	Retroperitoneum and peritoneum	PEMESO		Malignant Mesothelioma|Peritoneal Mesothelioma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Acinic cell carcinoma	Parotid gland	ACCC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Adamantinoma	Bones, joints and articular cartilage	ADMA		Solid Tumor|Cancer	
+MISC - Not_TCGA	Adenocarcinoma, NOS	Gallbladder	GBAD		Solid Tumor|Cancer	
+MISC - Not_TCGA	Adenocarcinoma, NOS	Other and unspecified parts of biliary tract	CHOL		Solid Tumor|Cancer	
+MISC - Not_TCGA	Adenocarcinoma, NOS	Parotid gland	SAAD		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Adenoid cystic carcinoma	Bones, joints and articular cartilage	ACYC		Solid Tumor|Cancer	site misclassification
+MISC - Not_TCGA	Adenoid cystic carcinoma	Bronchus and lung	CUP		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Adenosquamous carcinoma	Bronchus and lung	LUAS		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Lung Adenocarcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Ameloblastoma	Bones, joints and articular cartilage	Other		Solid Tumor|Cancer	not classifiable
+MISC - Not_TCGA	Angiomyolipoma	Kidney	RAML		Sarcoma|Solid Tumor|Cancer	best fit
+MISC - Not_TCGA	Carcinoid	Bronchus and lung	LUCA		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Carcinoma, NOS	Bronchus and lung	ALUCA		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Carcinoma, NOS	Other and unspecified parts of biliary tract	PAMPCA		Lung Cancer|Lung Carcinoma|Lung Non-small Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Chronic lymphocytic leukemia	Hematopoietic and reticuloendothelial systems	CLLSLL		Cancer	
+MISC - Not_TCGA	Clear cell adenocarcinoma	Other and unspecified male genital organs	Other		Solid Tumor|Cancer	
+MISC - Not_TCGA	Clear cell adenocarcinoma, NOS	Other and unspecified parts of tongue	OHNCA		Solid Tumor|Cancer	
+MISC - Not_TCGA	Clear cell adenocarcinoma, NOS	Uterus	UCCC		Uterine Cancer|Solid Tumor|Cancer	
+MISC - Not_TCGA	Clear cell carcinoma	Other and unspecified major salivary glands	OSACA		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Collecting duct carcinoma	Kidney	CDRCC		Renal Carcinoma|Renal Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Collecting duct carcinoma of Bellini	Kidney	CDRCC		Renal Carcinoma|Renal Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Cutaneous adnexal carcinoma	Skin	SKAC		Solid Tumor|Cancer	
+MISC - Not_TCGA	Ependymoma	Brain	EPM		Adult Spinal Cord Ependymoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Epithelial-myoepithelial carcinoma	Parotid gland	MYEC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Extramammary paget disease	Other and unspecified male genital organs	EMPD		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Ganglioglioma	Other endocrine glands and related structures	GNG		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Germ-cell tumors	Ovary	OGCT		Solid Tumor|Cancer	germ cell tumor not in civic
+MISC - Not_TCGA	Granular cell tumor	Testis	GCT		Solid Tumor|Cancer	germ cell tumor not in civic
+MISC - Not_TCGA	High-grade carcinoma	Parotid gland	OSACA		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Breast	BRCA	HER2_minus_HR_plus	Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Breast	BRCA	HER2_plus	Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Breast	BRCA	TNBC	Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Cervix uteri	CENE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Rectum	HGNEC		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Stomach	GINETES		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Large cell neuroendocrine carcinoma	Uterus	UNEC		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Meningioma	Bones, joints and articular cartilage	ATM		Meningioma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Merkel cell carcinoma	Skin	MCC		Merkel Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Mixed adenoneurocarcinoma	Colon	COAD		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	
+MISC - Not_TCGA	Mixed neuroendocrine carcinoma and acinar cell adenocarcinoma	Prostate gland	PRNE		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Mucoepidermoid carcinoma	Other and unspecified parts of tongue	MUCC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Mucoepidermoid carcinoma	Parotid gland	MUCC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Myeloma	Hematopoietic and reticuloendothelial systems	PCM		Multiple Myeloma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Myoepithelial carcinoma	Oropharynx	EMYOCA		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Myoepithelial carcinoma	Other and unspecified major salivary glands	MYEC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Myoepithelial carcinoma	Parotid gland	MYEC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Myoepithelial carcinoma	Skin	MYEC		Solid Tumor|Cancer	
+MISC - Not_TCGA	Nephroblastoma	Kidney	WT		Renal Wilms' Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine carcinoma, NOS	Larynx	HNNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine carcinoma, NOS	Pancreas	PANEC		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine carcinoma, NOS	Prostate gland	PRNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine carcinoma, NOS	Stomach	GINETES		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine carcinoma, NOS	Thymus	TNET		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade I	Pancreas	PANET		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade I	Thymus	TNET		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Colon	HGNEC		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Nasal cavity and middle ear	HNNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Oropharynx	HNNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Pancreas	PANET		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Rectum	RWDNET		Neuroendocrine Tumor|Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Thymus	TNET		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Neuroendocrine tumor, grade II	Tonsil	HNNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	NUT-type	Other and unspecified major salivary glands	NMCHN		NUT Midline Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Parathyroid carcinoma	Other endocrine glands and related structures	PTHC		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Polymorphous low-grade adenocarcinoma	Other and unspecified major salivary glands	SACA		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Poorly differentiated carcinoma	Uterus	UPDC		Uterine Cancer|Solid Tumor|Cancer	
+MISC - Not_TCGA	Poorly differentiated small cell neuroendocrine carcinoma	Prostate gland	PRNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Salivary duct carcinoma	Parotid gland	SDCA		Salivary Gland Cancer|Salivary Gland Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Sebaceous carcinoma	Eye and adnexa	SEBA		Solid Tumor|Cancer	
+MISC - Not_TCGA	Serous carcinoma, NOS	Retroperitoneum and peritoneum	PSEC		Ovarian Cancer|Ovarian Carcinoma|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Sex cord stromal tumor	Testis	TSCST		Sertoli-Leydig Cell Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Small cell neuroendocrine carcinoma	Prostate gland	PRNE		Neuroendocrine Tumor|Solid Tumor|Cancer	
+MISC - Not_TCGA	Soft tissue myoepithelial carcinoma	Connective, subcutaneous and other soft tissues	STMYEC		Solid Tumor|Cancer	
+MISC - Not_TCGA	Solid pseudopapillary neoplasm	Pancreas	SPN		Solid Tumor	
+MISC - Not_TCGA	Squamous cell carcinoma, NOS	Pancreas	PAASC		Pancreatic Cancer|Pancreatic Carcinoma||Solid Tumor|Cancer	
+MISC - Not_TCGA	Squamous cell carcinoma, NOS	Penis	PSCC		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Squamous cell carcinoma, NOS	Skin	CSCC		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Squamous cell carcinoma, NOS	Vagina	VSC		Skin Squamous Cell Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Undifferenciated carcinoma	Unknown	PDC		Solid Tumor|Cancer	
+MISC - Not_TCGA	Undifferentiated carcinoma with osteoclast-like giant cells	Pancreas	OSGCT		Pancreatic Cancer|Pancreatic Carcinoma|Solid Tumor|Cancer	
+MISC - Not_TCGA	Yolk sac tumor	Ovary	OYST		Ovarian Cancer|Ovarian Carcinoma|Solid Tumor|Cancer	
+OV	Adenocarcinoma, NOS	Ovary	OVT		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Solid Tumor|Cancer	
+OV	Clear cell carcinoma	Ovary	CCOV		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Ovary Serous Adenocarcinoma|Solid Tumor|Cancer	
+OV	Cystadenocarcinoma, NOS	Ovary	SOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Solid Tumor|Cancer	
+OV	Endometrioid carcinoma, NOS	Ovary	EOV		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Endometrioid Ovary Carcinoma|Solid Tumor|Cancer	
+OV	High-grade serous carcinoma	Ovary	HGSOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Ovary Serous Adenocarcinoma|Solid Tumor|Cancer	
+OV	Low-grade serous carcinoma	Ovary	LGSOC		Ovarian Cancer|Ovarian Carcinoma|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Ovary Serous Adenocarcinoma|Solid Tumor|Cancer	
+OV		Ovary	OVT		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Solid Tumor|Cancer	
+OV	Papillary serous cystadenocarcinoma	Ovary	SOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Ovary Serous Adenocarcinoma|Solid Tumor|Cancer	
+OV	Poorly differentiated adenocarcinoma	Ovary	OVT		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Solid Tumor|Cancer	
+OV	Serous carcinoma, NOS	Ovary	SOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Solid Tumor|Cancer	
+OV	Serous cystadenocarcinoma, NOS	Ovary	SOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Ovary Serous Adenocarcinoma|Ovarian Serous Cystadenocarcinoma|Solid Tumor|Cancer	
+OV	Serous surface papillary carcinoma	Ovary	SOC		Ovarian Cancer|Ovarian Carcinoma|Epithelial Ovarian Cancer|Ovarian Clear Cell Carcinoma|Ovarian Serous Carcinoma|Solid Tumor|Cancer	
+PAAD	Adenocarcinoma with mixed subtypes	Pancreas	PAAD		Pancreatic Cancer|Pancreatic Carcinoma|Pancreatic Adenocarcinoma|Solid Tumor|Cancer	
+PAAD	Adenocarcinoma, NOS	Pancreas	PAAD		Pancreatic Cancer|Pancreatic Carcinoma|Pancreatic Adenocarcinoma|Solid Tumor|Cancer	
+PAAD	Carcinoma, undifferentiated, NOS	Pancreas	UCP		Pancreatic Cancer|Pancreatic Carcinoma|Pancreatic Adenocarcinoma|Solid Tumor|Cancer	
+PAAD	Infiltrating duct carcinoma, NOS	Pancreas	PAAD		Pancreatic Cancer|Pancreatic Carcinoma|Pancreatic Adenocarcinoma|Pancreatic Ductal Carcinoma|Pancreatic Ductal Adenocarcinoma|Solid Tumor|Cancer	
+PAAD	Mucinous adenocarcinoma	Pancreas	MCN		Pancreatic Cancer|Pancreatic Carcinoma|Pancreatic Adenocarcinoma|Solid Tumor|Cancer	
+PAAD	Neuroendocrine carcinoma, NOS	Pancreas	PANEC		Neuroendocrine Tumor|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, malignant	Heart, mediastinum, and pleura	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, malignant	Other and ill-defined sites	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, malignant	Retroperitoneum and peritoneum	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, NOS	Connective, subcutaneous and other soft tissues	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, NOS	Heart, mediastinum, and pleura	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, NOS	Other and ill-defined sites	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Extra-adrenal paraganglioma, NOS	Retroperitoneum and peritoneum	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Paraganglioma, malignant	Adrenal gland	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Paraganglioma, malignant	Spinal cord, cranial nerves, and other parts of central nervous system	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Paraganglioma, NOS	Adrenal gland	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Paraganglioma, NOS	Connective, subcutaneous and other soft tissues	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Paraganglioma, NOS	Retroperitoneum and peritoneum	PGNG		Neuroendocrine Tumor|Paraganglioma|Solid Tumor|Cancer	
+PCPG	Pheochromocytoma, malignant	Adrenal gland	PHC		Neuroendocrine Tumor|Adrenal Gland Pheochromocytoma|Solid Tumor|Cancer	
+PCPG	Pheochromocytoma, malignant	Other endocrine glands and related structures	PHC		Neuroendocrine Tumor|Adrenal Gland Pheochromocytoma|Solid Tumor|Cancer	
+PCPG	Pheochromocytoma, NOS	Adrenal gland	PHC		Neuroendocrine Tumor|Adrenal Gland Pheochromocytoma|Solid Tumor|Cancer	
+PCPG	Pheochromocytoma, NOS	Retroperitoneum and peritoneum	PHC		Neuroendocrine Tumor|Adrenal Gland Pheochromocytoma|Solid Tumor|Cancer	
+PRAD	Adenocarcinoma with mixed subtypes	Prostate gland	PRAD		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+PRAD	Adenocarcinoma with neuroendocrine differentiation	Prostate gland	PRNE		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+PRAD	Adenocarcinoma, NOS	Prostate gland	PRAD		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+PRAD	Infiltrating duct carcinoma, NOS	Prostate gland	PRAD		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+PRAD	Mucinous adenocarcinoma	Prostate gland	PRAD		Prostate Cancer|Prostate Carcinoma|Prostate Adenocarcinoma|Solid Tumor|Cancer	
+READ	Adenocarcinoma in tubulovillous adenoma	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Adenocarcinoma with mixed subtypes	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Adenocarcinoma, NOS	Colon	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Solid Tumor|Cancer	site misclassification
+READ	Adenocarcinoma, NOS	Connective, subcutaneous and other soft tissues	READ		Solid Tumor|Cancer	site misclassification
+READ	Adenocarcinoma, NOS	Rectosigmoid junction	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Adenocarcinoma, NOS	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Mucinous adenocarcinoma	Rectosigmoid junction	MACR		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Mucinous adenocarcinoma	Rectum	MACR		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Mucinous adenocarcinoma	Unknown	CUP		Solid Tumor|Cancer	
+READ		Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+READ	Tubular adenocarcinoma	Rectum	READ		Colon Cancer|Colon Carcinoma|Colorectal Adenocarcinoma|Colorectal Cancer|Rectum Cancer|Solid Tumor|Cancer	
+SARC	Abdominal fibromatosis	Retroperitoneum and peritoneum	DES		Sarcoma|Solid Tumor|Cancer	
+SARC	Aggressive fibromatosis	Connective, subcutaneous and other soft tissues	DES		Sarcoma|Solid Tumor|Cancer	
+SARC	Dedifferentiated liposarcoma	Colon	DDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Dedifferentiated liposarcoma	Connective, subcutaneous and other soft tissues	DDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Dedifferentiated liposarcoma	Other and unspecified male genital organs	DDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Dedifferentiated liposarcoma	Retroperitoneum and peritoneum	DDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Dedifferentiated liposarcoma	Stomach	DDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Fibromyxosarcoma	Bronchus and lung	MFS		Sarcoma|Solid Tumor|Cancer	
+SARC	Fibromyxosarcoma	Connective, subcutaneous and other soft tissues	MFS		Sarcoma|Solid Tumor|Cancer	
+SARC	Fibromyxosarcoma	Retroperitoneum and peritoneum	MFS		Sarcoma|Solid Tumor|Cancer	
+SARC	Giant cell sarcoma	Connective, subcutaneous and other soft tissues	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Giant cell sarcoma	Kidney	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Giant cell sarcoma	Retroperitoneum and peritoneum	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	High-grade sarcoma	Retroperitoneum and peritoneum	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Colon	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Connective, subcutaneous and other soft tissues	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Kidney	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Penis	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Retroperitoneum and peritoneum	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Testis	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Unknown	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Uterus	ULMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma	Uterus, NOS	ULMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Bones, joints and articular cartilage	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Connective, subcutaneous and other soft tissues	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Corpus uteri	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Other and unspecified parts of tongue	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Ovary	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Retroperitoneum and peritoneum	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Stomach	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Leiomyosarcoma, NOS	Uterus	LMS		Sarcoma|Solid Tumor|Cancer	
+SARC	Liposarcoma, well differentiated	Retroperitoneum and peritoneum	WDLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Malignant fibrous histiocytoma	Connective, subcutaneous and other soft tissues	MFH		Sarcoma|Solid Tumor|Cancer	
+SARC	Malignant peripheral nerve sheath tumor	Connective, subcutaneous and other soft tissues	MPNST		Sarcoma|Malignant Peripheral Nerve Sheath Tumor|Solid Tumor|Cancer	
+SARC	Malignant peripheral nerve sheath tumor	Meninges	MPNST		Sarcoma|Malignant Peripheral Nerve Sheath Tumor|Solid Tumor|Cancer	
+SARC	Malignant peripheral nerve sheath tumor	Peripheral nerves and autonomic nervous system	MPNST		Sarcoma|Malignant Peripheral Nerve Sheath Tumor|Solid Tumor|Cancer	
+SARC	Malignant peripheral nerve sheath tumor	Retroperitoneum and peritoneum	MPNST		Sarcoma|Malignant Peripheral Nerve Sheath Tumor|Solid Tumor|Cancer	
+SARC	Myxoid leiomyosarcoma	Corpus uteri	MRLS		Sarcoma|Solid Tumor|Cancer	
+SARC	Myxoid leiomyosarcoma	Retroperitoneum and peritoneum	MRLS		Sarcoma|Solid Tumor|Cancer	
+SARC	Myxoid leiomyosarcoma	Uterus	MRLS		Sarcoma|Solid Tumor|Cancer	
+SARC	Myxoid/round cell liposarcoma	Connective, subcutaneous and other soft tissues	MRLS		Sarcoma|Liposarcoma|Myxoid Liposarcoma|Solid Tumor|Cancer	
+SARC	Pleomorphic liposarcoma	Connective, subcutaneous and other soft tissues	PLLS		Sarcoma|Liposarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma	Bronchus and lung	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma	Connective, subcutaneous and other soft tissues	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma, biphasic	Connective, subcutaneous and other soft tissues	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma, NOS	Connective, subcutaneous and other soft tissues	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma, spindle cell	Connective, subcutaneous and other soft tissues	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Synovial sarcoma, spindle cell	Kidney	SYNS		Sarcoma|Synovial Sarcoma|Solid Tumor|Cancer	
+SARC	Undifferentiated pleomorphic sarcoma	Connective, subcutaneous and other soft tissues	MFH		Sarcoma|Solid Tumor|Cancer	
+SARC	Undifferentiated sarcoma	Connective, subcutaneous and other soft tissues	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Undifferentiated sarcoma	Eye and adnexa	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Undifferentiated sarcoma	Retroperitoneum and peritoneum	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC	Undifferentiated sarcoma	Uterus	UUS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Adenosarcoma	Other and ill-defined sites	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Alveolar soft part sarcoma	Connective, subcutaneous and other soft tissues	ASPS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Ameloblastic sarcoma	Gum	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Angiosarcoma	Breast	ANGS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Angiosarcoma	Connective, subcutaneous and other soft tissues	ANGS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Carcinosarcoma	Ovary	OCS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Carcinosarcoma	Prostate gland	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Chondrosarcoma	Bones, joints and articular cartilage	MYCHS		Sarcoma|Chondrosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Chondrosarcoma	Connective, subcutaneous and other soft tissues	DDCHS		Sarcoma|Chondrosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Dendritic cell follicular sarcoma	Connective, subcutaneous and other soft tissues	FDCS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Dermatofibrosarcoma protuberans	Skin	DFSP		Sarcoma|Dermatofibrosarcoma Protuberans|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Retroperitoneum and peritoneum	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Connective, subcutaneous and other soft tissues	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Heart, mediastinum, and pleura	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Other and ill-defined sites	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Pancreas	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Desmoplastic small round cell tumor	Unknown	DSRCT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Embryonal rhabdomyosarcoma	Cervix uteri	ERMS		Sarcoma|Rhabdomyosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Embryonal rhabdomyosarcoma	Connective, subcutaneous and other soft tissues	ERMS		Sarcoma|Rhabdomyosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Epitheloid angiosarcoma	Connective, subcutaneous and other soft tissues	ANGS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Ewing sarcoma	Bones, joints and articular cartilage	ES		Sarcoma|Ewing Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Ewing sarcoma	Connective, subcutaneous and other soft tissues	ES		Sarcoma|Ewing Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Extraskeletal myxoid chondrosarcoma	Connective, subcutaneous and other soft tissues	EMCHS		Sarcoma|Chondrosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Extraskeletal osteosarcoma	Connective, subcutaneous and other soft tissues	OS		Sarcoma|Osteosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Fibrosarcoma	Connective, subcutaneous and other soft tissues	FIBS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Gastrointestinal stromal tumor	Connective, subcutaneous and other soft tissues	GIST		Sarcoma|Gastrointestinal Stromal Tumor|Solid Tumor|Cancer	
+SARC - Not_TCGA	Gastrointestinal stromal tumor	Stomach	GIST		Sarcoma|Gastrointestinal Stromal Tumor|Solid Tumor|Cancer	
+SARC - Not_TCGA	High-grade sarcomatoid carcinoma	Unknown	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Osteosarcoma	Bones, joints and articular cartilage	OSOS		Sarcoma|Osteosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Rhabdomyosarcoma	Connective, subcutaneous and other soft tissues	RMS		Sarcoma|Rhabdomyosarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Sarcomatoid carcinoma	Bronchus and lung	SARCL		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Sarcomatoid carcinoma	Connective, subcutaneous and other soft tissues	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Sarcomatoid carcinoma	Unknown	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Solitary fibrous tumor	Bronchus and lung	SFT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Solitary fibrous tumor	Connective, subcutaneous and other soft tissues	SFT		Sarcoma|Solid Tumor|Cancer	
+SARC - Not_TCGA	Solitary fibrous tumor	Spinal cord, cranial nerves, and other parts of central nervous system	SFT		Sarcoma|Solid Tumor|Cancer	
+SI - Not_TCGA	Adenocarcinoma, NOS	Small intestine	SBC		Solid Tumor|Cancer	
+SI - Not_TCGA	Carcinoma, diffuse type	Small intestine	SBC		Solid Tumor|Cancer	
+SI - Not_TCGA	Gastrointestinal stromal tumor	Small intestine	GIST		Sarcoma|Gastrointestinal Stromal Tumor|Solid Tumor|Cancer	
+SI - Not_TCGA	Mucinous adenocarcinoma	Small intestine	SBC		Solid Tumor|Cancer	
+SI - Not_TCGA	Neuroendocrine tumor, grade I	Small intestine	SBWDNET		Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+SI - Not_TCGA	Neuroendocrine tumor, grade II	Small intestine	SBWDNET		Gastrointestinal Neuroendocrine Tumor|Solid Tumor|Cancer	
+SKCM	Acral lentiginous melanoma, malignant	Skin	ACRM		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Amelanotic melanoma	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Basal cell carcinoma, NOS	Skin	BCC		Basal Cell Carcinoma|Cancer|Solid Tumor|Cancer	
+SKCM	Desmoplastic melanoma, malignant	Skin	DESM		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Epithelioid cell melanoma	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Lentigo maligna melanoma	Skin	SKLMM		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Malignant melanoma, NOS	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	
+SKCM	Malignant melanoma, NOS	Skin	SKCM		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Mixed epithelioid and spindle cell melanoma	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Mucosal melanoma	Accessory sinuses	HNMUCM		Mucosal Melanoma|Solid Tumor|Cancer	
+SKCM	Nodular melanoma	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Spindle cell melanoma, NOS	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+SKCM	Superficial spreading melanoma	Skin	MEL		Skin Melanoma|Solid Tumor|Cancer	
+STAD	Adenocarcinoma with mixed subtypes	Stomach	STAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Adenocarcinoma, diffuse type	Stomach	STAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Adenocarcinoma, intestinal type	Stomach	STAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Adenocarcinoma, NOS	Stomach	STAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Carcinoma, diffuse type	Stomach	SPDAC		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Mucinous adenocarcinoma	Stomach	MSTAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Papillary adenocarcinoma, NOS	Stomach	PSTAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Signet ring cell carcinoma	Stomach	SSRCC		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+STAD	Tubular adenocarcinoma	Stomach	TSTAD		Stomach Cancer|Stomach Carcinoma|Gastric Adenocarcinoma|Solid Tumor|Cancer	
+TGCT	Embryonal carcinoma	Testis	EMBCA		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Embryonal carcinoma, NOS	Testis	EMBCA		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Germ cell tumor, nonseminomatous	Testis	NSGCT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Leydig cell tumor	Testis	TSCST		Sertoli-Leydig Cell Tumor|Solid Tumor|Cancer	
+TGCT	Mixed germ cell tumor	Testis	MGCT		Sertoli-Leydig Cell Tumor|Solid Tumor|Cancer	
+TGCT		Testis	NSGCT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Seminoma, NOS	Testis	SEM		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Sertoli cell tumor	Testis	TSCST		Sertoli-Leydig Cell Tumor|Solid Tumor|Cancer	
+TGCT	Teratocarcinoma	Testis	TT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Teratoma	Testis	TT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Teratoma, benign	Testis	TT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Teratoma, malignant, NOS	Testis	TT		Solid Tumor|Cancer	germ cell tumor not in civic
+TGCT	Yolk sac tumor	Testis	TYST		Solid Tumor|Cancer	germ cell tumor not in civic
+THCA	Carcinoma, NOS	Thyroid gland	Thyroid		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Solid Tumor|Cancer	
+THCA	Follicular adenocarcinoma, NOS	Thyroid gland	THFO		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Follicular Carcinoma|Thyroid Gland Hurthle Cell Carcinoma|Solid Tumor|Cancer	
+THCA	Follicular carcinoma, minimally invasisve	Thyroid gland	THFO		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Follicular Carcinoma|Thyroid Gland Hurthle Cell Carcinoma|Solid Tumor|Cancer	
+THCA	Nonencapsulated sclerosing carcinoma	Thyroid gland	Thyroid		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Solid Tumor|Cancer	
+THCA	Oxyphilic adenocarcinoma	Thyroid gland	THHC		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Solid Tumor|Cancer	
+THCA	Papillary adenocarcinoma, NOS	Thyroid gland	THPA		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Papillary Carcinoma|Solid Tumor|Cancer	
+THCA	Papillary carcinoma with anaplastic component	Thyroid gland	THAP		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Anaplastic Carcinoma|Solid Tumor|Cancer	
+THCA	Papillary carcinoma, columnar cell	Thyroid gland	THPA		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Papillary Carcinoma|Solid Tumor|Cancer	
+THCA	Papillary carcinoma, follicular variant	Thyroid gland	THPA		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Papillary Carcinoma|Solid Tumor|Cancer	
+THCA	Poorly differentiated carcinoma	Thyroid gland	THPD		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Anaplastic Carcinoma|Solid Tumor|Cancer	
+THCA	Undifferentiated (anaplastic) carcinoma	Thyroid gland	THAP		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Anaplastic Carcinoma|Solid Tumor|Cancer	
+THCA - Not_TCGA	Medullary carcinoma	Thyroid gland	THME		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Medullary Carcinoma|Solid Tumor|Cancer	
+THCA - Not_TCGA	Undifferentiated carcinoma (anaplastic)	Thyroid gland	THPD		Thyroid Gland Cancer|Thyroid Gland Carcinoma|Thyroid Gland Anaplastic Carcinoma|Solid Tumor|Cancer	
+THYM	Squamous cell carcinoma, NOS	Thymus	THYC		Thymic Carcinoma|Solid Tumor|Cancer	
+THYM	Thymic carcinoma, NOS	Heart, mediastinum, and pleura	THYC		Thymic Carcinoma|Solid Tumor|Cancer	
+THYM	Thymic carcinoma, NOS	Thymus	THYC		Thymic Carcinoma|Solid Tumor|Cancer	
+THYM	Thymoma, NOS	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type A, malignant	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type A, malignant	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type A, NOS	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type AB, malignant	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type AB, malignant	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type AB, NOS	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type AB, NOS	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B1, malignant	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B1, malignant	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B1, NOS	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B2, malignant	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B2, malignant	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B2, NOS	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B2, NOS	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B3, malignant	Heart, mediastinum, and pleura	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+THYM	Thymoma, type B3, malignant	Thymus	THYM		Solid Tumor|Cancer	Thymoma not in Civic
+UCEC	Adenocarcinoma, endocervical type	Corpus uteri	ECAD		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Adenocarcinoma, NOS	Corpus uteri	UCEC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Carcinoma, undifferentiated, NOS	Corpus uteri	UUC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Clear cell adenocarcinoma, NOS	Corpus uteri	CECC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Endometrioid adenocarcinoma, NOS	Corpus uteri	UEC		Uterine Cancer|Uterine Corpus Endometrial Carcinoma|Solid Tumor|Cancer	
+UCEC	Endometrioid adenocarcinoma, secretory variant	Corpus uteri	UEC		Uterine Cancer|Uterine Corpus Endometrial Carcinoma|Solid Tumor|Cancer	
+UCEC	Endometrioid carcinoma, NOS	Corpus uteri	UEC		Uterine Cancer|Uterine Corpus Endometrial Carcinoma|Solid Tumor|Cancer	
+UCEC		Uterus	UCEC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Papillary serous cystadenocarcinoma	Corpus uteri	USC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Serous cystadenocarcinoma, NOS	Corpus uteri	USC		Uterine Cancer|Solid Tumor|Cancer	
+UCEC	Serous surface papillary carcinoma	Corpus uteri	USC		Uterine Cancer|Solid Tumor|Cancer	
+UCS	Carcinosarcoma, NOS	Uterus	UCS		Uterine Cancer|Solid Tumor|Cancer	
+UCS	Mesodermal mixed tumor	Uterus	UCS		Uterine Cancer|Solid Tumor|Cancer	
+UCS	Mullerian mixed tumor	Corpus uteri	UCS		Uterine Cancer|Solid Tumor|Cancer	
+UCS	Mullerian mixed tumor	Uterus	UCS		Uterine Cancer|Solid Tumor|Cancer	
+Unknown_Primary	Adenocarcinoma, NOS	Unknown	ADNOS		Solid Tumor|Cancer	
+Unknown_Primary	Carcinoma	Unknown	PDC		Solid Tumor|Cancer	
+Unknown_Primary	Carcinoma, NOS	Unknown	CUP		Solid Tumor|Cancer	
+Unknown_Primary	Germ-cell tumors	Unknown	CUP		Solid Tumor|Cancer	
+Unknown_Primary	High-grade sarcomatoid carcinoma	Unknown	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+Unknown_Primary	Malignant melanoma, NOS	Unknown	SKCM		Skin Melanoma|Solid Tumor|Cancer	
+Unknown_Primary	Mucinous adenocarcinoma	Unknown	CUP		Solid Tumor|Cancer	
+Unknown_Primary	Myoepithelial carcinoma	Unknown	STMYEC		Solid Tumor|Cancer	
+Unknown_Primary	Neuroendocrine tumor, grade I	Unknown	NETNOS		Neuroendocrine Tumor|Solid Tumor|Cancer	
+Unknown_Primary	Neuroendocrine tumor, grade II	Unknown	NETNOS		Neuroendocrine Tumor|Solid Tumor|Cancer	
+Unknown_Primary	Papillary adenocarcinoma	Unknown	ADNOS		Solid Tumor|Cancer	
+Unknown_Primary	Perivascular epithelioid cell tumor	Unknown	PECOMA		Solid Tumor|Cancer	not in civic
+Unknown_Primary	Poorly differentiated adenocarcinoma	Unknown	PDC		Solid Tumor|Cancer	
+Unknown_Primary	Poorly differentiated carcinoma	Unknown	PDC		Solid Tumor|Cancer	
+Unknown_Primary	Sarcomatoid carcinoma	Unknown	SARCNOS		Sarcoma|Solid Tumor|Cancer	
+Unknown_Primary	Small cell carcinoma	Unknown	SCUP		Solid Tumor|Cancer	
+Unknown_Primary	Small cell neuroendocrine carcinoma	Unknown	NECNOS		Solid Tumor|Cancer	
+Unknown_Primary	Squamous cell carcinoma, NOS	Unknown	SCCNOS		Solid Tumor|Cancer	
+Unknown_Primary	Undifferentiated carcinoma	Unknown	UDMN		Solid Tumor|Cancer	
+UVM	Epithelioid cell melanoma	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	
+UVM	Malignant melanoma, NOS	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	
+UVM	Mixed epithelioid and spindle cell melanoma	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	
+UVM	Spindle cell melanoma, NOS	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	
+UVM	Spindle cell melanoma, type B	Eye and adnexa	UM		Uveal Melanoma|Solid Tumor|Cancer	

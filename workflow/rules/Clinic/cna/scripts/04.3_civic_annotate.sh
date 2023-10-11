@@ -45,7 +45,7 @@ table_alt=$(printf "%s" "${table_alt[*]}")
 
 # preprocess table of alterations before annotating with CIViC
 printf -- "-INFO: preparing table before annotating with CIViC...\n"
-python -u workflow/rules/Clinic/Cnv_Annotation/scripts/04.1_civic_preprocess.py \
+python -u workflow/rules/Clinic/cna/scripts/04.1_civic_preprocess.py \
     --table_alt ${table_alt} \
     --table_cln ${table_cln} \
     --table_gen ${table_gen} \
@@ -67,6 +67,6 @@ python -u ${code_dir}/civic.py \
 
 # postprocess annotations
 printf -- "-INFO: postprocess CIViC annotations...\n"
-python -u workflow/rules/Clinic/Cnv_Annotation/scripts/04.2_civic_postprocess.py \
+python -u workflow/rules/Clinic/cna/scripts/04.2_civic_postprocess.py \
     --input ${table_run} \
     --output ${table_pos}

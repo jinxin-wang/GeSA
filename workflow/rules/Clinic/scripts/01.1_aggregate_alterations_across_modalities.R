@@ -334,8 +334,12 @@ collapse_oncokb_annotations <- function(df_agg){
 
   # recode oncokb to escat levels
   sen_level_simple <- list(LEVEL_1="Tier1", LEVEL_2="Tier1", LEVEL_3A="Tier2", LEVEL_3B="Tier3", LEVEL_4="Tier3")
-  df_agg$Oncokb_Sen_Level_Simple <- recode(df_agg$Oncokb_Sen_Level, !!!sen_level_simple)
-
+  if (sum(is.na(df_agg$Oncokb_Sen_Level)) == length(df_agg$Oncokb_Sen_Level)) {
+    df_agg$Oncokb_Sen_Level_Simple <- rep(NA, length(df_agg$Oncokb_Sen_Level)) 
+  } else {
+    df_agg$Oncokb_Sen_Level_Simple <- recode(df_agg$Oncokb_Sen_Level, !!!sen_level_simple)
+  }
+  
   #### resistance
   levels_res <- sort(colnames(df_agg)[grepl("^LEVEL_R", colnames(df_agg))])
 
@@ -372,8 +376,11 @@ collapse_oncokb_annotations <- function(df_agg){
 
   # recode oncokb to escat levels
   res_level_simple <- list(LEVEL_R1="Tier1", LEVEL_R2="Tier2", LEVEL_R3="Tier3")
-  df_agg$Oncokb_Res_Level_Simple <- recode(df_agg$Oncokb_Res_Level, !!!res_level_simple)
-
+  if (sum(is.na(df_agg$Oncokb_Res_Level)) == length(df_agg$Oncokb_Res_Level)) {
+    df_agg$Oncokb_Res_Level_Simple <- rep(NA, length(df_agg$Oncokb_Res_Level)) 
+  } else {
+    df_agg$Oncokb_Res_Level_Simple <- recode(df_agg$Oncokb_Res_Level, !!!res_level_simple)    
+  }
   cat("done!\n")
   cols <- c("Oncokb_Annotated",
             "Oncokb_Sen_Level", "Oncokb_Sen_Level_Simple", "Oncokb_Sen_Drug", "Oncokb_Sen_Drug_Best_Level", 
@@ -424,8 +431,12 @@ collapse_civic_annotations <- function(df_agg){
   # recode oncokb to escat levels
   sen_level_simple <- list(`Predictive:P:A`="Tier1", `Predictive:P:B`="Tier2", `Predictive:P:C`="Tier3",
                            `Predictive:P:D`="Tier3", `Predictive:P:E`="Tier3")
-  df_agg$Civic_Sen_Level_Simple <-recode(df_agg$Civic_Sen_Level, !!!sen_level_simple)
 
+  if (sum(is.na(df_agg$Civic_Sen_Level)) == length(df_agg$Civic_Sen_Level)) {
+    df_agg$Civic_Sen_Level_Simple <- rep(NA, length(df_agg$Civic_Sen_Level)) 
+  } else {
+    df_agg$Civic_Sen_Level_Simple <-recode(df_agg$Civic_Sen_Level, !!!sen_level_simple)
+  }
   #### resistance
   levels_res <- sort(colnames(df_agg)[grepl("^Predictive:N", colnames(df_agg))])
 
@@ -463,8 +474,12 @@ collapse_civic_annotations <- function(df_agg){
   # recode oncokb to escat levels
   res_level_simple <- list(`Predictive:N:A`="Tier1", `Predictive:N:B`="Tier2", `Predictive:N:C`="Tier3",
                            `Predictive:N:D`="Tier3", `Predictive:N:E`="Tier3")
-  df_agg$Civic_Res_Level_Simple <- recode(df_agg$Civic_Res_Level, !!!res_level_simple)
 
+  if (sum(is.na(df_agg$Civic_Res_Level)) == length(df_agg$Civic_Res_Level)) {
+    df_agg$Civic_Res_Level_Simple <- rep(NA, length(df_agg$Civic_Res_Level)) 
+  } else {
+    df_agg$Civic_Res_Level_Simple <- recode(df_agg$Civic_Res_Level, !!!res_level_simple)
+  }
   cat("done!\n")
   cols <- c("Civic_Annotated",
             "Civic_Sen_Level", "Civic_Sen_Level_Simple", "Civic_Sen_Drug", "Civic_Sen_Drug_Best_Level",
@@ -715,17 +730,32 @@ main <- function(args){
     df_fin <- df_fin %>% select(-all_of(col_drug)) %>% rename(!!col_drug:=New)
   }
 
+  for ( row_id in 1:nrow(df_fin) ) {
+  
+    sid <- str_split(df_fin[row_id, "Sample_Id"], pattern="_|-", n = Inf, simplify = TRUE)[1]
+    
+    if ( sid %in% df_cln$Subject_Id ) {
+      df_fin[row_id, "Subject_Id"] <- sid
+      df_fin[row_id, "Tumor_Type"] <- df_cln[df_cln$Subject_Id == sid, "Tumor_Type"]
+      df_fin[row_id, "MSKCC_Oncotree"] <- df_cln[df_cln$Subject_Id == sid, "MSKCC_Oncotree"]
+      df_fin[row_id, "Civic_Disease"] <- df_cln[df_cln$Subject_Id == sid, "Civic_Disease"]
+    }
+  }
+
+  df_fin_simple <- df_fin[, -which(names(df_fin)=="Row_Identifier")]
+
   # # consensus drug by taking union of oncokb and civic
   # df_fin <- df_fin %>% rowwise() %>%
   #   mutate(Res_Drug_Simple=union_drugs(c(Oncokb_Res_Drug, Civic_Res_Drug))) %>%
   #   mutate(Sen_Drug_Simple=union_drugs(c(Oncokb_Sen_Drug, Civic_Sen_Drug)))
 
   # select only annotations with best level
-  df_fin_best <- df_fin %>% filter_at(vars(ends_with("_Best_Level")), all_vars(. == 1))
+  # df_fin_best <- df_fin %>% filter_at(vars(ends_with("_Best_Level")), all_vars(. == 1))
+  df_fin_simple_best <- df_fin_simple %>% filter_at(vars(ends_with("_Best_Level")), all_vars(. == 1))
 
   # save tables
-  save_table(df_fin, args$output_all)
-  save_table(df_fin_best, args$output_best)
+  save_table(df_fin_simple, args$output_all)
+  save_table(df_fin_simple_best, args$output_best)
 }
 
 
@@ -734,32 +764,35 @@ main <- function(args){
 if (getOption('run.main', default=TRUE)) {
   parser <- ArgumentParser(description='Aggregate alterations.')
   parser$add_argument("--bio", type="character", help="Path to input curated biospecimen table.",
-                      default="../../data/tcga/clinical/curated/bio_tcga_in_design_curated.tsv")
+                      default=NULL)
   parser$add_argument("--cln", type="character", help="Path to input curated clincal table.",
-                      default="../../data/tcga/clinical/curated/cln_tcga_in_design_curated.tsv")
+                      default="config/clinic.tsv")
   parser$add_argument("--cna", type="character", help="Path to input annotated CNAs table.",
-                      default="../../data/tcga/wes/somatic_cna/somatic_calls_union_ann.tsv.gz")
-  parser$add_argument("--fus", type="character", help="Path to input annotated fusions table.",
-                      default="../../data/tcga/rna/fusions/tcga_annotated_filtered_union_ann.tsv.gz")
-  parser$add_argument("--msi", type="character", help="Path to input table of MSI.",
-                      default="../../data/tcga/wes/somatic_msi/somatic_msi.tsv")
+                      default="aggregate/somatic_cna/somatic_calls_union_ann.tsv.gz")
   parser$add_argument("--mut", type="character", help="Path to input annotated mutations table.",
-                      default="../../data/tcga/wes/somatic_maf/somatic_calls_union_ann.maf.gz")
+                      default="aggregate/somatic_maf/somatic_calls_union_ann.maf.gz")
+  parser$add_argument("--fus", type="character", help="Path to input annotated fusions table.",
+                      default="results/annotate/calls_fusions_civic_oncokb.tsv.gz")
+  parser$add_argument("--msi", type="character", help="Path to input table of MSI.",
+                      default=NULL)
   parser$add_argument("--tmb", type="character", help="Path to input table of TMB.",
-                      default="../../data/tcga/wes/summary/somatic_maf.tsv")
+                      default=NULL)
   parser$add_argument("--exp_arv7", type="character", nargs="*", help="Path to table of AR-V7 expression.",
                       default=NULL)
   parser$add_argument("--gen", type="character", help="Path to input list of genes to be considered.",
-                      default="../../data/resources/curated/cancer_genes_curated.tsv")
+                      default="workflow/resources/clinic/curated/cancer_genes_curated.tsv")
   parser$add_argument("--target_bed", type="character", help="Path to target bed file.",
-                      default="../../data/resources/target_files/all_targets_intersect_padded_10n.bed")
+                      default="workflow/resources/clinic/target_files/all_targets_intersect_padded_10n.bed")
   parser$add_argument('--drug', type="character", help='Path to table of drugs.',
-                      default="../../data/resources/drug_tables/Table_Drugs_v7.xlsx")
+                      default="workflow/resources/clinic/drug_tables/Table_Drugs_v7.xlsx")
   parser$add_argument("--output_best", type="character", help="Paths to output aggregated table",
-                      default="../../results/combined_alterations/alterations/aggregated_alterations_tcga.tsv")
+                      default="aggregated_alterations.tsv")
+#                       default="../../results/combined_alterations/alterations/aggregated_alterations_tcga.tsv")
   parser$add_argument("--output_all", type="character", help="Paths to output aggregated table",
-                      default="../../results/combined_alterations/alterations/aggregated_alterations_tcga_all.tsv")
-  parser$add_argument('--log', type="character", help='Path to log file.')
+                      default="aggregated_alterations_all.tsv")
+#                       default="../../results/combined_alterations/alterations/aggregated_alterations_tcga_all.tsv")
+  parser$add_argument('--log', type="character", help='Path to log file.', 
+                      default="aggregate_alterations.log")
   args <- parser$parse_args()
 
   for (arg_name in names(args)){
@@ -773,9 +806,9 @@ if (getOption('run.main', default=TRUE)) {
   }
 
   # log file
-  log <- file(args$log, open="wt")
-  sink(log)
-  sink(log, type="message")
+  # log <- file(args$log, open="wt")
+  # sink(log)
+  # sink(log, type="message")
 
   print(args)
   main(args)

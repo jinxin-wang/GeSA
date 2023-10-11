@@ -32,15 +32,35 @@ SCRATCH_WORKING_PWD="${SCRATCH_PWD}/${WORKING_DIR}"
 TODAY=`date +%Y%m%d`
 
 #### project name: [01_BCC|04_XP_SKIN|05_XP_INTERNAL|17_UV_MMR|19_XPCtox|20_POLZ|21_DEN|23_|....]
-PROJECT_NAME=
+BCC="01_BCC"
+XPSKIN="04_XP_SKIN"
+XPINTERNAL="05_XP_INTERNAL"
+NF2="15_NF2"
+UV_MMR="17_UV_MMR"
+XPCtox="19_XPCtoxins"
+POLZ="20_POLZ"
+DEN="21_DEN"
+ALCLAK="ALCL_AK"
+ATACseq="ATACseq_epiProbe"
+FD02="FD02"
+METARPISM="META_PRISM"
+NEIL3="NEIL3_CISPL"
+STING="STING_UNLOCK"
 
 ######################################## raw data directories ########################################
+EGA="EGA"
+IRODS="iRODS"
+AMAZON="S3"
+BGI="GeneAn"
+
 DO_DOWNLOAD=false
-RAW_SAMPLES_ROOT_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}"
+DATABASE=${IRODS}
+
+DO_MD5SUM=false
+MD5SUM_FILE="md5sum.txt"
 
 ###################### do concatenation of fastq raw data read 1 and 2 ####################################
 DO_CONCAT=false
-CONCAT_SAMPLES_ROOT_DIR="${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}"
 
 ###################### do genome routine analysis ##########################
 DO_PIPELINE=false
@@ -75,30 +95,16 @@ DO_ONCOTATOR="False"
 #### variant call table 
 VAR_TABLE="variant_call_list_${MODE}.tsv"
 
-######################################## do check md5sum of fastq raw data file ########################################
-DO_MD5SUM=false
-#### md5sum file path
-MD5SUM_FILE="md5sum.txt"
-
-########################################    do oncokb and civic annotation    ########################################
 DO_CLINIC=false
+PATIENTS_TABLE="config/patients.tsv"
 
-######################################## do backup of fastq raw data ########################################
 DO_BACKUP_FASTQ=false
-
-######################################## do backup of concatenated fastq raw data ########################################
 DO_BACKUP_CONCAT=false
-
-######################################## do backup of bam file ##########################################################
 DO_BACKUP_BAM=false
-
-######################################## do backup of all analysis results ########################################
 DO_BACKUP_RESULTS=false
-
-######################################## do clean up working space ########################################
 DO_CLEAN_UP=false
 
-#### script exec in interactive mode
+#### script exec in interactive mode ####
 INTERACT=false
 
 function enable_all_backup {
@@ -133,17 +139,27 @@ function disable_all_tasks {
 #######################################
 ####           parse args          ####
 #######################################
+DATE=
+BATCH_POSTFIX=
 
 function help {
-    echo "Usage: weather [ -c | --city1 ]
-                         [ -d | --city2 ]
-                         [ -h | --help  ]"
+    echo "Usage: dna_pipeline [cmd] [options]
+
+    "
     exit 0
 }
 
 SHORT_OPTS=a,i,h
-LONG_OPTS=download,md5check,concat,pipeline,clinic,backup,backupFASTQ,backupCONCAT,backupBAM,backupRESULTS,interact,unlock,help
-LONG_OPTS=${LONG_OPTS},projectName:,downloadDB:,rawDIR:,concatDIR:,workDIR:,pipelineDIR:,backupDIR:,jobs:
+
+GENERAL_OPTS=project-name:,date:,downloadDB:,rawDIR:,workDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,unlock,help
+DOWNLOAD_OPTS=download,download-configfile:,download-DB:,download-to:,
+MD5SUM_OPTS=md5check,md5check-file:,
+CONCAT_OPTS=concat,concat-sample-list:,concat-src:,concat-to:
+PIPELINE_OPTS=pipeline,clinic,
+BACKUP_OPTS=backupALL,backupFASTQ,backupCONCAT,backupBAM,backupRESULTS
+
+LONG_OPTS=${GENERAL_OPTS},${DOWNLOAD_OPTS},${MD5SUM_OPTS},${CONCAT_OPTS},${PIPELINE_OPTS},${BACKUP_OPTS}
+
 OPTS=$(getopt -a -n run_pipeline --options ${SHORT_OPTS} --longoptions ${LONG_OPTS} -- "$@")
 
 eval set -- "$OPTS"
@@ -152,16 +168,47 @@ while true ; do
     case "$1" in
 	-a | --all )
 	    enable_all_backup ; shift ;;
+	--project-name ) 
+	    PROJECT_NAME=$2 ; shift 2 ;;
+	--batch-postfix ) 
+	    BATCH_POSTFIX=$2 ; shift 2 ;;
+        --date ) 
+	    DATE=$2 ; shift 2 ;;
+	
 	--download )
 	    DO_DOWNLOAD=true ; shift ;;
+	--download-configfile )
+	    DOWNLOAD_CONFIGFILE=$2 ; shift 2 ;;
+	--download-DB )
+	    DATABASE=$2 ; shift 2 ;;
+	--download-to )
+	    FASTQ_SAMPLES_DIR=$2 ; shift 2 ;;
+	
 	--md5check )
 	    DO_MD5SUM=true ; shift ;;
+	--md5check-file )
+	    DO_MD5SUM=true ; shift 2 ;;
+	
 	--concat )
-	    DO_CONCAT=true ; shift ;;  
+	    DO_CONCAT=true ; shift ;;
+	--concat-sample-list )
+	    FASTQ_SAMPLE_LIST=$2 ;
+	    shift 2 ;;	    
+	--concat-src )
+	    FASTQ_SAMPLES_DIR=$2 ;
+	    shift 2 ;;  
+	--concat-to )
+	    CONCAT_SAMPLES_DIR=$2 ;
+	    shift 2 ;;
+	
 	--pipeline )
 	    DO_PIPELINE=true ; shift ;;  
+	--pipeline-branch )
+	    DO_PIPELINE=true ; shift 2 ;;
+	
 	--clinic )
-	    DO_CLINIC=true ; shift ;;  
+	    DO_CLINIC=true ; shift ;;
+	
 	--backup )
 	    enable_all_backup ; shift ;; 
 	--backupFASTQ )
@@ -172,6 +219,7 @@ while true ; do
 	    DO_BACKUP_BAM=true ; shift ;; 
 	--backupRESULTS )
 	    DO_BACKUP_RESULTS=true ; shift ;;
+	
 	-i | --interact )
 	    INTERACT=true ; shift ;;
 	--unlock )
@@ -183,39 +231,87 @@ while true ; do
     esac
 done
 
+#### General Settings ####
+if [ -z ${DATE} ] ; then
+    DATE=${TODAY}
+fi
 
-#########################################
+if [ -z ${PROJECT_NAME} ] && [ ${INTERACT} == true ] ; then
+    echo -e "[check point] Please set project name by choosing the number: \n  1. BCC\n  2. XP SKIN \n  3. XP INTERNAL \n  4. NF2 \n  5. UV_MMR \n  6. XPCtox \n  7. POLZ \n  8. DEN \n  9. ALCLAK \n  10. ATACseq \n  11. FD02 \n  12. METARPISM \n  13. NEIL3 \n  14. STING UNLOCK \nfor any other project, please provide the name directly: \n "
+    
+    read choice
+    
+    case ${choice} in
+	1 )
+	    PROJECT_NAME=${BCC} ;;
+	2 )
+	    PROJECT_NAME=${XPSKIN} ;;
+	3 )
+	    PROJECT_NAME=${XPINTERNAL} ;;
+	4 )
+	    PROJECT_NAME=${NF2} ;;
+	5 )
+	    PROJECT_NAME=${UV_MMR} ;;
+	6 )
+	    PROJECT_NAME=${XPCtox} ;;
+	7 )
+	    PROJECT_NAME=${POLZ} ;;
+	8 )
+	    PROJECT_NAME=${DEN} ;;
+	9 )
+	    PROJECT_NAME=${ALCLAK} ;;
+	10)
+	    PROJECT_NAME=${ATACseq} ;;
+	11)
+	    PROJECT_NAME=${FD02} ;;
+	12)
+	    PROJECT_NAME=${METARPISM} ;;
+	13)
+	    PROJECT_NAME=${NEIL3} ;;
+	14)
+	    PROJECT_NAME=${STING} ;;
+	*   )
+	    PROJECT_NAME=${choice} ;;
+    esac
+
+    echo -e "\nProject name: ${PROJECT_NAME} \n"
+fi
 
 #### default analysis results directory: 
-FASTQ_SAMPLES_FOLDER="${START_DATE}"
-FASTQ_SAMPLES_DIR="${RAW_SAMPLES_ROOT_DIR}/${FASTQ_SAMPLES_FOLDER}"
-CONCAT_SAMPLES_DIR="${CONCAT_SAMPLES_ROOT_DIR}/${FASTQ_SAMPLES_FOLDER}/${FASTQ_SAMPLES_RELA_DIR}"
-RESULT_BATCH_NAME="${START_DATE}_${SAMPLES}_${SEQ_TYPE}_${MODE}"
+RESULT_BATCH_NAME="${DATE}_${SAMPLES}_${SEQ_TYPE}_${MODE}"
 
-if [ $BATCH_POSTFIX != "" ] ; then
+if [ ! -z ${BATCH_POSTFIX} ] ; then
     RESULT_BATCH_NAME="${RESULT_BATCH_NAME}_${BATCH_POSTFIX}"
 fi
 
 # if not abs. path, convert rela. path to abs.
-if [[ ${VAR_TABLE} != /* ]] ; then
+if [ -f ${VAR_TABLE} ] & [[ ${VAR_TABLE} != /* ]] ; then
     VAR_TABLE="${PWD}/$VAR_TABLE"
 fi
 
-exit 0
+RUN_PIPELINE_SCRIPT="run_pipeline.sh"
+
+echo -e "#!/usr/bin/bash\n\nset -e\n\n" > ${RUN_PIPELINE_SCRIPT}
 
 #######################################
 #### init pipelline work directory ####
 #######################################
 
+## current directory is where user execute the interactive bash script
 CURRENT_DIR="$PWD"
+
+## working directory is where the pipeline store the results to
 WORKING_DIR="${SCRATCH_WORKING_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
+
 echo "[info] pipeline working directory: ${WORKING_DIR}"
-mkdir -p ${WORKING_DIR}
-    
+
+mkdir -p ${WORKING_DIR}/config
+cd ${WORKING_DIR} ;
+
 #### if workflow is not ln to src, then create a softlink
-if [ ! -d workflow ] ; then
+if [ ! -d ${WORKING_DIR}/workflow ] ; then
     if [ ${INTERACT} == true ] ; then
-	echo "Directory of pipeline is ${ANALYSIS_PIPELINE_SRC_DIR} : [y/n] "
+	echo "[check point]Directory of pipeline is ${ANALYSIS_PIPELINE_SRC_DIR} : [y/n] "
 	read line
 	if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
 	    echo "Please specify the directory of pipeline: "
@@ -223,16 +319,28 @@ if [ ! -d workflow ] ; then
 	fi
     fi
     echo "[info] softlink to pipeline directory ${ANALYSIS_PIPELINE_SRC_DIR} " ;
-    ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow .
+    ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow  ${WORKING_DIR}/workflow ;
 fi
+
+if [ ${DO_DOWNLOAD} == true ] ; then
+    if [ ! -f config/download.yaml ] ; then
+	if [ ${INTERACT} == true ] ; then
+	else
+	    echo "[info] copy an example of download configuration file to config/ directory"
+	    cp workflow/config/download.yaml config/
+	fi
+    fi
+fi
+
+exit 0
 
 if [ ${DO_PIPELINE} == true ] ; then
         
     #### copy the script run.sh to working directory if not in working directory
-    if [ ${PWD} != ${WORKING_DIR} ] ; then 
-	echo "[info] copy the script to working directory"
-	cp $0 ${WORKING_DIR}
-    fi
+    # if [ ${PWD} != ${WORKING_DIR} ] ; then 
+    #   echo "[info] copy the script to working directory"
+    #   cp $0 ${WORKING_DIR}
+    # fi
     
     cd ${WORKING_DIR}
 
@@ -261,9 +369,11 @@ if [ ${DO_PIPELINE} == true ] ; then
     if [ -f variant_call_list_${MODE}.tsv ] ; then
 	echo "[info] variant call table is ready: "
 	cat variant_call_list_${MODE}.tsv ;
+	
     elif [ -f ${VAR_TABLE} ] ; then
 	echo "[info] copy the variant call table to current directory"
 	cp ${VAR_TABLE} . ;
+	
     elif [ ${MODE} == ${TvN} ] ; then
 	echo "[info] Generating variant call table..."
 	cd ${FASTQ_SAMPLES_DIR} ;
@@ -293,6 +403,7 @@ if [ ${DO_PIPELINE} == true ] ; then
 		echo "[info] variant call table is checked."
 	    fi
 	fi
+	
     elif [ ${MODE} == ${T} ] ; then
 	echo "[info] Generating variant call table..."
 	cd ${FASTQ_SAMPLES_DIR} ;
@@ -314,6 +425,7 @@ if [ ${DO_PIPELINE} == true ] ; then
 		echo "[info] variant call table is checked."
 	    fi
 	fi
+	
     elif [ ${INTERACT} == true ] ; then
 	    echo "Please provide the variant call table location: "
 	    read VAR_TABLE
@@ -325,12 +437,12 @@ if [ ${DO_PIPELINE} == true ] ; then
     fi
 
     #### if annotate civic and oncokb, build configuration files
-    if [ DO_CLINIC == true ] ; then
-	echo "build configuration files for civic and oncokb annotation pipeline "
-	
-    fi
+    # if [ DO_CLINIC == true ] ; then
+    #	echo "build configuration files for civic and oncokb annotation pipeline "
+    # 
+    # fi
 
-    #### cnvfacet need the conda env. has to be local 
+    #### cnvfacet need the conda env. has to be local, if conda env doesn't exsit then softlink to j_wang 
     if [ DO_CNVFACET == ture] ; then 
 	envs_dir=(`conda info | grep "envs directories" `)
 	if [ ! -d ${envs_dir[-1]}/pipeline_GATK_2.1.4_V2 ] ; then
@@ -386,17 +498,19 @@ if [ ${DO_DOWNLOAD} == true ] ; then
 	fi
     fi
     
-    echo "downloading raw data to ${FASTQ_SAMPLES_DIR} "
-    module load java ;
+    echo "echo 'downloading raw data to ${FASTQ_SAMPLES_DIR}'
+    module load java
     mkdir -p ${FASTQ_SAMPLES_DIR} ;
     mkdir -p logs/slurm/ ; 
-    CONFIG_OPTIONS=" PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_PATH} "
+    CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_PATH} '
     ${APP_SNAKEMAKE} \
 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
 	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
 	-s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/download/entry_point.smk \
-	--config ${CONFIG_OPTIONS} ;    
+	--config ${CONFIG_OPTIONS} ;  " >> ${RUN_PIPELINE_SCRIPT} ;
 fi
+
+exit 0
 
 #########################################
 ####         verify md5sum code      ####
@@ -589,10 +703,30 @@ fi
 if [ ${DO_CLINIC} == true ] ; then
     echo "starting oncokb and civic annotations..."
     # 1.  build configuration files
+    # example patients.tsv
+    # PATIENT_ID      Sex     MSKCC_Oncotree  Project_TCGA_More
+    # ST4359          M       SCLC            SCLC
+    # ST3259          F       LUAD            LUAD
+    # ST4405          M       PRAD            PRAD
+    # ST3816          F       HGSOC           OV
+    # ST4806          M       BLCA            BLCA
+
+    echo "patients informations, expecting 4 columns: 'PATIENT_ID', 'Sex', 'MSKCC_Oncotree', 'Project_TCGA_More'"
+    # config/patients.tsv
+    cat ${PATIENTS_TABLE}
+    if [ ${INTERACT} == true ] ; then
+	
+    fi
+    conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake
+    # /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake \
+    #     --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {resources.queue}' \
+    #     --jobs 20 --latency-wait 50 --rerun-incomplete  --use-conda -s workflow/rules/Clinic/config/entry_point.smk
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk 
     # 2.1 mut. oncokb and civic annotations
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk
     # 2.2 cna. oncokb and civic annotations
-    # 2.3 fus. oncokb and civic annotations
-    # 3.  aggregate cna,mut,fus results
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk 
+    conda deactivate 
 fi
 
 ###########################

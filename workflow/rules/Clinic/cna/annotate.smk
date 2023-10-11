@@ -26,7 +26,7 @@ rule somatic_cnv_process_vcf:
         time_min=20
     shell:
         """
-        Rscript workflow/rules/Clinic/Cnv_Annotation/scripts/05.2_cnv_process_vcf.R \
+        Rscript workflow/rules/Clinic/cna/scripts/05.2_cnv_process_vcf.R \
             --input_vcf {input.vcf} \
             --gender {params.gender} \
             --rules_arm {input.rules_arm} \
@@ -58,7 +58,7 @@ rule somatic_cnv_gene_calls:
         time_min=20
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/05.3_cnv_gene_calls.py \
+        python -u workflow/rules/Clinic/cna/scripts/05.3_cnv_gene_calls.py \
             --input_tab {input.tab} \
             --input_bed {input.bed} \
             --threshold {params.threshold} \
@@ -114,7 +114,7 @@ rule somatic_cna_civic:
     threads: 1
     shell:
         """
-        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_civic_annotate.sh \
+        bash workflow/rules/Clinic/cna/scripts/04.3_civic_annotate.sh \
             {params.a_option} \
             -b {input.table_cln} \
             -c {input.table_gen} \
@@ -155,7 +155,7 @@ rule somatic_cna_oncokb:
         mem_mb=4000,
     shell:
         """
-        bash workflow/rules/Clinic/Cnv_Annotation/scripts/04.3_oncokb_annotate.sh \
+        bash workflow/rules/Clinic/cna/scripts/04.3_oncokb_annotate.sh \
             {params.a_option} \
             -b {input.table_cln} \
             -c {input.table_gen} \
@@ -187,7 +187,7 @@ rule somatic_cna_civic_aggregate:
         time_min=60
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/cna/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
@@ -208,7 +208,7 @@ rule somatic_cna_oncokb_aggregate:
         time_min=60
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.1_concatenate_tables.py \
+        python -u workflow/rules/Clinic/cna/scripts/06.1_concatenate_tables.py \
             --files {input} \
             --output {output} &> {log}
         """
@@ -231,7 +231,7 @@ rule somatic_cna_union_ann:
     threads: 1
     shell:
         """
-        python -u workflow/rules/Clinic/Cnv_Annotation/scripts/06.2_concatenate_annotations.py \
+        python -u workflow/rules/Clinic/cna/scripts/06.2_concatenate_annotations.py \
             --civ {input.civ} \
             --okb {input.okb} \
             --cat cna \

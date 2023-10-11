@@ -1,0 +1,113 @@
+general:
+  # Table of samples to be processed with paths to fastqs and library orientation
+  samples: "config/samples.tsv"
+  # Set disable: true to disable automatic irods checks. This step checks that the user
+  # has access to the fastq filepaths specified in the tables `samples.tsv` by requesting
+  # all fastqs available for a given project. The name(s) of the project(s) that include
+  # the fastqs listed must be specified in the variable project_names below.
+  automatic_irods_check:
+      disable: true
+      project_names: null
+  # Set update_gene_symbols: false to disable automatic update of gene symbols using the
+  # latest database from HGNC.
+  update_gene_symbols: true
+  # Set to true to annotate all putative fusions with oncokb/civic and not only the PASS
+  annotate_all_fusions: false
+
+setup:
+  python: "../envs/python.yaml"
+  R: "../envs/R.yaml"
+  nf-core: "../envs/nf-core-rnafusion-1.2.0.yaml"
+  FusionAnnotator: "../envs/FusionAnnotator.yaml"
+
+civic:
+  code_dir: "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator"
+  data_dir: "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data"
+  gene_list: "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-GeneSummaries.tsv"
+  evidences: "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/01-Jan-2022-ClinicalEvidenceSummaries_Annotated.xlsx"
+  rules_clean: "/mnt/beegfs/software/metaprism/wes/external/CivicAnnotator/data/CIViC_Curation_And_Rules_Mutation.xlsx"
+
+fusion_annotator:
+  # code_dir: "/mnt/beegfs/software/metaprism/rnaseq/external/FusionAnnotator"
+  code_dir: "/mnt/beegfs/userdata/j_wang/METAPRISM/FusionAnnotator"
+  genome_lib_dir: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/ctat_genome_lib_build_dir"
+
+fusions_lists:
+  babiceanu: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/babiceanu_recurrent_normal.tsv"
+  chimerkb: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/chimerkb_4.0.tsv"
+  chimerseq_normal: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/chimerseq_normal_4.0_curated.tsv"
+  chitars_cancer: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/chitars_5.0/chitar_cancer_fusion.tsv"
+  chitars_all_human: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/chitars_5.0/all_human_ChiTaRS_coord.csv"
+  cosmic: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/cosmic_V95_fusions_curated_enhanced.tsv"
+  gtex: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/gtex_v6.tsv"
+  tic: "/mnt/beegfs/database/bioinfo/metaprism/rna/fusions_lists/tic_3.3.tsv"
+
+genes:
+  drivers:
+    # list of genes with a column Inclusion_Level
+    # only genes with Inclusion_Level==1 will be considered as driver genes
+    gene_table: "/mnt/beegfs/database/bioinfo/metaprism/rna/genes/cancer_genes_curated.tsv"
+
+  gencode:
+    ebi_ftp: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human"
+    # check gencode-ensembl releases correspondence here https://www.gencodegenes.org/human/releases.html
+    # gencode release
+    g_release: 31
+    # ensembl release
+    e_release: 97
+    # gene_table: "resources/genes/gencode.v31.annotation.gene.tsv"
+    # gene_table: "/mnt/beegfs/database/bioinfo/Index_DB/gencode/annotation/homo_sapiens/gencode.v31.metadata.Annotation_remark"
+    gene_table: "/mnt/beegfs/database/bioinfo/metaprism/rna/genes/gencode.v31.annotation.gene.tsv"
+    build: GRCh38
+
+  hgnc:
+    ebi_ftp: "https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/archive/monthly/tsv"
+    release: 2023-07-01
+    # gene_table: "resources/genes/hgnc_complete_set_2023-07-01.txt"
+    # gene_table: "/mnt/beegfs/database/bioinfo/Index_DB/hgnc/homo_sapiens/hgnc_complete_set.txt"
+    gene_table: "/mnt/beegfs/database/bioinfo/metaprism/rna/genes/hgnc_complete_set_2023-07-01.txt"
+
+nf-core:
+  # List of algorithms to be run
+  algos:
+    - "Arriba"
+    - "EricScript"
+    - "Pizzly"
+    - "Star-Fusion"
+
+  # Path to pipeline repository, containing `main.nf`
+  pipeline_dir: "/mnt/beegfs/pipelines/nf-core-rnafusion/1.2.0/"
+
+  # Path to indexed genome data
+  nf_core_genome_base: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/"
+  # Path to arriba index
+  arriba: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/arriba/"
+  # Path to ericscript index
+  ericscript: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/ericscript/ericscript_db_homosapiens_ensembl84/"
+  # Path to fusion catcher index
+  fusioncatcher: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/fusioncatcher/"
+  # Path to STAR mapper index
+  star_index: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/star-index_150bp"
+  # Path to STAR-Fusion index
+  # star_fusion_ref: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/"
+  star_fusion_ref: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/star-fusion/ctat_genome_lib_build_dir/"
+  # Path to supplementary databases
+  databases: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/databases/"
+  # Path to genome sequence (FASTA)
+  fasta: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.all.fa"
+  transcript: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.cdna.all.fa.gz"
+  # Path to genome annotation (GTF)
+  gtf: "/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded/Homo_sapiens.GRCh38_r97.gtf"
+
+oncokb:
+  code_dir: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator"
+  data_dir: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data"
+  gene_list: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data/cancerGeneList_oncokb_annotated.tsv"
+  token: "81a7024b-b860-4e9c-ba71-4380d64b0e9a"
+  rules_clean: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data/OncoKB_Curation_And_Rules.xlsx"
+
+data:
+  resources:
+    drug: data/resources/drug_tables/Table_Drugs_v7.xlsx
+    target_bed: data/resources/target_files/all_targets_intersect_padded_10n.bed
+    cancer_genes: data/resources/curated/cancer_genes_curated.tsv

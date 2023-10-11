@@ -32,15 +32,12 @@ TODAY=`date +%Y%m%d`
 #### project name: [01_BCC|04_XP_SKIN|05_XP_INTERNAL|17_UV_MMR|19_XPCtox|20_POLZ|21_DEN|23_|....]
 PROJECT_NAME=
 
-######################################## raw data directories ########################################
 DO_DOWNLOAD=false
-# RAW_SAMPLES_ROOT_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}"
-
-###################### do concatenation of fastq raw data read 1 and 2 ####################################
 DO_CONCAT=false
-# CONCAT_SAMPLES_ROOT_DIR="${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}"
 
-###################### do genome routine analysis ##########################
+DO_MD5SUM=false
+MD5SUM_FILE="md5sum.txt"
+
 DO_PIPELINE=false
 # ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Genome_Sequencing_Analysis"
 ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final"
@@ -54,30 +51,14 @@ SNAKEMAKE_JOBS_NUM=20
 HUMAN="human"
 MOUSE="mouse"
 
-######################################## do check md5sum of fastq raw data file ######################################
-DO_MD5SUM=false
-#### md5sum file path
-MD5SUM_FILE="md5sum.txt"
-
-########################################    do oncokb and civic annotation    ########################################
 DO_CLINIC=false
 
-######################################## do backup of fastq raw data ########################################
 DO_BACKUP_FASTQ=false
-
-######################################## do backup of concatenated fastq raw data ####################################
 DO_BACKUP_CONCAT=false
-
-######################################## do backup of bam file #######################################################
 DO_BACKUP_BAM=false
-
-######################################## do backup of all analysis results ########################################
 DO_BACKUP_RESULTS=false
-
-######################################## do clean up working space ########################################
 DO_CLEAN_UP=false
 
-#### script exec in interactive mode
 INTERACT=false
 
 function enable_all_backup {
@@ -495,12 +476,13 @@ function nfcore1.2 {
     # conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/shared_install/cf86d417625a66c2fd24c9995cffb88e_
 
     echo -e "trace.overwrite = true\ndag.overwrite = true" > config/nextflow.config
+
+    # 	     -name nfcore-pipeline-${TODAY} \
     
     nextflow -config config/nextflow.config \
 	     run /mnt/beegfs/pipelines/nf-core-rnafusion/1.2.0/main.nf \
 	     -resume \
 	     --read_length 150 \
-	     -name nfcore-pipeline-${TODAY} \
 	     --plaintext_email \
 	     --monochrome_logs \
 	     --fastp_trim \
@@ -524,7 +506,7 @@ function nfcore1.2 {
 	     --genomes_base '/mnt/beegfs/database/bioinfo/nf-core-rnafusion/1.2.0/references_downloaded' \
 	     --outdir 'results/nf-core' \
 	     --custom_config_base 'config/nextflow.config' \
-	     --custom_config_version '1.2.0' &
+	     --custom_config_version '1.2.0' 
 }
 
 function nfcore2.3 {
@@ -587,6 +569,10 @@ fi
 
 
 #### civic and oncoKB ####
+
+conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake
+
+/mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s ~/Workspace/Genome_Sequencing_Analysis_Clinic/workflow/rules/Clinic/rna/nfcore/rnafusion/1.2/entry_point.smk 
 
 
 ### backup results #### 

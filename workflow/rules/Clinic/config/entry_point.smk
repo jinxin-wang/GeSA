@@ -1,3 +1,11 @@
+import os
+import re
+import sys
+import glob
+import logging
+import pandas  as pd
+from   pathlib import Path
+
 annotation_config = {
     "general": {
         "patients": "config/patients.tsv",
@@ -7,7 +15,7 @@ annotation_config = {
 
     "params": {
         "civic": {
-            "corr_table" : "workflow/rules/Clinic/Config/resources/Table_Correspondence_Tumor_Type.tsv",
+            "corr_table" : "workflow/resources/Table_Correspondence_Tumor_Type.tsv",
         },
     },
 }

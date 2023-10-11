@@ -45,7 +45,7 @@ table_alt=$(printf "%s" "${table_alt[*]}")
 
 # preprocess table of alterations before annotating with OncoKB
 printf -- "-INFO: preparing table before annotating with OncoKB...\n"
-python -u workflow/rules/Clinic/Cnv_Annotation/scripts/04.1_oncokb_preprocess.py \
+python -u workflow/rules/Clinic/cna/scripts/04.1_oncokb_preprocess.py \
     --table_alt ${table_alt} \
     --table_cln ${table_cln} \
     --table_gen ${table_gen} \
@@ -77,7 +77,7 @@ fi
 
 # postprocess annotations
 printf -- "-INFO: postprocess OncoKB annotations...\n"
-python -u workflow/rules/Clinic/Cnv_Annotation/scripts/04.2_oncokb_postprocess.py \
+python -u workflow/rules/Clinic/cna/scripts/04.2_oncokb_postprocess.py \
     --input ${table_run} \
     --rules ${rules} \
     --category ${category} \

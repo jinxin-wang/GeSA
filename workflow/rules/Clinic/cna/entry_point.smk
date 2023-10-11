@@ -1,6 +1,6 @@
 import pandas as pd
 
-configfile: "workflow/rules/Clinic/Cnv_Annotation/config/config.yaml"
+configfile: "workflow/rules/Clinic/cna/config/config.yaml"
 
 df = pd.read_csv("variant_call_list_TvN.tsv", sep="\t", header=None)
 
