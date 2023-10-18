@@ -1,25 +1,25 @@
 DATABASE:     "iRODS"
 STORAGE_PATH: "/mnt/beegfs/scratch/j_wang/01_RawData/STING_UNLOCK/STING_UNLOCK_Batch3_META"
 
+## EGA:
+EGA_CONFIG_FILE: 'config/ega_config.json' 
+EGA_DATASETS: ['EGAD00001009695','EGAD00001009696']
+EGA_CONNECTIONS: 500
+
 ## iRODS:
+iRODS_datasets_metadata: "config/metadata_20230927.csv"
+iRODS_METADATA_SAMPLE_ID: "Alias:STING sample number"
+iRODS_METADATA_PATH: "datafilePath"
+
 iRODS_PROJECT_NAMES: ["STING","STING_UNLOCK"]
 iRODS_sample_bilan: "config/Bilan_20230921.tsv"
-iRODS_datasets_metadata: "config/metadata_20230927.csv"
-iRODS_datasets_bilan: "config/Datasets_Bilan_20230921.tsv"
-iRODS_DATASETS_COLN: "datasets"
-iRODS_DATASETS_SEPT: "|"
-iRODS_BILAN_KEY:     "Sample_Name"
-iRODS_DATASET_KEY:   "sampleAlias"
-iRODS_METADATA_KEY:  "Alias:STING sample number"
-iRODS_METADATA_PATH: "datafilePath"
-iRODS_bilan_keys:   ["PATIENT_ID", "PROTOCOL", "SampleType"]
-iRODS_dataset_keys: ["patientAlias","protocol", "sampleType"]
+iRODS_BILAN_QUERY_KEY:  "Sample_Name"
+iRODS_bilan_cquery_keys:   ["PATIENT_ID", "PROTOCOL", "SampleType"]
+iRODS_DATASET_QUERY_KEY:   "sampleAlias"
+iRODS_dataset_cquery_keys: ["patientAlias","protocol", "sampleType"]
 
 S3:
     todo: ""
 
-EGA:
-    todo: ""
-
-conda:
-    python3.10: "/mnt/beegfs/userdata/j_wang/.conda/envs/python3.10/"
+# conda:
+#     python3.10: "/mnt/beegfs/userdata/j_wang/.conda/envs/python3.10/"

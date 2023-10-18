@@ -1,7 +1,7 @@
 from datetime import datetime
 
-COLUMN_DATASETS = str(config["iRODS_DATASETS_COLN"])
-SEP_DATASETS    = str(config["iRODS_DATASETS_SEPT"])
+COLUMN_DATASETS = "datasets" 
+SEP_DATASETS    = "|"        
 
 def query_datasets(index, conditions):
     meta_qu_cmd = f"imeta qu -C {conditions} | grep collection "
@@ -46,23 +46,23 @@ def download_datasets(datasets, save_to_dir):
         for irods_abs_path in datasets :
             download_to_dir(irods_abs_path, save_to_dir)
 
-def download_by_key(df, df_key, ds_key, pname, spath, sub_dir):
+def download_by_key(df, df_key, ds_key, pname, spath):
     for idx, row in df.iterrows():
         bilan_key   = row[df_key]
         conditions  = f" projectName like {pname} and {ds_key} like {bilan_key} "
         collections = query_datasets(index = idx, conditions = conditions)
         datasets    = [ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ]
-        save_to_dir = Path(f"{str(spath)}/{sub_dir}/{bilan_key}")
+        save_to_dir = Path(f"{str(spath)}/{bilan_key}")
         download_datasets(datasets  = datasets, save_to_dir = save_to_dir)
 
-def download_by_keys(df, df_key, ds_key, df_gp_keys, ds_gp_keys, pname, spath, sub_dir):
+def download_by_keys(df, df_key, ds_key, df_gp_keys, ds_gp_keys, pname, spath):
     for idx, row in df.iterrows():
         bilan_gp_keys= row[df_gp_keys]
         conditions   = " ".join([ f" and {dk} like {bk} " for dk, bk in zip(ds_gp_keys, bilan_gp_keys) ])
         conditions   = f" projectName like {pname} " + conditions
         collections  = query_datasets(index = idx, conditions = conditions)
         datasets     = [ c.split(":")[-1].strip() for c in collections.split("\n") if len(c.strip()) > 0 ]
-        save_to_dir  = Path(f"{str(spath)}/{sub_dir}/{row[df_key]}")
+        save_to_dir  = Path(f"{str(spath)}/{row[df_key]}")
         download_datasets(datasets = datasets, save_to_dir = save_to_dir)
 
 
@@ -73,11 +73,11 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
         output:
             storage_path = directory(config["STORAGE_PATH"]),
         params:
-            queue        = "shortq",
-            metadata_key = config["iRODS_METADATA_KEY"],
+            metadata_sid = config["iRODS_METADATA_SAMPLE_ID"],
             metadata_path= config["iRODS_METADATA_PATH"],
         threads: 4
         resources:
+            queue  = "shortq",
             mem_mb = 10240
         log:
             out = f"logs/download/irods/irods_metadata_download.log"
@@ -90,8 +90,6 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
 
             exten = str(input.meta).strip().split(".")[-1]
             meta_df   = None
-            timestamp = datetime.now().strftime("%Y%m%d")
-            sub_dir   = f"iRODS_Download_{timestamp}"
             
             dtypes = {COLUMN_DATASETS: str}
 
@@ -106,7 +104,7 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
                 raise Exception(f"Unable to identify the format of input file: {input.meta}")
 
             for idx, row in meta_df.iterrows():
-                save_to_dir = Path(f"{str(output.storage_path)}/{sub_dir}/{row[params.metadata_key]}")
+                save_to_dir = Path(f"{str(output.storage_path)}/{row[params.metadata_sid]}")
                 download_to_dir(row[params.metadata_path], save_to_dir)
 
 
@@ -115,16 +113,16 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
         input:
             bilan = config["iRODS_sample_bilan"],
         output:
-            bilan = config["iRODS_datasets_bilan"],
+            bilan = "config/datasets_query_bilan.tsv",
         params:
-            queue        = "shortq",
-            project_names= config["PROJECT_NAMES"],
-            bilan_key    = config["iRODS_BILAN_KEY"],
-            dataset_key  = config["iRODS_DATASET_KEY"],
-            bilan_keys   = config["iRODS_bilan_keys"],
-            dataset_keys = config["iRODS_dataset_keys"],
+            project_names  = config["PROJECT_NAMES"],
+            bilan_query_key  = config["iRODS_BILAN_QUERY_KEY"],
+            dataset_query_key= config["iRODS_DATASET_QUERY_KEY"],
+            bilan_cquery_keys   = config["iRODS_bilan_cquery_keys"],
+            dataset_cquery_keys = config["iRODS_dataset_cquery_keys"],
         threads: 4
         resources:
+            queue  = "shortq",
             mem_mb = 10240
         log:
             out = f"logs/download/irods/irods_query_datasets.log"
@@ -138,15 +136,15 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             bilan = str(input.bilan)
             exten = bilan.strip().split(".")[-1]
             bilan_df  = None
-            timestamp = datetime.now().strftime("%Y%m%d")
-            sub_dir   = f"iRODS_Download_{timestamp}"
 
-            if exten == "tsv" : 
+            if exten == "tsv" :
                 logging.info(f"identify the format of input file is tsv: {input.bilan}")
                 bilan_df = pd.read_table(bilan, sep="\t")
+                
             elif exten == "csv" : 
                 logging.info(f"identify the format of input file is csv: {input.bilan}")
                 bilan_df = pd.read_table(bilan, sep=";")
+                
             else:
                 logging.warning(f"Unable to identify the format of input file: {input.bilan}")
                 raise Exception(f"Unable to identify the format of input file: {input.bilan}")
@@ -156,31 +154,31 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             for project_name in params.project_names:
                 if len(project_name.strip()) > 0 :
                     bilan_df = query_by_key(df = bilan_df, pname  = project_name,
-                                            df_key = params.bilan_key,
-                                            ds_key = params.dataset_key)
+                                            df_key = params.bilan_query_key,
+                                            ds_key = params.dataset_query_key)
 
 
-                if len(project_name.strip()) > 0 and len(params.bilan_keys) > 0 and len(params.dataset_keys) > 0 :
+                if len(project_name.strip()) > 0 and len(params.bilan_cquery_keys) > 0 and len(params.dataset_cquery_keys) > 0 :
                     bilan_df = query_by_keys(df = bilan_df, pname  = project_name,
-                                                      df_key = params.bilan_key,
-                                                      ds_key = params.dataset_key,
-                                                      df_gp_keys = params.bilan_keys,
-                                                      ds_gp_keys = params.dataset_keys)
+                                                      df_key = params.bilan_query_key,
+                                                      ds_key = params.dataset_query_key,
+                                                      df_gp_keys = params.bilan_cquery_keys,
+                                                      ds_gp_keys = params.dataset_cquery_keys)
 
             bilan_df[COLUMN_DATASETS] = bilan_df[COLUMN_DATASETS].map(lambda x: SEP_DATASETS.join(x))
             bilan_df.to_csv(output.bilan, sep="\t", index=False)
 
     rule irods_download_datasets:
         input:
-            bilan = config["iRODS_datasets_bilan"],
+            bilan = "config/datasets_query_bilan.tsv",
         output:
             storage_path = directory(config["STORAGE_PATH"]),
         params:
-            queue        = "shortq",
-            bilan_key    = config["iRODS_BILAN_KEY"],
+            bilan_query_key = config["iRODS_BILAN_QUERY_KEY"],
         threads: 4
         resources:
-            mem_mb = 10240
+            queue  = "shortq",
+            mem_mb = 10240,
         log:
             out = f"logs/download/irods/irods_download_datasets.log"
         run:
@@ -193,8 +191,6 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             bilan = str(input.bilan)
             exten = bilan.strip().split(".")[-1]
             bilan_df  = None
-            timestamp = datetime.now().strftime("%Y%m%d")
-            sub_dir   = f"iRODS_Download_{timestamp}"
 
             dtypes = {COLUMN_DATASETS: str}
 
@@ -212,7 +208,7 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             logging.debug(f"{bilan_df[COLUMN_DATASETS]}")
 
             for idx, row in bilan_df.iterrows():
-                save_to_dir = Path(f"{str(output.storage_path)}/{sub_dir}/{row[params.bilan_key]}")
+                save_to_dir = Path(f"{str(output.storage_path)}/{row[params.bilan_query_key]}")
                 download_datasets(datasets = row[COLUMN_DATASETS], save_to_dir = save_to_dir)
 
 

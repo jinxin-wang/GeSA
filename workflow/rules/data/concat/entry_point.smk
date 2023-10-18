@@ -5,6 +5,8 @@ import logging
 import pandas as pd
 from pathlib import Path
 
+configfile: "workflow/config/concat.yaml"
+    
 def is_match(r1: str, r2: str):
 
     read1, read2, flag = [*r1], [*r2], True
@@ -58,8 +60,6 @@ def do_softlink(fastq_file, concat_dir, sample_id, read12):
     logging.info("softlink %s R%s done."%(sample_id, read12))
 
 
-configfile: "workflow/config/concat.yaml"
-    
 # rule softlink_to_concat_fastq:
 #     input:
 #         fastq = expand(config["concat_fastq_dir"] + "/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
@@ -83,11 +83,12 @@ for col_idx in range(len(samples_df.columns)):
 print(config["raw_fastq_dir"])
 
 # if config["do_concat"]:
-if os.path.isfile(config["sample_sheet"]):
+if os.path.isfile(config["sample_sheet"]) :
     include: "concat_samplesheet.smk"
     
-elif os.path.isdir(config["raw_fastq_dir"]):
+elif os.path.isdir(config["raw_fastq_dir"]) :
     include: "concat_src_dir.smk"
+    
 else:
     raise Exception("Missing rample sheet table or raw fastq directory.")
     

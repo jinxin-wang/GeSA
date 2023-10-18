@@ -5,19 +5,9 @@
     "paired": True,
     "remove_duplicates": True,
     "sam2fastq": False,
-    "do_concat": False,
     "do_clinic": False,
     "do_cnvfacet": False,
 
-    "raw_fastq_dir": "",
-    "concat_fastq_dir": "",
-    "concat_r1_pattern": "*1.fq.gz",
-    "concat_r2_pattern": "*2.fq.gz",
-    "reads_patterns": ["*fq.gz", "*fastq.gz"],
-    "reads": ["1", "2"], 
-    
-    "sample_sheet": "",
-    
     "python": {
         "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",
     },
