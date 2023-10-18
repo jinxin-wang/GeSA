@@ -10,9 +10,6 @@
 $ s3cmd ls
 ```
 
-#### fix bug: s3cmd line 308 and 310
-change "is" to "=="
-
 #### configuration file example, Region: eu-west-3
 ```
 $ cat FD02_F099P01_T01_MEL_D1.conf
