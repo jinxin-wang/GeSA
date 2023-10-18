@@ -1,3 +1,6 @@
+example of [configuration file](https://github.com/jinxin-wang/Genome_Sequencing_Analysis/blob/andrei_modi_final/workflow/config/concat.yaml)
+
+
 #### 1. concatenated by sample meta information table such as in the following example: 
 ```
 $ cat sample_sheet.tsv
