@@ -7,4 +7,20 @@ ST3227_R\trna\t/somewhere/iRODS_Download_20230927/ST3227_R/ST3259_R_EKRN23001686
 ST3227_R\trna\t/somewhere/iRODS_Download_20230927/ST3227_R/ST3259_R_EKRN230016864-1A_HWNVTDSX5_L1_1.fq.gz\t/somewhere/iRODS_Download_20230927/ST3227_R/ST3259_R_EKRN230016864-1A_HWNVTDSX5_L1_2.fq.gz
 ```
 
-#### 2. concatenated by given directly the directory of download samples
+#### 2. concatenated by given directly the directory of samples
+The directory of samples must be like the following layout: 
+```
+dir/
+  |- sample1/
+    |- subfolders/
+         |- line1_read1.fq.gz
+         |- line1_read2.fq.gz
+         |- line2_read1.fq.gz
+         |- line2_read2.fq.gz
+    |- subfolders/
+         |- line3_read1.fq.gz
+         |- line3_read2.fq.gz
+     ....
+  |- sample2/
+     ....
+```
