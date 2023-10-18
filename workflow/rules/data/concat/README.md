@@ -24,3 +24,26 @@ dir/
   |- sample2/
      ....
 ```
+
+for example: 
+```
+/mnt/beegfs/scratch/j_wang/01_RawData/STING_UNLOCK/STING_UNLOCK_Batch3_META/iRODS_Download_20230927/
+├── ST2194_N
+│   ├── ST2194_N_S1_L003_R1_001.fastq.gz
+│   └── ST2194_N_S1_L003_R2_001.fastq.gz
+├── ST2194_R
+│   ├── ST2194_R_EKRN230037912-1A_HJGVCDSX7_L3_1.fq.gz
+│   └── ST2194_R_EKRN230037912-1A_HJGVCDSX7_L3_2.fq.gz
+├── ST2194_T
+│   ├── ST2194_T_S1_L003_R1_001.fastq.gz
+│   └── ST2194_T_S1_L003_R2_001.fastq.gz
+├── ST2405_N
+│   ├── ST2405_N_S1_L003_R1_001.fastq.gz
+│   └── ST2405_N_S1_L003_R2_001.fastq.gz
+├── ST2405_R
+│   ├── ST2405_R_EKRN230037905-1A_HKTT5DSX7_L2_1.fq.gz
+│   └── ST2405_R_EKRN230037905-1A_HKTT5DSX7_L2_2.fq.gz
+├── ST2405_T
+│   ├── ST2405_T_S1_L003_R1_001.fastq.gz
+│   └── ST2405_T_S1_L003_R2_001.fastq.gz
+```
