@@ -106,7 +106,7 @@ def build_Tonly_targets(tsample):
             
 if config["mode"] == "TvN": 
     print(OKGREEN + "[message] Pipeline runs in Tumor vs Normal mode." + ENDC)
-    VARIANT_CALL_TABLE = "variant_call_list_TvN.tsv"
+    VARIANT_CALL_TABLE = "config/variant_call_list_TvN.tsv"
     with open(VARIANT_CALL_TABLE,'r') as fd: 
         print(OKGREEN + "[message] Configuration file %s is detected. "%VARIANT_CALL_TABLE + ENDC)
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
@@ -119,7 +119,7 @@ if config["mode"] == "TvN":
 
 if config["mode"] == "Tp":
     print(OKGREEN + "[message] Pipeline runs in Tumor vs PoN mode." + ENDC)
-    VARIANT_CALL_TABLE = "variant_call_list_Tp.tsv"
+    VARIANT_CALL_TABLE = "config/variant_call_list_Tp.tsv"
     with open(VARIANT_CALL_TABLE,'r') as fd: 
         print(OKGREEN + "[message] Configuration file %s is detected. "%VARIANT_CALL_TABLE + ENDC)
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
@@ -131,7 +131,7 @@ if config["mode"] == "Tp":
 
 if config["mode"] == "TvNp":
     print(OKGREEN + "[message] Pipeline runs in Tumor vs Normal vs PoN mode." + ENDC)
-    VARIANT_CALL_TABLE = "variant_call_list_TvNp.tsv"
+    VARIANT_CALL_TABLE = "config/variant_call_list_TvNp.tsv"
     with open(VARIANT_CALL_TABLE,'r') as fd: 
         print(OKGREEN + "[message] Configuration file %s is detected. "%VARIANT_CALL_TABLE + ENDC)
         rd = csv.reader(fd, delimiter="\t", quotechar='"')
@@ -145,7 +145,7 @@ if config["mode"] == "TvNp":
 
 if config["mode"] == "T":
     TUMOR_ONLY = True
-    VARIANT_CALL_TABLE = "variant_call_list_T.tsv"
+    VARIANT_CALL_TABLE = "config/variant_call_list_T.tsv"
     print(OKGREEN + "[message] Pipeline runs in Tumor Only mode." + ENDC)
     if os.path.isfile("VARIANT_CALL_TABLE"):
         print(OKGREEN + "[message] Configuration file variant_call_list_T.tsv is detected. " + ENDC)
