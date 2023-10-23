@@ -9,10 +9,12 @@ rule concat_samplesheet:
         R2 = expand("%s/{sample}_2.fastq.gz"%config["concat_fastq_dir"], sample = SAMPLES),
     params:
         concat_dir = config["concat_fastq_dir"],
-        queue = "shortq",
     threads: 4
     resources: 
-        mem_mb = 51200
+        mem_mb = 51200,
+        queue  = "shortq",
+        time_min = len(SAMPLES) * 10,
+        disk_mb  = dataset_size * 1024,
     log:
         out="logs/data/concat/concat_fastq_samplesheet.log"
     run:

@@ -10,8 +10,10 @@ rule amazon_s3_download_datasets:
     resources:
         queue  = "mediumq",
         mem_mb = 10240,
+        disk_mb= ( int(config["S3_DATASET_SIZE"].split('.')[0]) + 1 )*1024,
+        time_min = ( int(config["S3_DATASET_SIZE"].split('.')[0]) + 1 ) * 2,
     log:
-        out = f"logs/download/s3/amazon_s3_download_datasets.log"
+        out = f"logs/data/download/s3/amazon_s3_download_datasets.log"
     run:
         if sys.version_info.major < 3:
             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))

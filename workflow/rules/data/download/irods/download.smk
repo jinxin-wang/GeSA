@@ -123,9 +123,9 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
         threads: 4
         resources:
             queue  = "shortq",
-            mem_mb = 10240
+            mem_mb = 10240,
         log:
-            out = f"logs/download/irods/irods_query_datasets.log"
+            out = f"logs/data/download/irods/irods_query_datasets.log"
         run:
             #### require python3                                                                                                                                                                                 
             if sys.version_info.major < 3:
@@ -180,7 +180,7 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             queue  = "shortq",
             mem_mb = 10240,
         log:
-            out = f"logs/download/irods/irods_download_datasets.log"
+            out = f"logs/data/download/irods/irods_download_datasets.log"
         run:
             #### require python3                                                                                                                                                                                 
             if sys.version_info.major < 3:

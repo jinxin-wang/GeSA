@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import logging
+import subprocess
 import pandas as pd
 from pathlib import Path
 
@@ -80,7 +81,14 @@ SAMPLES = []
 for col_idx in range(len(samples_df.columns)):
     SAMPLES = list(set(samples_df.iloc[:, col_idx].tolist() + SAMPLES))
 
+# print(config["raw_fastq_dir"])
+raw_fastq_dir = config["raw_fastq_dir"]
+proc = subprocess.Popen(f"du -sh {raw_fastq_dir}", stdout = subprocess.PIPE, shell = True)
+(out, err) = proc.communicate()
 print(config["raw_fastq_dir"])
+print(out.decode('UTF-8'))
+print(out.decode('UTF-8').split("\t")[0].replace('G',''))
+dataset_size = int(out.decode('UTF-8').split("\t")[0].replace('G',''))
 
 # if config["do_concat"]:
 if os.path.isfile(config["sample_sheet"]) :

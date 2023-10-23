@@ -8,12 +8,14 @@ rule concat_src_dir:
         R2 = expand("%s/{sample}_2.fastq.gz"%config["concat_fastq_dir"], sample = SAMPLES),
     params:
         samples  = SAMPLES,
-        queue    = "shortq",
         reads_patterns = config["reads_patterns"],
         concat_fastq_dir = config["concat_fastq_dir"],
     threads: 4
     resources: 
-        mem_mb = 51200
+        mem_mb = 51200,
+        queue  = "shortq",
+        time_min = len(SAMPLES) * 10,
+        disk_mb  = dataset_size * 1024,
     log:
         out="logs/data/concat/concat_bash_from_dir.log"
     run:
@@ -31,7 +33,7 @@ rule concat_src_dir:
             
             reads_list = []
             for pattern in params.reads_patterns:
-                pattern = f"{input.raw_fastq_dir}/{sample}/**/{pattern}"
+                pattern = f"{input.raw_fastq_dir}/**/{sample}/**/{pattern}"
                 logging.info("matching pattern: {pattern}")
                 reads_list.extend(glob.glob(pattern, recursive = True))
 

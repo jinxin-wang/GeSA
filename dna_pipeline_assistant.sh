@@ -56,7 +56,7 @@ FTP="ftp"
 STORAGE="backup"
 
 DO_DOWNLOAD=false
-DATABASE=${IRODS}
+DATABASE=
 
 DO_MD5SUM=false
 MD5SUM_FILE="md5sum.txt"
@@ -300,6 +300,15 @@ function prepare_download_from_amazon_s3 {
     echo "[check point] Please provide the directory of the dataset on amazon s3: [for example: f22ftseuht1706] "
     read dataset
     echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\nS3_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd\nS3_dataset: ${dataset}\n" > ${WORKING_DIR}/config/download.yaml
+
+    echo -e "S3_CONFIG_FILE: ${WORKING_DIR}/config/s3_config.yaml\n" >> ${WORKING_DIR}/config/download.yaml
+
+    echo "[info] checking total data size to download. "
+    line_arr=( $(/mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd -c ${WORKING_DIR}/config/s3_config.yaml du s3://${dataset} --human-readable) )
+    dataset_size=${line_arr[0]}
+
+    echo "[info] total data size: ${dataset_size} "
+    echo -e "S3_DATASET_SIZE: ${dataset_size}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_bgi {
@@ -470,11 +479,11 @@ function build_download_cmd {
 echo 'downloading raw data to ${STORAGE_DIR}' ;
 module load java ;
 conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;	
-mkdir -p ${STORAGE_DIR} logs/slurm ; 
+mkdir -p logs/slurm ; 
 CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_DIR} ' ;
-${APP_SNAKEMAKE} \\
+snakemake \\
     --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
-    -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/download/entry_point.smk \\
+    -s workflow/rules/data/download/entry_point.smk \\
     --configfile config/download.yaml \\
     --config \${CONFIG_OPTIONS} ;
 conda deactivate ; " >> ${PIPELINE_SCRIPT} ;
@@ -499,10 +508,10 @@ echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
 module load java ; 
 conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
 mkdir -p ${CONCAT_DIR} ; 
-${APP_SNAKEMAKE} \\
+snakemake \\
     --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
     -s workflow/rules/data/concat/entry_point.smk \\
-    --configfile config/concat.yaml \\
+    --configfile workflow/config/concat.yaml \\
     --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ;
 conda deactivate ;" >> ${PIPELINE_SCRIPT} ;
 }
@@ -510,18 +519,37 @@ conda deactivate ;" >> ${PIPELINE_SCRIPT} ;
 function build_pipeline_cmd {
 
     CONFIG_OPTIONS="$1"
-    PIPELINE_SCRIPT="$2"
+    CONCAT_DIR="$2"
+    PIPELINE_SCRIPT="$3"
 
+    echo '
+if [ -z "$(ls DNA_samples)"  ] ; then '  >> ${PIPELINE_SCRIPT} ;
+    
     echo "
+    ln -s ${CONCAT_DIR}/*gz DNA_samples" >> ${PIPELINE_SCRIPT} ;
+    
+    echo '
+    cd DNA_samples
+    for s in * ; do
+        s1=${s//-/_}   ;
+        s2=${s1//__/_} ;
+        mv ${s} ${s2}  ;
+    done
+    cd ..
+fi ' >> ${PIPELINE_SCRIPT} ;
+    
+    echo "
+echo '[check point] Please check if the variant call table is correct: [enter to continue]'
+cat config/variant_call_list*tsv ;
+read line
+
 echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
 module load java ;
 mkdir -p logs/slurm/ ; 
 rm -f bam/*tmp* ;
 ${APP_SNAKEMAKE} \\
-    -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/Snakefile \\
     --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
     --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \\
-    --configfile config/config.json \\
     --config ${CONFIG_OPTIONS} " >> ${PIPELINE_SCRIPT} ;
     
 }
@@ -537,17 +565,18 @@ if [ -f config/patients.tsv ] ; then
     if [ -f ${line} ] ; then
         cp ${line} config/patients.tsv
     fi
-fi
+fi ' >> ${PIPELINE_SCRIPT}
 
-echo "Starting oncokb and civic annotation" ; 
-conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
+    echo "
+echo 'Starting oncokb and civic annotation' ; 
+conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
 ## 2.0 generate configuration files
 snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
 ## 2.1 mut. oncokb and civic annotations
 snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk ;
 ## 2.2 cna. oncokb and civic annotations
 snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk     ;
-conda deactivate ; ' >> ${PIPELINE_SCRIPT}
+conda deactivate ; " >> ${PIPELINE_SCRIPT}
 
 }
 
@@ -566,9 +595,9 @@ function help {
 
 SHORT_OPTS=a,i,h
 
-MANDATORY_OPTS=project-name:,pipeline-analysis-mode:,pipeline-sequencing-protocol:,pipeline-sample-species:
+MANDATORY_OPTS=project-name:,pipeline-analysis-mode:,pipeline-sequencing-protocol:,pipeline-sample-species:,download-DB:
 GENERAL_OPTS=date:,downloadDB:,rawDIR:,workDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,unlock,help
-DOWNLOAD_OPTS=download,download-configfile: # ,download-DB:,download-to:,
+DOWNLOAD_OPTS=download,download-configfile:,cluster-storage: # ,download-DB:,download-to:,
 MD5SUM_OPTS=md5check,md5check-file:,
 CONCAT_OPTS=concat,concat-sample-list:,concat-src:,concat-to:
 PIPELINE_OPTS=pipeline,clinic,pipeline-branch:,pipeline-analysis-batch:,pipeline-data-filetype:
@@ -597,7 +626,7 @@ while true ; do
 	    DOWNLOAD_CONFIGFILE=$2 ; shift 2 ;;
 	--download-DB )
 	    DATABASE=$2 ; shift 2 ;;
-	--cluster-DB )
+	--cluster-storage )
 	    CLUSTER_STORAGE=$2 ; shift 2 ;;
 
 	--md5check )
@@ -776,7 +805,7 @@ fi
 
 RUN_PIPELINE_SCRIPT="run_pipeline.sh"
 
-echo -e "#!/usr/bin/bash\n\nset -e" > ${RUN_PIPELINE_SCRIPT}
+echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
 
 #######################################
 #### init pipelline work directory ####
@@ -802,15 +831,15 @@ if [ ! -d ${WORKING_DIR}/workflow ] ; then
 	    read ANALYSIS_PIPELINE_SRC_DIR
 	fi
     fi
-    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/config.json ${WORKING_DIR}/config ;
-    # echo "[info] softlink to pipeline directory ${ANALYSIS_PIPELINE_SRC_DIR} " ;
-    # ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow  ${WORKING_DIR}/workflow ;
+    # cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/config.json ${WORKING_DIR}/config ;
+    echo "[info] softlink to pipeline directory ${ANALYSIS_PIPELINE_SRC_DIR} " ;
+    ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow  ${WORKING_DIR}/workflow ;
 fi
 
 if [ ${DO_DOWNLOAD} == true ] ; then
 
     if [ ${INTERACT} == false ] && [ -z ${DATABASE} ] ; then
-	echo "[Error] --download-DB is mandatory option for download. "
+	echo "[Error] --download-DB is mandatory option :  ${EGA} , ${IRODS}, ${AMAZON}, ${BGI}, ${FTP}, ${STORAGE} "
 	exit -1
     fi
     
@@ -877,7 +906,7 @@ if [ ${DO_DOWNLOAD} == true ] ; then
     else
 	if [ ! -f ${WORKING_DIR}/config/download.yaml ] ; then 
 	    echo "[info] copy an example of download configuration file to config/ directory, please setup the essential parameters" ;
-	    cp ${WORKING_DIR}/workflow/config/download.yaml ${WORKING_DIR}/config/ ;
+	    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/download.yaml ${WORKING_DIR}/config/ ;
 	fi
 	
 	STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
@@ -897,30 +926,48 @@ fi
 
 if [ ${DO_MD5SUM} == true ] ; then
 
+    echo "find_arr=($(find ${STORAGE_DIR} -name \"*md5sum*txt\")) ; " >> ${RUN_PIPELINE_SCRIPT} ;
+
     echo '
-echo "Please provide the md5sum file: [enter to continue] "
-read line
+if [ ${#find_arr[@]} == 1 ] ; then
+    line=${find_arr[0]}
+    echo "[info] The md5sum file: ${find_arr[0]} "
+else
+    if [ ${#find_arr[@]} > 1 ] ; then
+        echo "[info] Possible md5sum files: "
+        for fname in "${find_arr[@]}" ; do
+	    echo " - ${fname}"
+	done
+    fi 
+    echo "Please provide the md5sum file: [enter to continue] "
+    read line
+fi
 
 if [ ! -z ${line} ] ; then
     MD5SUM_FILE=${line}
     MD5SUM_LOG=${MD5SUM_FILE/.txt/.log}
 fi
+' >> ${RUN_PIPELINE_SCRIPT} ;
 
+    echo "cd ${STORAGE_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+    
+    echo '
 if [ -f ${MD5SUM_LOG} ] ; then
     echo "[info] md5sum had been verified previously. "
 elif [ ! -z ${MD5SUM_FILE} ] ; then 
     echo "[info] starting to verify md5sum "
-    md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
-fi
+    srun --mem=40960 -p shortq -D . -c 20 md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
+fi' >> ${RUN_PIPELINE_SCRIPT} ;
+
+    echo "cd ${WORKING_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
     
-if [ -f ${MD5SUM_LOG} ] && [ -z $(grep FAILED ${MD5SUM_LOG}) ] ; then
+    echo '
+if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) != 0 ] ; then
     echo "WARNING: Some files did NOT match md5sum, please check the log ${MD5SUM_LOG}. " ; 
     exit -1 ;
-fi '>> ${RUN_PIPELINE_SCRIPT} ;
+fi ' >> ${RUN_PIPELINE_SCRIPT} ;
 
 fi
-
-#### concat
 
 #### if concat fastq directory is given, then add to config options
 if [ ${DO_DOWNLOAD} == true ] || [ ${DO_CONCAT} == true ] ; then
@@ -1039,7 +1086,7 @@ if [ ${DO_PIPELINE} == true ] ; then
     fi
     
     #### if bam directory is not empty, then clean up temporal bam files
-    build_pipeline_cmd "${CONFIG_OPTIONS}" ${RUN_PIPELINE_SCRIPT} ;
+    build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${RUN_PIPELINE_SCRIPT} ;
 
 fi
 
@@ -1142,3 +1189,4 @@ rsync -avh --progress bam ${BACKUP_BAM_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
 fi 
 
 cp ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+chmod u+x  ${WORKING_DIR}/*sh ;
