@@ -519,10 +519,10 @@ function build_concat_cmd {
     PIPELINE_SCRIPT=$3 ;
     
     echo "
-if [ ! -f config/sample_sheet.tsv ] && [ ! -f config/variant_call_list_${MODE}.tsv ] ; then
-    echo '[Error] Please check if sample_sheet.tsv or variant_call_list_${MODE}.tsv is set in the config directory. '
-    exit -1
-fi
+# if [ ! -f config/sample_sheet.tsv ] && [ ! -f config/variant_call_list_${MODE}.tsv ] ; then
+#     echo '[Error] Please check if sample_sheet.tsv or variant_call_list_${MODE}.tsv is set in the config directory. '
+#     exit -1
+# fi
 
 echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
 module load java ; 
@@ -607,7 +607,99 @@ DATE=
 BATCH_POSTFIX=
 
 function help {
-    echo "Usage: dna_pipeline [cmd] [options]
+    echo "Usage: dna_pipeline_assistant [options]
+
+    This script help you to prepare the working directory and generate the script of entire process, including download the data then check md5sum, concatenation of reads, analysis of the samples, annotation by civic and oncokb, and backup everything to storage.
+
+    mandatory arguments :
+
+    --project-name
+	$BCC $XPSKIN $XPINTERNAL $NF2 ${UV_MMR}
+	$XPCtox $POLZ $DEN $ALCLAK $ATACseq
+	$FD02 $METARPISM $NEIL3 $STING
+
+    --download-DB
+	${EGA}, ${IRODS}, ${AMAZON}, ${BGI}, ${FTP}, ${STORAGE}
+
+    --pipeline-analysis-mode
+        TvN  - Tumor vs Normal
+	T    - Tumor Only
+	Tp   - Tumor vs Pon
+	TvNp - Tumor vs Normal vs Pon
+
+    --pipeline-sequencing-protocol
+	WGS, WES
+
+    --pipeline-sample-species
+	$HUMAN, $MOUSE
+
+    optional arguments :
+
+    -a, --all
+    	enable all the submodules: download, md5check, concat, analysis, civic and oncokb annotation, backup
+
+    -i, --interact
+    	interactive mode (Strongly recommended)
+
+    --date
+	format: YYYYMMDD
+	default: ${TODAY}
+
+    --batch-postfix
+	add postfix to working directory name      
+
+    enable submodules : 
+        --download
+        --md5check
+        --concat
+        --pipeline
+	--clinic
+        --backupALL
+        --backupFASTQ
+        --backupCONCAT
+        --backupBAM
+        --backupRESULTS
+
+    download submodule arguments :
+
+    	--download-configfile
+
+	--cluster-storage
+
+    check md5sum submodule arguments :
+
+        --md5check-file
+
+    concat submodule arguments :
+
+        --concat-sample-list
+	    a tsv file contains list of sample, it can be the variant call table.
+
+	--concat-src
+	    raw data directory
+
+	--concat-to
+	    concat data directory
+	   
+    analysis pipeline submodule arguments :
+
+    	--pipeline-branch
+	    set a specific branch of pipeline
+
+	--pipeline-data-filetype
+	    $FASTQ , $BAM
+
+	--cnvfacet
+	    activate cnv_facet submodule
+
+	--oncotator
+	    activate oncotator submodule
+
+    civic and oncokb annotation submodule arguments :
+
+        --clinic
+
+    backup submodule arguments :
 
     "
     exit 0
@@ -616,11 +708,11 @@ function help {
 SHORT_OPTS=a,i,h
 
 MANDATORY_OPTS=project-name:,pipeline-analysis-mode:,pipeline-sequencing-protocol:,pipeline-sample-species:,download-DB:
-GENERAL_OPTS=date:,downloadDB:,rawDIR:,workDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,unlock,help
-DOWNLOAD_OPTS=download,download-configfile:,cluster-storage: # ,download-DB:,download-to:,
+GENERAL_OPTS=date:,rawDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,help
+DOWNLOAD_OPTS=download,download-configfile:,cluster-storage: 
 MD5SUM_OPTS=md5check,md5check-file:,
 CONCAT_OPTS=concat,concat-sample-list:,concat-src:,concat-to:
-PIPELINE_OPTS=pipeline,clinic,pipeline-branch:,pipeline-analysis-batch:,pipeline-data-filetype:
+PIPELINE_OPTS=pipeline,clinic,pipeline-branch:,pipeline-data-filetype:,cnvfacet,oncotator
 BACKUP_OPTS=backupALL,backupFASTQ,backupCONCAT,backupBAM,backupRESULTS
 
 LONG_OPTS=${MANDATORY_OPTS},${GENERAL_OPTS},${DOWNLOAD_OPTS},${MD5SUM_OPTS},${CONCAT_OPTS},${PIPELINE_OPTS},${BACKUP_OPTS}
@@ -676,10 +768,12 @@ while true ; do
 	    SEQ_TYPE=$2 ; shift 2 ;;
         --pipeline-analysis-mode )
 	    MODE=$2 ; shift 2 ;;
-	--pipeline-analysis-batch )
-	    BATCH_POSTFIX=$2 ; shift 2 ;;
 	--pipeline-data-filetype )
 	    DATA_FILETYPE=$2 ; shift 2 ;;
+	--cnvfacet )
+	    DO_CNVFACET=true ; shift ;;
+	--oncotator )
+	    DO_ONCOTATOR=true ; shift ;;
 
 	--clinic )
 	    DO_CLINIC=true ; shift ;;
@@ -823,10 +917,6 @@ if [ -f ${VAR_TABLE} ] & [[ ${VAR_TABLE} != /* ]] ; then
     VAR_TABLE="${PWD}/${VAR_TABLE}"
 fi
 
-RUN_PIPELINE_SCRIPT="run_pipeline.sh"
-
-echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
-
 #######################################
 #### init pipelline work directory ####
 #######################################
@@ -840,6 +930,10 @@ WORKING_DIR="${SCRATCH_WORKING_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
 echo "[info] pipeline working directory: ${WORKING_DIR}"
 
 mkdir -p ${WORKING_DIR}/config
+
+RUN_PIPELINE_SCRIPT=${WORKING_DIR}/"run.sh"
+
+echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
 
 #### if workflow is not ln to src, then create a softlink
 if [ ! -d ${WORKING_DIR}/workflow ] ; then
@@ -1173,7 +1267,7 @@ rsync -avh --progress ${dir} ${BACKUP_RESULTS_PWD} ; " >> ${RUN_PIPELINE_SCRIPT}
 fi
 
 #### do backup of fastq raw data
-if [ $DO_BACKUP_FASTQ == true ] ; then
+if [ $DO_BACKUP_FASTQ == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
     echo "[info] backup raw fastq files to storage"
     BACKUP_FASTQ_PWD="${BACKUP_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
     echo "
@@ -1208,5 +1302,6 @@ rsync -avh --progress bam ${BACKUP_BAM_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
     fi
 fi 
 
-cp ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
-chmod u+x  ${WORKING_DIR}/*sh ;
+chmod u+x  ${RUN_PIPELINE_SCRIPT} ;
+
+echo -e "[Congratulations] The working directory is finally ready: \n${WORKING_DIR}"
