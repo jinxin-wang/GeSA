@@ -7,7 +7,7 @@ import pandas as pd
 from pathlib import Path
 
 configfile: "workflow/config/concat.yaml"
-    
+
 def is_match(r1: str, r2: str):
 
     read1, read2, flag = [*r1], [*r2], True
@@ -60,46 +60,63 @@ def do_softlink(fastq_file, concat_dir, sample_id, read12):
     os.system(softlink_cmd)
     logging.info("softlink %s R%s done."%(sample_id, read12))
 
-
-# rule softlink_to_concat_fastq:
-#     input:
-#         fastq = expand(config["concat_fastq_dir"] + "/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
-#     output:
-#         targets = expand("DNA_samples/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
-#     params:
-#         queue = "shortq",
-#     threads: 1
-#     resources: 
-#         mem_mb = 5120
-#     shell:
-#         "ln -s {input.fastq} DNA_samples/ ;"
-
-
-samples_df = pd.read_csv(config["sample_list"], sep="\t", header=None)
-SAMPLES = []
-
-for col_idx in range(len(samples_df.columns)):
-    SAMPLES = list(set(samples_df.iloc[:, col_idx].tolist() + SAMPLES))
-
-# print(config["raw_fastq_dir"])
 raw_fastq_dir = config["raw_fastq_dir"]
 proc = subprocess.Popen(f"du -sh {raw_fastq_dir}", stdout = subprocess.PIPE, shell = True)
 (out, err) = proc.communicate()
-print(config["raw_fastq_dir"])
-print(out.decode('UTF-8'))
-print(out.decode('UTF-8').split("\t")[0].replace('G',''))
 dataset_size = int(out.decode('UTF-8').split("\t")[0].replace('G',''))
-
-# if config["do_concat"]:
-if os.path.isfile(config["sample_sheet"]) :
-    include: "concat_samplesheet.smk"
     
-elif os.path.isdir(config["raw_fastq_dir"]) :
-    include: "concat_src_dir.smk"
+if os.path.isfile(config["sample_list"]):
+    samples_df = pd.read_csv(config["sample_list"], sep="\t", header=None)
+    SAMPLES = []
+
+    for col_idx in range(len(samples_df.columns)):
+        SAMPLES = list(set(samples_df.iloc[:, col_idx].tolist() + SAMPLES))
+
+    if os.path.isfile(config["sample_sheet"]) :
+        include: "concat_samplesheet.smk"
+    
+    elif os.path.isdir(config["raw_fastq_dir"]) :
+        include: "concat_samplelist.smk"
+    
+    else:
+        raise Exception("Missing rample sheet table or raw fastq directory.")
     
 else:
-    raise Exception("Missing rample sheet table or raw fastq directory.")
+    reads_list = []
+
+    raw_fastq_dir = config["raw_fastq_dir"]
+    
+    for pattern in config["reads_patterns"]:
+        pattern = f"{raw_fastq_dir}/**/{pattern}"
+        reads_list.extend(glob.glob(pattern, recursive = True))
+            
+    if len(reads_list) == 0:
+        raise Exception("Unable to find fastq files")
+
+    reads_list = [ Path(r) for r in reads_list ]
+
+    ## identify the depth of root directory 
+    fastq_idx = 0
+    fastq_dir= Path(raw_fastq_dir)
+    for parents_idx in range(10):
+        if reads_list[0].parents[parents_idx] == fastq_dir:
+            fastq_idx = parents_idx
+            break
+            
+    root_idx = 0
+    ## identify the directory which contains all the samples
+    for reverse_parents_idx in range(fastq_idx + 1):
+        if len(set([r.parents[fastq_idx - reverse_parents_idx] for r in reads_list ])) > 1 :
+            break
+        root_idx = fastq_idx - reverse_parents_idx
+            
+    reads_list.sort(key=lambda e: str(e))
+    SAMPLES = os.listdir(reads_list[0].parents[root_idx])
+    
+    include: "concat_src_dir.smk"
     
 rule concat_targets:
     input:
         fastq = expand(config["concat_fastq_dir"] + "/{sample}_{read}.fastq.gz", sample = SAMPLES, read = config["reads"]),
+            
+

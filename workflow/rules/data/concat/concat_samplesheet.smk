@@ -13,16 +13,15 @@ rule concat_samplesheet:
     resources: 
         mem_mb = 51200,
         queue  = "shortq",
-        time_min = len(SAMPLES) * 10,
+        time_min = dataset_size,
         disk_mb  = dataset_size * 1024,
     log:
         out="logs/data/concat/concat_fastq_samplesheet.log"
     run:
-        #### require python3    
+        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+
         if sys.version_info.major < 3:
             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
         sample_df = pd.read_csv(input.samplesheet, sep=',', header=0)
         sample_grps = sample_df.groupby(['sampleId', 'protocol'])
