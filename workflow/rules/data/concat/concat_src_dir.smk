@@ -24,9 +24,11 @@ rule concat_src_dir:
         if sys.version_info.major < 3:
             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
 
-        logging.info(f"list of sample : \n%s"%("\n".join(SAMPLES)))
+        logging.info(f"list of samples : \n%s"%("\n".join(SAMPLES)))
 
-        for sample in params.samples:
+        logging.info(f"list of reads : \n%s"%("\n".join(reads_list)))
+        
+        for sample in SAMPLES:
             
             logging.info("build concat cmd for sample %s"%sample)
             
