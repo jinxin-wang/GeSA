@@ -9,9 +9,9 @@ rule concat_src_dir:
         R2 = expand("%s/{sample}_2.fastq.gz"%config["concat_fastq_dir"], sample = SAMPLES),
     params:
         concat_fastq_dir = config["concat_fastq_dir"],
-    threads: 8
+    threads: 1
     resources: 
-        mem_mb = 20480,
+        mem_mb = 10240,
         queue  = "shortq",
         time_min = dataset_size,
         disk_mb  = dataset_size * 1024,
@@ -26,7 +26,7 @@ rule concat_src_dir:
 
         logging.info(f"list of samples : \n%s"%("\n".join(SAMPLES)))
 
-        logging.info(f"list of reads : \n%s"%("\n".join(reads_list)))
+        logging.info(f"list of reads : \n%s"%("\n".join([ str(r) for r in reads_list])))
         
         for sample in SAMPLES:
             

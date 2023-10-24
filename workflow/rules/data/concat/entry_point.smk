@@ -110,7 +110,7 @@ else:
             break
         root_idx = fastq_idx - reverse_parents_idx
             
-    reads_list.sort(key=lambda e: str(e))
+    reads_list.sort(key=lambda e: e.absolute().as_posix() )
     SAMPLES = os.listdir(reads_list[0].parents[root_idx])
     
     include: "concat_src_dir.smk"
