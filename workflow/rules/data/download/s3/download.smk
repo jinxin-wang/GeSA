@@ -10,16 +10,14 @@ rule amazon_s3_download_datasets:
     resources:
         queue  = "mediumq",
         mem_mb = 10240,
-        disk_mb= ( int(config["S3_DATASET_SIZE"].split('.')[0]) + 1 )*1024,
-        time_min = ( int(config["S3_DATASET_SIZE"].split('.')[0]) + 1 ) * 2,
+        disk_mb  = dataset_size * 1024,
+        time_min = dataset_size * 2,
     log:
         out = f"logs/data/download/s3/amazon_s3_download_datasets.log"
     run:
-        if sys.version_info.major < 3:
-            logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
-        cmd = f"mkdir -p {output.storage_path} ; cd {output.storage_path} ; {params.s3cmd} -c {input.config} get s3://{params.dataset}/ --recursive "
+        cmd = f"mkdir -p {output.storage_path} ;
+                {params.s3cmd} -c {input.config} get --recursive s3://{params.dataset}/ {output.storage_path} ; "
+        
         logging.info(f"executing S3 command: {cmd}")
+        
         os.system(cmd)

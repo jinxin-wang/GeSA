@@ -78,16 +78,12 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
         threads: 4
         resources:
             queue  = "shortq",
-            mem_mb = 10240
+            mem_mb = 10240,
+            disk_mb  = dataset_size * 1024,
+            time_min = dataset_size * 2,
         log:
-            out = f"logs/download/irods/irods_metadata_download.log"
+            out = f"logs/data/download/irods/irods_metadata_download.log"
         run:
-            #### require python3                                                                                                                                                                                 
-            if sys.version_info.major < 3:
-                logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-                
-            logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
             exten = str(input.meta).strip().split(".")[-1]
             meta_df   = None
             
@@ -127,12 +123,6 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
         log:
             out = f"logs/data/download/irods/irods_query_datasets.log"
         run:
-            #### require python3                                                                                                                                                                                 
-            if sys.version_info.major < 3:
-                logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-            logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
             bilan = str(input.bilan)
             exten = bilan.strip().split(".")[-1]
             bilan_df  = None
@@ -179,15 +169,11 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
         resources:
             queue  = "shortq",
             mem_mb = 10240,
+            disk_mb  = dataset_size * 1024,
+            time_min = dataset_size * 2,
         log:
             out = f"logs/data/download/irods/irods_download_datasets.log"
         run:
-            #### require python3                                                                                                                                                                                 
-            if sys.version_info.major < 3:
-                logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-            logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
             bilan = str(input.bilan)
             exten = bilan.strip().split(".")[-1]
             bilan_df  = None

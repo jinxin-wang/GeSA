@@ -196,7 +196,7 @@ function prepare_download_from_irods {
     echo "[info] setup iRODS download configuration file "
     DATABASE=${IRODS} ;
 
-    echo "[check point] activate session to iRODS on cluster "
+    echo "[check point] Please activate session to iRODS on cluster "
     iinit ;
 
     echo "[check point] Please provide the metadata sheet: [example: metadata.csv]"
@@ -221,6 +221,8 @@ function prepare_download_from_irods {
 	if [ -z ${coln_sampleid} ] ; then
 	    coln_sampleid="sampleAlias"
 	fi
+	num_fastq_arr=($(wc -l ${metadata}))
+	dataset_size=$((${num_fastq_arr[0]}*2))
     else
 	echo "[check point] Please provide the bilan table of samples, [tsv/csv] "
 	echo "for example: config/bilan.tsv"
@@ -266,9 +268,11 @@ function prepare_download_from_irods {
 	    dataset_cquery_keys_arr[${#dataset_cquery_keys_arr[@]}]="'${line}'"
 	done
 	dataset_cquery_keys="[$(join_by_char ',' ${dataset_cquery_keys_arr[@]})]"
+	num_samples_arr=($(wc -l ${bilan_table})) ;
+	dataset_size=$((${num_samples_arr[0]}*10)) ;
     fi
 
-    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_datasets_metadata: ${metadata}\niRODS_METADATA_SAMPLE_ID: ${coln_sampleid}\niRODS_METADATA_PATH: ${coln_filepath}\n\n" >> ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_sample_bilan: ${bilan_table}\niRODS_PROJECT_NAMES: ${project_names}\n" >> ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_BILAN_QUERY_KEY: ${bilan_query_key}\niRODS_DATASET_QUERY_KEY: ${dataset_query_key}\n" >> ${WORKING_DIR}/config/download.yaml
@@ -323,14 +327,24 @@ function prepare_download_from_bgi {
     echo "[check point] Please provide the password of GeneAn account: [example: hy__cb@Hy@fjxzrz]"
     read passwd
 
+    echo "[check point] Verify the login and password: "
+    /mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry login 
+    
+    /mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry project
     echo "[check point] Please provide the project name or project No. "
     read dataset
 
-    echo "[check point] Please provide the path of the project on GeneAn Cloud: "
+    echo "[check point] Please provide the path of the project on GeneAn Cloud: [default: '/'] "
     read cpath
+    if [ -z ${cpath} ] ; then
+	cpath='/'
+    fi
 
-   echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
-   echo -e "BGI_APP: '/mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry'\nBGI_USERNAME: ${user}\nBGI_PASSWORD: ${passwd}\nBGI_dataset: ${dataset}\nBGI_CLOUDPATH: ${cpath}\n" >> ${WORKING_DIR}/config/download.yaml
+    echo "[check point] Please estimate the size of the dataset: "
+    read dataset_size
+    
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "BGI_APP: '/mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry'\nBGI_USERNAME: ${user}\nBGI_PASSWORD: ${passwd}\nBGI_dataset: ${dataset}\nBGI_CLOUDPATH: ${cpath}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_ftp_server {
@@ -347,16 +361,22 @@ function prepare_download_from_ftp_server {
     echo "[check point] Please provide the password of ftp server: "
     read passwd 
 
-    echo "[check point] Please provide the ip address of ftp server: "
+    echo "[check point] Please provide the host or ip address of ftp server: "
     read hostaddr
 
     echo "[check point] Please provide the directory to download on the ftp server: "
     /mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp -c "set ftp:ssl-allow no; open -u ${username}, ${passwd} ${hostaddr} ; ls "
-    echo -e "\n\nThe directory to download is : "
+    echo -e "\n\nThe directory to download is : [default: .] "
     read dataset
+    if [ -z ${dataset} ] ; then
+	dataset='.'
+    fi
 
-    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
-    echo -e "FTP_APP: '/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp'\nFTP_USERNAME: ${username}\nFTP_PASSWORD: ${passwd}\nFTP_SERVER_ADDR: ${hostaddr}\nFTP_DATASET: ${dataset}\n" >> ${WORKING_DIR}/config/download.yaml
+    line_arr=( $(/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp -c "set ftp:ssl-allow no; open -u ${username}, ${passwd} ${hostaddr} ; du -s --block-size=1073741824 ${dataset} ") )
+    dataset_size="${line_arr[0]}G"
+    
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "FTP_APP: '/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp'\nFTP_USERNAME: ${username}\nFTP_PASSWORD: ${passwd}\nFTP_HOST: ${hostaddr}\nFTP_DATASET: ${dataset}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_backup_storage {

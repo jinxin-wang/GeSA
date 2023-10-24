@@ -1,12 +1,13 @@
 DATABASE:     "iRODS"
 STORAGE_PATH: "/mnt/beegfs/scratch/j_wang/01_RawData/STING_UNLOCK/STING_UNLOCK_Batch3_META"
+DATASET_SIZE: 100G
 
-## EGA:
+## EGA
 EGA_CONFIG_FILE: 'config/ega_config.json' 
 EGA_DATASETS: ['EGAD00001009695','EGAD00001009696']
 EGA_CONNECTIONS: 500
 
-## iRODS:
+## iRODS
 iRODS_datasets_metadata: "config/metadata_20230927.csv"
 iRODS_METADATA_SAMPLE_ID: "Alias:STING sample number"
 iRODS_METADATA_PATH: "datafilePath"
@@ -18,8 +19,21 @@ iRODS_bilan_cquery_keys:   ["PATIENT_ID", "PROTOCOL", "SampleType"]
 iRODS_DATASET_QUERY_KEY:   "sampleAlias"
 iRODS_dataset_cquery_keys: ["patientAlias","protocol", "sampleType"]
 
-S3:
-    todo: ""
+## S3
+S3_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd
+S3_dataset: homlsxyr-598731762349/F23A430001132-04_HOMlsxyR
+S3_CONFIG_FILE: /mnt/beegfs/scratch/j_wang/03_Results/04_XP_skin/20231023_human_WGS_TvN/config/s3_config.yaml
 
-# conda:
-#     python3.10: "/mnt/beegfs/userdata/j_wang/.conda/envs/python3.10/"
+## BGI GENEAN
+BGI_APP: /mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry
+BGI_USERNAME: FhwAlb4pr5slwe6@genean.addr
+BGI_PASSWORD: hy__cb@Hy@fjxzrz
+BGI_dataset: 
+BGI_CLOUDPATH: '/'
+
+## FTP SERVER
+FTP_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp
+FTP_USERNAME: ega-box-898
+FTP_PASSWORD: 55CZEu4j
+FTP_HOST: ftp.ega.ebi.ac.uk
+FTP_DATASET: SANOFI

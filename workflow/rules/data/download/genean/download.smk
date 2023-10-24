@@ -1,5 +1,3 @@
-import subprocess
-
 rule bgi_genean_download_datasets:
     output:
         storage_path = directory(config["STORAGE_PATH"]),
@@ -9,18 +7,15 @@ rule bgi_genean_download_datasets:
         passwd = config["BGI_PASSWORD"],
         dataset= config["BGI_dataset"],
         cpath  = config["BGI_CLOUDPATH"],
-    threads: 4
+    threads: 10
     resources:
         queue  = "longq",
         mem_mb = 10240,
+        disk_mb  = dataset_size * 1024,
+        time_min = dataset_size * 10,
     log:
         out = f"logs/download/genean/bgi_genean_download_datasets.log"
     run:
-        if sys.version_info.major < 3:
-            logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
         logging.info(f"logging genean: {params.s3cmd} login {params.user}")
         
         login_sp  = subprocess.Popen([str(params.s3cmd), 'login', str(params.user)],
