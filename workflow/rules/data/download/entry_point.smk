@@ -30,12 +30,6 @@ configfile: "workflow/config/download.yaml",
 
 dataset_size = int(config["DATASET_SIZE"].replace('G','').split('.')[0]) + 1 
 
-if sys.version_info.major < 3:
-    logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-    
-logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
-
-
 if   config["DATABASE"] == IRODS:
     include: "irods/download.smk"
 elif config["DATABASE"] == AMAZON:
