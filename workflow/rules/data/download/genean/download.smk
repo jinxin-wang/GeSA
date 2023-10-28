@@ -14,7 +14,9 @@ rule bgi_genean_download_datasets:
         disk_mb  = dataset_size * 1024,
         time_min = dataset_size * 10,
     log:
-        out = f"logs/download/genean/bgi_genean_download_datasets.log"
+        out = "logs/download/genean/bgi_genean_download_datasets.log"
+    benchmark:
+        out = "logs/benchmark/download/genean/bgi_genean_download_datasets.tsv"
     run:
         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 

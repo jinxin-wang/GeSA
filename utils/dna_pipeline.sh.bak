@@ -10,20 +10,20 @@ set -e
 
 FASTQS_DIR="01_RawData"
 CONCATS_DIR="02_ConcatData"
-RESULTS_DIR="03_Results"
+WORKING_DIR="03_Projects"
 BAMS_DIR="04_BamData"
 
 BACKUP_PWD="/mnt/glustergv0/U981/NIKOLAEV/${USER^^}"
 SCRATCH_PWD="/mnt/beegfs/scratch/${USER}"
 
 BACKUP_FASTQ_PWD="${BACKUP_PWD}/${FASTQS_DIR}"
-BACKUP_CONCATS_PWD="${BACKUP_PWD}/${CONCATS_DIR}"
-BACKUP_RESULTS_PWD="${BACKUP_PWD}/${RESULTS_DIR}"
+BACKUP_CONCAT_PWD="${BACKUP_PWD}/${CONCATS_DIR}"
+BACKUP_WORKING_PWD="${BACKUP_PWD}/${WORKING_DIR}"
 BACKUP_BAM_PWD="${BACKUP_PWD}/${BAMS_DIR}"
 
 SCRATCH_FASTQ_PWD="${SCRATCH_PWD}/${FASTQS_DIR}"
 SCRATCH_CONCAT_PWD="${SCRATCH_PWD}/${CONCATS_DIR}"
-SCRATCH_WORKING_PWD="${SCRATCH_PWD}/${RESULTS_DIR}"
+SCRATCH_WORKING_PWD="${SCRATCH_PWD}/${WORKING_DIR}"
 
 #### #### #### #### #### #### #### #### ####
 ####       default global variables     ####
@@ -56,7 +56,7 @@ FTP="ftp"
 STORAGE="backup"
 
 DO_DOWNLOAD=false
-DATABASE=
+DATABASE=${IRODS}
 
 DO_MD5SUM=false
 MD5SUM_FILE="md5sum.txt"
@@ -151,6 +151,63 @@ function join_by_char {
   echo "$*" ;
 }
 
+function build_download_cmd {
+    PROJECT_NAME=$1
+    STORAGE_DIR=$2
+
+    # 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+    #   --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
+    
+    echo "echo 'downloading raw data to ${STORAGE_DIR}'
+    module load java
+    mkdir -p ${STORAGE_DIR} logs/slurm ; 
+    CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_DIR} '
+    ${APP_SNAKEMAKE} \
+        --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \
+	-s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/download/entry_point.smk \
+	--configfile config/download.yaml \
+	--config ${CONFIG_OPTIONS} ;  " >> ${RUN_PIPELINE_SCRIPT} ;
+}
+
+function build_concat_cmd {
+    # 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+    #	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
+
+    STORAGE_DIR=$1 ;
+    CONCAT_DIR=$2  ;
+
+    echo "echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
+    module load java ; 
+    mkdir -p ${CONCAT_DIR} ; 
+    ${APP_SNAKEMAKE} \ 
+	--profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \ 
+	-s workflow/rules/data/concat/entry_point.smk 
+	--configfile config/concat.yaml \
+	--config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+}
+
+function build_pipeline_cmd {
+
+    #### if bam directory is not empty, then clean up temporal bam files
+    echo -e 'if [ -d ${bam_dir} ] && [ "$(ls ${bam_dir})" ] ; then \n	rm -f bam/*tmp* ;\nfi' >> ${RUN_PIPELINE_SCRIPT} ;
+	
+    echo "[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode ;
+    module load java ;
+    mkdir -p logs/slurm/ ; 
+    ${APP_SNAKEMAKE} \
+	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
+	--config ${CONFIG_OPTIONS} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+}
+
+function build_oncokb_civic_cmd {
+
+}
+
+function build_backup_cmd {
+
+}
+
 function prepare_download_from_ega {
     STORAGE_DIR=$1
     
@@ -196,7 +253,7 @@ function prepare_download_from_irods {
     echo "[info] setup iRODS download configuration file "
     DATABASE=${IRODS} ;
 
-    echo "[check point] Please activate session to iRODS on cluster "
+    echo "[check point] activate session to iRODS on cluster "
     iinit ;
 
     echo "[check point] Please provide the metadata sheet: [example: metadata.csv]"
@@ -221,8 +278,6 @@ function prepare_download_from_irods {
 	if [ -z ${coln_sampleid} ] ; then
 	    coln_sampleid="sampleAlias"
 	fi
-	num_fastq_arr=($(wc -l ${metadata}))
-	dataset_size=$((${num_fastq_arr[0]}*2))
     else
 	echo "[check point] Please provide the bilan table of samples, [tsv/csv] "
 	echo "for example: config/bilan.tsv"
@@ -268,11 +323,9 @@ function prepare_download_from_irods {
 	    dataset_cquery_keys_arr[${#dataset_cquery_keys_arr[@]}]="'${line}'"
 	done
 	dataset_cquery_keys="[$(join_by_char ',' ${dataset_cquery_keys_arr[@]})]"
-	num_samples_arr=($(wc -l ${bilan_table})) ;
-	dataset_size=$((${num_samples_arr[0]}*10)) ;
     fi
 
-    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_datasets_metadata: ${metadata}\niRODS_METADATA_SAMPLE_ID: ${coln_sampleid}\niRODS_METADATA_PATH: ${coln_filepath}\n\n" >> ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_sample_bilan: ${bilan_table}\niRODS_PROJECT_NAMES: ${project_names}\n" >> ${WORKING_DIR}/config/download.yaml
     echo -e "iRODS_BILAN_QUERY_KEY: ${bilan_query_key}\niRODS_DATASET_QUERY_KEY: ${dataset_query_key}\n" >> ${WORKING_DIR}/config/download.yaml
@@ -304,15 +357,6 @@ function prepare_download_from_amazon_s3 {
     echo "[check point] Please provide the directory of the dataset on amazon s3: [for example: f22ftseuht1706] "
     read dataset
     echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\nS3_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd\nS3_dataset: ${dataset}\n" > ${WORKING_DIR}/config/download.yaml
-
-    echo -e "S3_CONFIG_FILE: ${WORKING_DIR}/config/s3_config.yaml\n" >> ${WORKING_DIR}/config/download.yaml
-
-    echo "[info] checking total data size to download. "
-    line_arr=( $(/mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd -c ${WORKING_DIR}/config/s3_config.yaml du s3://${dataset} --human-readable) )
-    dataset_size=${line_arr[0]}
-
-    echo "[info] total data size: ${dataset_size} "
-    echo -e "S3_DATASET_SIZE: ${dataset_size}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_bgi {
@@ -327,24 +371,14 @@ function prepare_download_from_bgi {
     echo "[check point] Please provide the password of GeneAn account: [example: hy__cb@Hy@fjxzrz]"
     read passwd
 
-    echo "[check point] Verify the login and password: "
-    /mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry login 
-    
-    /mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry project
     echo "[check point] Please provide the project name or project No. "
     read dataset
 
-    echo "[check point] Please provide the path of the project on GeneAn Cloud: [default: '/'] "
+    echo "[check point] Please provide the path of the project on GeneAn Cloud: "
     read cpath
-    if [ -z ${cpath} ] ; then
-	cpath='/'
-    fi
 
-    echo "[check point] Please estimate the size of the dataset: "
-    read dataset_size
-    
-    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
-    echo -e "BGI_APP: '/mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry'\nBGI_USERNAME: ${user}\nBGI_PASSWORD: ${passwd}\nBGI_dataset: ${dataset}\nBGI_CLOUDPATH: ${cpath}\n" >> ${WORKING_DIR}/config/download.yaml
+   echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
+   echo -e "BGI_APP: '/mnt/beegfs/userdata/j_wang/BGI_GENEAN/ferry'\nBGI_USERNAME: ${user}\nBGI_PASSWORD: ${passwd}\nBGI_dataset: ${dataset}\nBGI_CLOUDPATH: ${cpath}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_ftp_server {
@@ -361,22 +395,16 @@ function prepare_download_from_ftp_server {
     echo "[check point] Please provide the password of ftp server: "
     read passwd 
 
-    echo "[check point] Please provide the host or ip address of ftp server: "
+    echo "[check point] Please provide the ip address of ftp server: "
     read hostaddr
 
     echo "[check point] Please provide the directory to download on the ftp server: "
     /mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp -c "set ftp:ssl-allow no; open -u ${username}, ${passwd} ${hostaddr} ; ls "
-    echo -e "\n\nThe directory to download is : [default: .] "
+    echo -e "\n\nThe directory to download is : "
     read dataset
-    if [ -z ${dataset} ] ; then
-	dataset='.'
-    fi
 
-    line_arr=( $(/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp -c "set ftp:ssl-allow no; open -u ${username}, ${passwd} ${hostaddr} ; du -s --block-size=1073741824 ${dataset} ") )
-    dataset_size="${line_arr[0]}G"
-    
-    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
-    echo -e "FTP_APP: '/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp'\nFTP_USERNAME: ${username}\nFTP_PASSWORD: ${passwd}\nFTP_HOST: ${hostaddr}\nFTP_DATASET: ${dataset}\n" >> ${WORKING_DIR}/config/download.yaml
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "FTP_APP: '/mnt/beegfs/userdata/j_wang/.conda/envs/work/bin/lftp'\nFTP_USERNAME: ${username}\nFTP_PASSWORD: ${passwd}\nFTP_SERVER_ADDR: ${hostaddr}\nFTP_DATASET: ${dataset}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
 function prepare_download_from_backup_storage {
@@ -458,148 +486,6 @@ function prepare_variant_call_table {
 
 }
 
-function check_md5sum_file {
-    ## if md5sum file doesn't exist, search in raw fastq data directory.
-    ## user need to choose the correct one
-    if [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
-	for md5 in `find ${FASTQ_SAMPLES_DIR} -name "*md5*txt" ` ; do
-	    echo "[INTERVENE] Is ${md5} the md5sum file ? [y/n]" ; 
-	    read line ;
-	    if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-		echo "OK"
-		MD5SUM_FILE=${md5} ;
-		break ;
-	    fi
-	done
-    fi
-
-    ## if not found, specify the location
-    if  [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
-	echo "[INTERVENE] Please specify the md5sum file location: " ;
-	read MD5SUM_FILE ;
-    fi
-
-    ## exist if all failed.
-    if  [ ! -f ${MD5SUM_FILE} ] ; then
-	echo "[ERROR] Unable to find the md5 file. Please check!"
-	exit -1
-    fi
-}
-
-function build_download_cmd {
-    
-    PROJECT_NAME=$1
-    STORAGE_DIR=$2
-    PIPELINE_SCRIPT=$3
-    
-    # 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
-    #   --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
-    
-    echo "
-echo 'downloading raw data to ${STORAGE_DIR}' ;
-module load java ;
-conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;	
-mkdir -p logs/slurm ; 
-CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_DIR} ' ;
-snakemake \\
-    --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
-    -s workflow/rules/data/download/entry_point.smk \\
-    --configfile config/download.yaml \\
-    --config \${CONFIG_OPTIONS} ;
-conda deactivate ; " >> ${PIPELINE_SCRIPT} ;
-
-}
-
-function build_concat_cmd {
-    # 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
-    #	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
-
-    STORAGE_DIR=$1 ;
-    CONCAT_DIR=$2  ;
-    PIPELINE_SCRIPT=$3 ;
-    
-    echo "
-# if [ ! -f config/sample_sheet.tsv ] && [ ! -f config/variant_call_list_${MODE}.tsv ] ; then
-#     echo '[Error] Please check if sample_sheet.tsv or variant_call_list_${MODE}.tsv is set in the config directory. '
-#     exit -1
-# fi
-
-echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
-module load java ; 
-conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
-mkdir -p ${CONCAT_DIR} ; 
-snakemake \\
-    --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
-    -s workflow/rules/data/concat/entry_point.smk \\
-    --configfile workflow/config/concat.yaml \\
-    --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ;
-conda deactivate ;" >> ${PIPELINE_SCRIPT} ;
-}
-
-function build_pipeline_cmd {
-
-    CONFIG_OPTIONS="$1"
-    CONCAT_DIR="$2"
-    PIPELINE_SCRIPT="$3"
-
-    echo '
-if [ -z "$(ls DNA_samples)"  ] ; then '  >> ${PIPELINE_SCRIPT} ;
-    
-    echo "
-    ln -s ${CONCAT_DIR}/*gz DNA_samples" >> ${PIPELINE_SCRIPT} ;
-    
-    echo '
-    cd DNA_samples
-    for s in * ; do
-        s1=${s//-/_}   ;
-        s2=${s1//__/_} ;
-        mv ${s} ${s2}  ;
-    done
-    cd ..
-fi ' >> ${PIPELINE_SCRIPT} ;
-    
-    echo "
-echo '[check point] Please check if the variant call table is correct: [enter to continue]'
-cat config/variant_call_list*tsv ;
-read line
-
-echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
-module load java ;
-mkdir -p logs/slurm/ ; 
-rm -f bam/*tmp* ;
-${APP_SNAKEMAKE} \\
-    --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
-    --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \\
-    --config ${CONFIG_OPTIONS} " >> ${PIPELINE_SCRIPT} ;
-    
-}
-
-function build_oncokb_civic_cmd {
-
-    PIPELINE_SCRIPT=$1
-    
-    echo '
-if [ -f config/patients.tsv ] ; then
-    echo "[check point] please provide patients table" ;
-    read line
-    if [ -f ${line} ] ; then
-        cp ${line} config/patients.tsv
-    fi
-fi ' >> ${PIPELINE_SCRIPT}
-
-    echo "
-echo 'Starting oncokb and civic annotation' ; 
-conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
-## 2.0 generate configuration files
-snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
-## 2.1 mut. oncokb and civic annotations
-snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk ;
-## 2.2 cna. oncokb and civic annotations
-snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk     ;
-conda deactivate ; " >> ${PIPELINE_SCRIPT}
-
-}
-
 #######################################
 ####           parse args          ####
 #######################################
@@ -607,99 +493,7 @@ DATE=
 BATCH_POSTFIX=
 
 function help {
-    echo "Usage: dna_pipeline_assistant [options]
-
-    This script help you to prepare the working directory and generate the script of entire process, including download the data then check md5sum, concatenation of reads, analysis of the samples, annotation by civic and oncokb, and backup everything to storage.
-
-    mandatory arguments :
-
-    --project-name
-	$BCC $XPSKIN $XPINTERNAL $NF2 ${UV_MMR}
-	$XPCtox $POLZ $DEN $ALCLAK $ATACseq
-	$FD02 $METARPISM $NEIL3 $STING
-
-    --download-DB
-	${EGA}, ${IRODS}, ${AMAZON}, ${BGI}, ${FTP}, ${STORAGE}
-
-    --pipeline-analysis-mode
-        TvN  - Tumor vs Normal
-	T    - Tumor Only
-	Tp   - Tumor vs Pon
-	TvNp - Tumor vs Normal vs Pon
-
-    --pipeline-sequencing-protocol
-	WGS, WES
-
-    --pipeline-sample-species
-	$HUMAN, $MOUSE
-
-    optional arguments :
-
-    -a, --all
-    	enable all the submodules: download, md5check, concat, analysis, civic and oncokb annotation, backup
-
-    -i, --interact
-    	interactive mode (Strongly recommended)
-
-    --date
-	format: YYYYMMDD
-	default: ${TODAY}
-
-    --batch-postfix
-	add postfix to working directory name      
-
-    enable submodules : 
-        --download
-        --md5check
-        --concat
-        --pipeline
-	--clinic
-        --backupALL
-        --backupFASTQ
-        --backupCONCAT
-        --backupBAM
-        --backupRESULTS
-
-    download submodule arguments :
-
-    	--download-configfile
-
-	--cluster-storage
-
-    check md5sum submodule arguments :
-
-        --md5check-file
-
-    concat submodule arguments :
-
-        --concat-sample-list
-	    a tsv file contains list of sample, it can be the variant call table.
-
-	--concat-src
-	    raw data directory
-
-	--concat-to
-	    concat data directory
-	   
-    analysis pipeline submodule arguments :
-
-    	--pipeline-branch
-	    set a specific branch of pipeline
-
-	--pipeline-data-filetype
-	    $FASTQ , $BAM
-
-	--cnvfacet
-	    activate cnv_facet submodule
-
-	--oncotator
-	    activate oncotator submodule
-
-    civic and oncokb annotation submodule arguments :
-
-        --clinic
-
-    backup submodule arguments :
+    echo "Usage: dna_pipeline [cmd] [options]
 
     "
     exit 0
@@ -707,15 +501,14 @@ function help {
 
 SHORT_OPTS=a,i,h
 
-MANDATORY_OPTS=project-name:,pipeline-analysis-mode:,pipeline-sequencing-protocol:,pipeline-sample-species:,download-DB:
-GENERAL_OPTS=date:,rawDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,help
-DOWNLOAD_OPTS=download,download-configfile:,cluster-storage: 
+GENERAL_OPTS=project-name:,date:,downloadDB:,rawDIR:,workDIR:,pipelineDIR:,backupDIR:,batch-postfix:,interact,unlock,help
+DOWNLOAD_OPTS=download,download-configfile: # ,download-DB:,download-to:,
 MD5SUM_OPTS=md5check,md5check-file:,
 CONCAT_OPTS=concat,concat-sample-list:,concat-src:,concat-to:
-PIPELINE_OPTS=pipeline,clinic,pipeline-branch:,pipeline-data-filetype:,cnvfacet,oncotator
+PIPELINE_OPTS=pipeline,clinic,pipeline-branch:,pipeline-sample-species:,pipeline-sequencing-protocol:,pipeline-analysis-mode:,pipeline-analysis-batch:,pipeline-data-filetype:
 BACKUP_OPTS=backupALL,backupFASTQ,backupCONCAT,backupBAM,backupRESULTS
 
-LONG_OPTS=${MANDATORY_OPTS},${GENERAL_OPTS},${DOWNLOAD_OPTS},${MD5SUM_OPTS},${CONCAT_OPTS},${PIPELINE_OPTS},${BACKUP_OPTS}
+LONG_OPTS=${GENERAL_OPTS},${DOWNLOAD_OPTS},${MD5SUM_OPTS},${CONCAT_OPTS},${PIPELINE_OPTS},${BACKUP_OPTS}
 
 OPTS=$(getopt -a -n run_pipeline --options ${SHORT_OPTS} --longoptions ${LONG_OPTS} -- "$@")
 
@@ -725,7 +518,7 @@ while true ; do
     case "$1" in
 	-a | --all )
 	    enable_all_tasks ; shift ;;
-	--project-name )
+	--project-name ) 
 	    PROJECT_NAME=$2 ; shift 2 ;;
 	--batch-postfix ) 
 	    BATCH_POSTFIX=$2 ; shift 2 ;;
@@ -738,8 +531,8 @@ while true ; do
 	    DOWNLOAD_CONFIGFILE=$2 ; shift 2 ;;
 	--download-DB )
 	    DATABASE=$2 ; shift 2 ;;
-	--cluster-storage )
-	    CLUSTER_STORAGE=$2 ; shift 2 ;;
+	--cluster-DB )
+	    
 
 	--md5check )
 	    DO_MD5SUM=true ; shift ;;
@@ -755,7 +548,7 @@ while true ; do
 	    FASTQ_SAMPLES_DIR=$2 ;
 	    shift 2 ;;  
 	--concat-to )
-	    CONCAT_DIR=$2 ;
+	    CONCAT_SAMPLES_DIR=$2 ;
 	    shift 2 ;;
 	
 	--pipeline )
@@ -768,12 +561,10 @@ while true ; do
 	    SEQ_TYPE=$2 ; shift 2 ;;
         --pipeline-analysis-mode )
 	    MODE=$2 ; shift 2 ;;
+	--pipeline-analysis-batch )
+	    BATCH_POSTFIX=$2 ; shift 2 ;;
 	--pipeline-data-filetype )
 	    DATA_FILETYPE=$2 ; shift 2 ;;
-	--cnvfacet )
-	    DO_CNVFACET=true ; shift ;;
-	--oncotator )
-	    DO_ONCOTATOR=true ; shift ;;
 
 	--clinic )
 	    DO_CLINIC=true ; shift ;;
@@ -800,51 +591,45 @@ while true ; do
     esac
 done
 
-if [ -z ${PROJECT_NAME} ] ; then
-    if [ ${INTERACT} == true ] ; then
-	echo -e "[check point] Please set project name by choosing the number: \n  1. BCC\n  2. XP SKIN \n  3. XP INTERNAL \n  4. NF2 \n  5. UV_MMR \n  6. XPCtox \n  7. POLZ \n  8. DEN \n  9. ALCLAK \n  10. ATACseq \n  11. FD02 \n  12. METARPISM \n  13. NEIL3 \n  14. STING UNLOCK \nfor any other project, please provide the name directly: \n "
+if [ -z ${PROJECT_NAME} ] && [ ${INTERACT} == true ] ; then
+    echo -e "[check point] Please set project name by choosing the number: \n  1. BCC\n  2. XP SKIN \n  3. XP INTERNAL \n  4. NF2 \n  5. UV_MMR \n  6. XPCtox \n  7. POLZ \n  8. DEN \n  9. ALCLAK \n  10. ATACseq \n  11. FD02 \n  12. METARPISM \n  13. NEIL3 \n  14. STING UNLOCK \nfor any other project, please provide the name directly: \n "
     
-	read choice
+    read choice
     
-	case ${choice} in
-	    1 )
-		PROJECT_NAME=${BCC} ;;
-	    2 )
-		PROJECT_NAME=${XPSKIN} ;;
-	    3 )
-		PROJECT_NAME=${XPINTERNAL} ;;
-	    4 )
-		PROJECT_NAME=${NF2} ;;
-	    5 )
-		PROJECT_NAME=${UV_MMR} ;;
-	    6 )
-		PROJECT_NAME=${XPCtox} ;;
-	    7 )
-		PROJECT_NAME=${POLZ} ;;
-	    8 )
-		PROJECT_NAME=${DEN} ;;
-	    9 )
-		PROJECT_NAME=${ALCLAK} ;;
-	    10)
-		PROJECT_NAME=${ATACseq} ;;
-	    11)
-		PROJECT_NAME=${FD02} ;;
-	    12)
-		PROJECT_NAME=${METARPISM} ;;
-	    13)
-		PROJECT_NAME=${NEIL3} ;;
-	    14)
-		PROJECT_NAME=${STING} ;;
-	    *   )
+    case ${choice} in
+	1 )
+	    PROJECT_NAME=${BCC} ;;
+	2 )
+	    PROJECT_NAME=${XPSKIN} ;;
+	3 )
+	    PROJECT_NAME=${XPINTERNAL} ;;
+	4 )
+	    PROJECT_NAME=${NF2} ;;
+	5 )
+	    PROJECT_NAME=${UV_MMR} ;;
+	6 )
+	    PROJECT_NAME=${XPCtox} ;;
+	7 )
+	    PROJECT_NAME=${POLZ} ;;
+	8 )
+	    PROJECT_NAME=${DEN} ;;
+	9 )
+	    PROJECT_NAME=${ALCLAK} ;;
+	10)
+	    PROJECT_NAME=${ATACseq} ;;
+	11)
+	    PROJECT_NAME=${FD02} ;;
+	12)
+	    PROJECT_NAME=${METARPISM} ;;
+	13)
+	    PROJECT_NAME=${NEIL3} ;;
+	14)
+	    PROJECT_NAME=${STING} ;;
+	*   )
 	    PROJECT_NAME=${choice} ;;
-	esac
-	
-	echo -e "\nProject name: ${PROJECT_NAME} \n"
-    else
-	echo "[Error] --project-name is a mandatory option. "
-	exit -1 ;
+    esac
 
-    fi
+    echo -e "\nProject name: ${PROJECT_NAME} \n"
 fi
 
 #### default analysis results directory:
@@ -894,16 +679,11 @@ if [ ${INTERACT} == true ] ; then
     if [ ! -z ${line} ] ; then
 	case ${line} in 
 	    1 ) DATA_FILETYPE=${FASTQ} ;;
-	    2 ) DATA_FILETYPE=${BAM} ;;
+	    2 ) DATA_FILETYPE=${BAM}
 	    * ) echo "Unknown choice !" ; exit -1 ;;
 	esac
     fi
 
-else 
-    echo "[info] The species of sample is ${SAMPLES}. "
-    echo "[info] The analysis mode of pipeline is ${MODE}. "
-    echo "[info] The sequencing protocol is ${SEQ_TYPE}. "
-    echo "[info] The file type of data is ${DATA_FILETYPE}."
 fi
 
 RESULT_BATCH_NAME="${DATE}_${SAMPLES}_${SEQ_TYPE}_${MODE}"
@@ -917,6 +697,10 @@ if [ -f ${VAR_TABLE} ] & [[ ${VAR_TABLE} != /* ]] ; then
     VAR_TABLE="${PWD}/${VAR_TABLE}"
 fi
 
+RUN_PIPELINE_SCRIPT="run_pipeline.sh"
+
+echo -e "#!/usr/bin/bash\n\nset -e\n\n" > ${RUN_PIPELINE_SCRIPT}
+
 #######################################
 #### init pipelline work directory ####
 #######################################
@@ -924,16 +708,17 @@ fi
 ## current directory is where user execute the interactive bash script
 CURRENT_DIR="$PWD"
 
+if [ -z ${PROJECT_NAME} ] ; then
+    echo "[warning] project name is unknown. "
+    exit -1
+fi
+
 ## working directory is where the pipeline store the results to
 WORKING_DIR="${SCRATCH_WORKING_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
 
 echo "[info] pipeline working directory: ${WORKING_DIR}"
 
 mkdir -p ${WORKING_DIR}/config
-
-RUN_PIPELINE_SCRIPT=${WORKING_DIR}/"run.sh"
-
-echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
 
 #### if workflow is not ln to src, then create a softlink
 if [ ! -d ${WORKING_DIR}/workflow ] ; then
@@ -945,68 +730,54 @@ if [ ! -d ${WORKING_DIR}/workflow ] ; then
 	    read ANALYSIS_PIPELINE_SRC_DIR
 	fi
     fi
-    # cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/config.json ${WORKING_DIR}/config ;
     echo "[info] softlink to pipeline directory ${ANALYSIS_PIPELINE_SRC_DIR} " ;
     ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow  ${WORKING_DIR}/workflow ;
 fi
 
-if [ ${DO_DOWNLOAD} == true ] ; then
-
-    if [ ${INTERACT} == false ] && [ -z ${DATABASE} ] ; then
-	echo "[Error] --download-DB is mandatory option :  ${EGA} , ${IRODS}, ${AMAZON}, ${BGI}, ${FTP}, ${STORAGE} "
-	exit -1
-    fi
+if [ ${DO_DOWNLOAD} == true ] && [ ! -f ${WORKING_DIR}/config/download.yaml ] ; then
     
-    if [ ${INTERACT} == true ] && [ ! -f ${WORKING_DIR}/config/download.yaml ] ; then
+    if [ ${INTERACT} == true ] ; then
 	echo "[check point] Please set the download configuration file:  [enter to continue]" ;
 	read line ;
-
 	if [ ! -z ${line} ] && [ -f ${line} ] ; then
 	    echo "[info] copy your download configuration file to config/ "
 	    cp ${line} ${WORKING_DIR}/config/download.yaml ;
 	    echo "[info] ${WORKING_DIR}/config/download.yaml : "
 	    cat ${WORKING_DIR}/config/download.yaml
 	    echo "[info] end of the configuration file "
-
 	else
 	    echo -e "[check point] please choose the database by the number : \n  1. EGA \n  2. iRODS \n  3. Amazon S3 \n  4. BGI GeneAn \n  5. FTP Server \n  6. From backup storage \n"
 	    read line
 	    
 	    case $line in 
 		1 )
-		    DATABASE=${EGA}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${EGA}"
 		    prepare_download_from_ega ${STORAGE_DIR} ;
-		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
+		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;;
 		2 )
-		    DATABASE=${IRODS}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${IRODS}"
 		    prepare_download_from_irods ${STORAGE_DIR} ;
-		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
+		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;;
 		3 )
-		    DATABASE=${AMAZON}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${AMAZON}"
 		    prepare_download_from_amazon_s3 ${STORAGE_DIR} ;
-		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
+		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;;
 		4 )
-		    DATABASE=${BGI}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${BGI}"
 		    prepare_download_from_bgi ${STORAGE_DIR} ;
-		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
+		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;;
 		5 )
-		    DATABASE=${FTP}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${FTP}"
 		    prepare_download_from_ftp_server ${STORAGE_DIR} ;
-		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
+		    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;;
 		6 )
-		    DATABASE=${STORAGE}
 		    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${STORAGE}" ;
 		    cmd="$(prepare_download_from_backup_storage ${STORAGE_DIR})" ;
-		    echo "${cmd}" >> ${RUN_PIPELINE_SCRIPT} ;;
+		    echo "${cmd}" >> ${RUN_PIPELINE_SCRIPT} ;
 	    esac
 	fi
 
-    elif [ ! -f ${WORKING_DIR}/config/download.yaml ] && [ ! -z ${DOWNLOAD_CONFIGFILE} ] && [ -f ${DOWNLOAD_CONFIGFILE} ] ; then
+    elif [ ! -z ${DOWNLOAD_CONFIGFILE} ] && [ -f ${DOWNLOAD_CONFIGFILE} ] ; then
 	cp ${DOWNLOAD_CONFIGFILE} ${WORKING_DIR}/config/download.yaml ;
 
 	STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
@@ -1014,156 +785,28 @@ if [ ${DO_DOWNLOAD} == true ] ; then
 	if [ ${DATABASE} == ${STORAGE} ] ; then
 	    echo "rsync -avh --progress ${CLUSTER_STORAGE} ${STORAGE_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
 	else
-	    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;
+	    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;
 	fi
 
     else
-	if [ ! -f ${WORKING_DIR}/config/download.yaml ] ; then 
-	    echo "[info] copy an example of download configuration file to config/ directory, please setup the essential parameters" ;
-	    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/download.yaml ${WORKING_DIR}/config/ ;
-	fi
-	
+	echo "[info] copy an example of download configuration file to config/ directory, please setup the essential parameters"
+	cp workflow/config/download.yaml config/
+
 	STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
 
 	if [ ${DATABASE} == ${STORAGE} ] ; then
 	    echo "rsync -avh --progress ${CLUSTER_STORAGE} ${STORAGE_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
 	else
-	    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;
+	    build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ;
 	fi
 
     fi
 fi
-
-#########################################
-####         verify md5sum code      ####
-#########################################
-
-if [ ${DO_MD5SUM} == true ] ; then
-
-    echo "find_arr=($(find ${STORAGE_DIR} -name \"*md5sum*txt\")) ; " >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo '
-if [ ${#find_arr[@]} == 1 ] ; then
-    line=${find_arr[0]}
-    echo "[info] The md5sum file: ${find_arr[0]} "
-else
-    if [ ${#find_arr[@]} > 1 ] ; then
-        echo "[info] Possible md5sum files: "
-        for fname in "${find_arr[@]}" ; do
-	    echo " - ${fname}"
-	done
-    fi 
-    echo "Please provide the md5sum file: [enter to continue] "
-    read line
-fi
-
-if [ ! -z ${line} ] ; then
-    MD5SUM_FILE=${line}
-    MD5SUM_LOG=${MD5SUM_FILE/.txt/.log}
-fi
-' >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo "cd ${STORAGE_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    
-    echo '
-if [ -f ${MD5SUM_LOG} ] ; then
-    echo "[info] md5sum had been verified previously. "
-elif [ ! -z ${MD5SUM_FILE} ] ; then 
-    echo "[info] starting to verify md5sum "
-    srun --mem=40960 -p shortq -D . -c 20 md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
-fi' >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo "cd ${WORKING_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    
-    echo '
-if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) != 0 ] ; then
-    echo "WARNING: Some files did NOT match md5sum, please check the log ${MD5SUM_LOG}. " ; 
-    exit -1 ;
-fi ' >> ${RUN_PIPELINE_SCRIPT} ;
-
-fi
-
-#### if concat fastq directory is given, then add to config options
-if [ ${DO_DOWNLOAD} == true ] || [ ${DO_CONCAT} == true ] ; then
-
-    if [ ${INTERACT} == false ] && [ -z ${DATABASE} ] ; then
-	echo "[Error] --download-DB is mandatory option for concatenation. "
-	exit -1
-    fi
-    
-    if [ -z "${STORAGE_DIR}" ] ; then
-	if [ ${INTERACT} == true ] ; then
-	    if [ -z ${DATABASE} ] ; then
-		echo -e "[check point] please choose the database by the number : \n  1. EGA \n  2. iRODS \n  3. Amazon S3 \n  4. BGI GeneAn \n  5. FTP Server \n  6. From backup storage \n"
-		read line
-		case $line in 
-		    1 ) DATABASE=${EGA} ;;
-		    2 ) DATABASE=${IRODS} ;;
-		    3 ) DATABASE=${AMAZON} ;;
-		    4 ) DATABASE=${BGI} ;;
-		    5 ) DATABASE=${FTP} ;;
-		    6 ) DATABASE=${STORAGE} ;;
-		esac
-	    fi
-	    
-	    echo "[check point] Please provide the directory of raw data. [enter to continue with default] "
-	    read line
-	    if [ ! -z ${line} ] ; then
-		STORAGE_DIR=${line}
-	    fi
-	fi
-	if  [ -z "${STORAGE_DIR}" ] ; then
-	    STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
-	fi
-    fi
-    
-    if [ -z "${CONCAT_DIR}" ] ; then
-	if [ ${INTERACT} == true ] ; then
-	    echo "[check point] Please provide the directory for the concatenation of raw data. [enter to continue with default] "
-	    read line
-	    if [ ! -z ${line} ] ; then
-		CONCAT_DIR=${line}
-	    fi
-	fi
-	if  [ -z "${CONCAT_DIR}" ] ; then
-	    CONCAT_DIR="${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
-	fi
-    fi
-	
-    CONFIG_OPTIONS=" raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR}" ;
-    
-    if [ ! -d "${CONCAT_DIR}" ] ; then
-	mkdir -p ${CONCAT_DIR} ;
-    fi
-
-    mkdir -p ${WORKING_DIR}/config/ ;
-    
-    if [ ${INTERACT} == true ] ; then 
-	echo "[check point] Please provide the table of samples meta info. if it is possible : [enter to continue]"
-	read line
-	if [ ! -z ${line} ] ; then
-	    cp ${line} ${WORKING_DIR}/config/sample_sheet.tsv ;
-	else
-	    echo "[check point] Please provide the variant call table : "
-	    read line ;
-	    if [ ! -z ${line} ] ; then
-		cp ${line} ${WORKING_DIR}/config/variant_call_list_${MODE}.tsv ;
-	    fi
-	fi
-    fi
-	
-    build_concat_cmd ${STORAGE_DIR} ${CONCAT_DIR} ${RUN_PIPELINE_SCRIPT} ;
-fi
-
-#########################
-#### start pipelline ####
-#########################
-
-fastq_dir="${WORKING_DIR}/DNA_samples"
-bam_dir="${WORKING_DIR}/bam"
 
 if [ ${DO_PIPELINE} == true ] ; then
 
+    fastq_dir="${WORKING_DIR}/DNA_samples"
+    bam_dir="${WORKING_DIR}/bam"
     if [ ${DATA_FILETYPE} == ${FASTQ} ] && [ ! -d ${fastq_dir} ] ; then 
 	#### if variable of concated sample directory is defined but DNA_samples doesn't exist, then create the DNA_samples directory
 	echo "[info] init DNA_samples directory" ; 
@@ -1183,25 +826,256 @@ if [ ${DO_PIPELINE} == true ] ; then
     fi
 
     #### cnvfacet need the conda env. has to be local, if conda env doesn't exsit then softlink to j_wang 
-    if [ DO_CNVFACET == ture ] && [ ! -d ~/.conda/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/conda/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/Anaconda3/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/miniconda3/envs/pipeline_GATK_2.1.4_V2 ] ; then 
+    if [ DO_CNVFACET == ture] && [ ! -d ~/.conda/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/conda/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/Anaconda3/envs/pipeline_GATK_2.1.4_V2 ] && [ ! -d ~/miniconda3/envs/pipeline_GATK_2.1.4_V2 ] ; then 
 	envs_dir=(`conda info | grep "envs directories" `)
 	if [ ! -d ${envs_dir[-1]}/pipeline_GATK_2.1.4_V2 ] ; then
 	    ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2 ${envs_dir[-1]}/pipeline_GATK_2.1.4_V2 ;
 	fi
-    fi  
-fi
-
-if [ ${DO_PIPELINE} == true ] ; then 
-
-    CONFIG_OPTIONS=" samples=${SAMPLES} seq_type=${SEQ_TYPE} mode=${MODE} "
-
-    if [ ${DO_CNVFACET} == true ] || [ ${DO_CLINIC} == true ] ; then
-	CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_cnvfacet=True "
     fi
     
-    #### if bam directory is not empty, then clean up temporal bam files
-    build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${RUN_PIPELINE_SCRIPT} ;
+fi
 
+#########################################
+####         Download Raw Data       ####
+#########################################
+
+if [ ${DO_DOWNLOAD} == true ] ; then
+
+    if [ ${INTERACT} == true ] ; then
+	echo "Downloading from the database ${DATABASE} , [y/n] "
+	read line
+	if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    echo "${DATABASE} OK"
+	else
+	    echo "Please specifiy the database [iRODS|Amazon S3|EGA|BGI GeneAn]: please choose the number"
+	    echo "1. iRODS"
+	    echo "2. Amazon S3"
+	    echo "3. EGA"
+	    echo "4. BGI GeneAn"
+	    read line
+	    case line in
+		"1" )
+		    DATABASE="iRODS" ;;
+		"2" )
+		    DATABASE="S3" ;;
+		"3" )
+		    DATABASE="EGA" ;;
+		"4" )
+		    DATABASE="GeneAn" ;;
+		* )
+		    echo "Non-supported Database. exit"
+		    exit -1
+	    esac
+	fi
+    fi
+    
+    if [ ${INTERACT} == true ] ; then
+	echo "Downloading to the directory ${FASTQ_SAMPLES_DIR} , [y/n] "
+	read line
+	if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    echo "OK"
+	else
+	    echo "Please specifiy the directory: "
+	    read FASTQ_SAMPLES_DIR
+	fi
+    fi
+    
+    echo "echo 'downloading raw data to ${FASTQ_SAMPLES_DIR}'
+    module load java
+    mkdir -p ${FASTQ_SAMPLES_DIR} ;
+    mkdir -p logs/slurm/ ; 
+    CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_PATH} '
+    ${APP_SNAKEMAKE} \
+	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
+	-s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/rules/data/download/entry_point.smk \
+	--config ${CONFIG_OPTIONS} ;  " >> ${RUN_PIPELINE_SCRIPT} ;
+fi
+
+exit 0
+
+#########################################
+####         verify md5sum code      ####
+#########################################
+
+MD5SUM_LOG=${MD5SUM_FILE/.txt/.log}
+
+function check_md5sum_file {
+    ## if md5sum file doesn't exist, search in raw fastq data directory.
+    ## user need to choose the correct one
+    if [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
+	for md5 in `find ${FASTQ_SAMPLES_DIR} -name "*md5*txt" ` ; do
+	    echo "[INTERVENE] Is ${md5} the md5sum file ? [y/n]" ; 
+	    read line ;
+	    if [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+		echo "OK"
+		MD5SUM_FILE=${md5} ;
+		break ;
+	    fi
+	done
+    fi
+
+    ## if not found, specify the location
+    if  [ ${INTERACT} == true ] && [ ! -f ${MD5SUM_FILE} ] ; then
+	echo "[INTERVENE] Please specify the md5sum file location: " ;
+	read MD5SUM_FILE ;
+    fi
+
+    ## exist if all failed.
+    if  [ ! -f ${MD5SUM_FILE} ] ; then
+	echo "[ERROR] Unable to find the md5 file. Please check!"
+	exit -1
+    fi
+}
+
+if [ ${DO_MD5SUM} == true ] ; then
+
+    tmpfile=".failed.tmp"
+
+    if [ -f ${MD5SUM_LOG} ] ; then
+	echo "[info] md5sum had been verified previously. Ignore"
+    else
+	echo "[info] verify md5sum"
+	check_md5sum_file ;
+	md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
+    fi
+    
+    grep "FAILED" ${MD5SUM_LOG} > ${tmpfile}
+        
+    if [ -s ${tmpfile} ] ; then
+	echo "WARNING: Please check the samples, some files did NOT match md5sum" ; 
+	cat ${tmpfile} ;
+	exit -1
+    fi
+
+    rm -f ${tmpfile}
+fi
+
+###########################################
+####       concat raw fastq files      ####
+###########################################
+
+if [ ${DO_CONCAT} == true ] ; then
+
+    cd ${WORKING_DIR}
+    
+    if [ ${INTERACT} == true ] ; then
+	## if concat after download, then there is no need to verify the raw data location
+	if [ ${DO_DOWNLOAD} == false ] ; then
+	    echo "1. data sheet.tsv"
+	    echo "2. raw data directory"
+	    read line
+	    case line in
+		"1" ) 
+		    echo "Raw data location is ${FASTQ_SAMPLES_DIR} ? [y/n]" ;
+		    read line ;
+		    if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+			echo "Please set the directory for the raw fastq files:" ;
+			read FASTQ_SAMPLES_DIR ;
+		    fi ;;
+		"2" )
+		    echo "Raw data location is ${FASTQ_SAMPLES_DIR} ? [y/n]" ;
+		    read line ;
+		    if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+			echo "Please set the directory for the raw fastq files:" ;
+			read FASTQ_SAMPLES_DIR ;
+		    fi ;;
+		 *  ) ;;
+	    esac
+	else
+	    CONFIG_OPTIONS=" raw_fastq_dir=${FASTQ_SAMPLES_DIR} "
+	fi
+	echo "Concat data location is ${CONCAT_SAMPLES_DIR} ? [y/n]" ;
+	read line ;
+	if [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+	    echo "Please set the directory for the concatenated fastq files: "
+	    read CONCAT_SAMPLES_DIR
+	fi
+    fi
+    
+    if [ ! -d "${CONCAT_SAMPLES_DIR}" ] ; then
+	mkdir -p ${CONCAT_SAMPLES_DIR} ;
+    fi
+    
+    CONFIG_OPTIONS="${CONFIG_OPTIONS} mode=${MODE} concat_fastq_dir=${CONCAT_SAMPLES_DIR} " ;  
+
+    #### TODO ###########################################################################################
+    cd "${}" ; 
+    ## replace all the special character '-' by '_' in the sample names
+    for sn in * ; do
+	if grep -q "-" <<< "$sn"; then
+	    echo "[info] mv $sn ${sn//-/_} ; "
+	    mv $sn ${sn//-/_} ; 
+	fi
+    done
+    cd - ;
+
+    cd ${CURRENT_DIR}
+
+fi
+
+#########################
+#### start pipelline ####
+#########################
+
+if [ ${DO_UNLOCK} == true] ; then
+    cd {WORKING_DIR} ;
+    ${APP_SNAKEMAKE} --unlock ;     
+    cd {CURRENT_DIR} ;
+fi
+
+echo "[info] do pipeline: ${DO_PIPELINE} "
+if [ ${DO_PIPELINE} == true ] ; then 
+
+    CONFIG_OPTIONS="samples=${SAMPLES} seq_type=${SEQ_TYPE} mode=${MODE}"
+
+    #### if concat fastq directory is given, then add to config options
+    if [ ${DO_CONCAT} == true ] ; then
+
+	if  [ -z "${CONCAT_SAMPLES_DIR}" ] ; then
+	    echo "Please set the directory for the concatenated fastq files: "
+	    read CONCAT_SAMPLES_DIR
+	fi
+	
+	CONFIG_OPTIONS="${CONFIG_OPTIONS} concat_fastq_dir=${CONCAT_SAMPLES_DIR}" ;
+	
+	if [ ! -d "${CONCAT_SAMPLES_DIR}" ] ; then
+	    mkdir -p ${CONCAT_SAMPLES_DIR} ;
+	fi
+	
+	if [ $DO_CONCAT == true ] ; then
+	    
+	    CONFIG_OPTIONS="${CONFIG_OPTIONS} do_concat=True raw_fastq_dir=${FASTQ_SAMPLES_DIR}" ; 
+	    
+	    cd "${CONCAT_SAMPLES_DIR}" ;
+	    for sn in * ; do
+		if grep -q "-" <<< "$sn"; then
+		    echo "[info] mv $sn ${sn//-/_} ; "
+		    mv $sn ${sn//-/_} ; 
+		fi
+	    done
+	    cd - ;
+	fi
+    fi
+    
+    # echo "CONFIG_OPTIONS=${CONFIG_OPTIONS}"
+
+    if ( [ -d ${fastq_dir} ] || [ -d ${bam_dir} ] ) && [ -f variant_call_list_${MODE}.tsv ] && [ -d workflow ] ; then
+
+	#### if bam directory is not empty, then clean up temporal bam files
+	if [ -d ${bam_dir} ] && [ "$(ls ${bam_dir})" ] ; then 
+	    rm -f bam/*tmp* ;
+	fi
+	
+	echo "[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode" ;
+	module load java ;
+	mkdir -p logs/slurm/ ; 
+	${APP_SNAKEMAKE} \
+	    --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
+	    --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
+	    --config ${CONFIG_OPTIONS} ;
+    fi 
+    
 fi
 
 ####################################################
@@ -1209,7 +1083,7 @@ fi
 ####################################################
 
 if [ ${DO_CLINIC} == true ] ; then
-    # echo "starting oncokb and civic annotations..."
+    echo "starting oncokb and civic annotations..."
     # 1.  build configuration files
     # example patients.tsv
     # PATIENT_ID      Sex     MSKCC_Oncotree  Project_TCGA_More
@@ -1219,30 +1093,22 @@ if [ ${DO_CLINIC} == true ] ; then
     # ST3816          F       HGSOC           OV
     # ST4806          M       BLCA            BLCA
 
+    echo "patients informations, expecting 4 columns: 'PATIENT_ID', 'Sex', 'MSKCC_Oncotree', 'Project_TCGA_More'"
     # config/patients.tsv
-    # cat ${PATIENTS_TABLE}
-    
-    if [ ${INTERACT} == true ] && [ ! -f ${PATIENTS_TABLE} ] ; then
-	echo "[check point] Please provide the patients info. table "
-	echo "patients table contains at least 4 columns: 'PATIENT_ID', 'Sex', 'MSKCC_Oncotree', 'Project_TCGA_More'"
-	echo "
-    # example: patients.tsv
-    # PATIENT_ID      Sex     MSKCC_Oncotree  Project_TCGA_More
-    # ST4359          M       SCLC            SCLC
-    # ST3259          F       LUAD            LUAD
-    # ST4405          M       PRAD            PRAD
-    # ST3816          F       HGSOC           OV
-    # ST4806          M       BLCA            BLCA
-
-location of the table: "
-	read line
-	if [ ! -z ${line} ] ; then
-	    cp ${line} ${WORKING_DIR}/config/patients.tsv ;
-	    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/clinic.yaml ${WORKING_DIR}/config/ ;
-	fi
+    cat ${PATIENTS_TABLE}
+    if [ ${INTERACT} == true ] ; then
+	
     fi
-
-    build_oncokb_civic_cmd ${RUN_PIPELINE_SCRIPT} ;
+    conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake
+    # /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake \
+    #     --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {resources.queue}' \
+    #     --jobs 20 --latency-wait 50 --rerun-incomplete  --use-conda -s workflow/rules/Clinic/config/entry_point.smk
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk 
+    # 2.1 mut. oncokb and civic annotations
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk
+    # 2.2 cna. oncokb and civic annotations
+    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk 
+    conda deactivate 
 fi
 
 ###########################
@@ -1250,58 +1116,46 @@ fi
 ###########################
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' 'Mutect2' 'oncotator_maf' 'oncotator_tsv_COSMIC_exom' 'annovar_mutect2')
-
-BACKUP_FASTQ_PWD="${BACKUP_PWD}/${FASTQS_DIR}"
-BACKUP_CONCATS_PWD="${BACKUP_PWD}/${CONCATS_DIR}"
-BACKUP_BAM_PWD="${BACKUP_PWD}/${BAMS_DIR}"
+BACKUP_TARGETS=('fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'mapping_QC' 'cnv_facets' 'facets' 'Mutect2' 'oncotator_maf' 'oncotator_tsv_COSMIC_exom' 'annovar_mutect2')
 
 if [ $DO_BACKUP_RESULTS == true ] ; then
     echo "[info] backup analysis results to storage"
-    BACKUP_RESULTS_PWD="${BACKUP_RESULTS_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}"
-    for dir in ${BACKUP_TARGETS[@]} ; do
-	echo "
-mkdir -p ${BACKUP_RESULTS_PWD} ;
-rsync -avh --progress ${dir} ${BACKUP_RESULTS_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+    for dir in ${BACKUP_TARGETS} ; do
+	if [ -d ${dir} ] && [ "$(ls ${dir})" ] ; then 
+	    rsync -avh --progress ${dir} ${BACKUP_RESULTS_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME} ;
+	fi
     done
 fi
 
 #### do backup of fastq raw data
-if [ $DO_BACKUP_FASTQ == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
+if [ $DO_BACKUP_FASTQ == true ] ; then
     echo "[info] backup raw fastq files to storage"
-    BACKUP_FASTQ_PWD="${BACKUP_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" ;
-    echo "
-mkdir -p ${BACKUP_FASTQ_PWD} ;
-rsync -avh --progress ${STORAGE_DIR} ${BACKUP_FASTQ_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if  [ ${DO_BACKUP_RESULTS} == true ] ; then 
-	echo "ln -s  ${BACKUP_FASTQ_PWD} ${BACKUP_RESULTS_PWD}/RAW_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ; 
-    fi
+    rsync -avh --progress ${FASTQ_SAMPLES_BASE_DIR} ${BACKUP_FASTQ_PWD}/${PROJECT_NAME}/${BACKUP_DATE}/ ;
+    #### TODO: check md5sum !!!!!!!!!!!!!!!!!!!!!!
+    mkdir -p ${BACKUP_RESULTS_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}/RAW_${fastq_dir}/
+    ln -s  ${BACKUP_FASTQ_PWD}/${PROJECT_NAME}/${BACKUP_DATE} !$ ;
 fi
 
 #### do backup of concatenated fastq raw data
 if [ $DO_BACKUP_CONCAT == true ] ; then
     echo "[info] backup concat fastq files to storage"
-    BACKUP_CONCATS_PWD="${BACKUP_CONCATS_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}" 
-    echo "
-mkdir -p ${BACKUP_CONCATS_PWD} ;
-rsync -avh --progress ${CONCAT_DIR} ${BACKUP_CONCATS_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if [ ${DO_BACKUP_RESULTS} == true ] ; then
-	echo "ln -s ${BACKUP_CONCATS_PWD} ${BACKUP_RESULTS_PWD}/CONCAT_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    fi
+    rsync -avh --progress ${CONCAT_SAMPLES_DIR}/* ${BACKUP_CONCAT_PWD}/${PROJECT_NAME}/${BACKUP_DATE}/ ;
+    mkdir -p ${BACKUP_RESULTS_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}/${fastq_dir}/
+    cd !$ ; ln -s ${BACKUP_CONCAT_PWD}/${PROJECT_NAME}/${BACKUP_DATE}/* . ; cd - ;
 fi
 
 #### do backup of bam file
 if [ $DO_BACKUP_BAM == true ] ; then
     echo "[info] backup bam files to storage"
-    BACKUP_BAM_PWD="${BACKUP_BAM_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}"
-    echo "
-mkdir -p ${BACKUP_BAM_PWD} ;
-rsync -avh --progress bam ${BACKUP_BAM_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if [ ${DO_BACKUP_RESULTS} == true ] ; then
-	echo "ln -s ${BACKUP_BAM_PWD} ${BACKUP_RESULTS_PWD}/bam ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    fi
+    rsync -avh --progress ${bam_dir}/* ${BACKUP_BAM_PWD}/${PROJECT_NAME}/${BACKUP_DATE}/ ;
+    mkdir -p ${BACKUP_RESULTS_PWD}/${PROJECT_NAME}/${RESULT_BATCH_NAME}/${bam_dir}/
+    cd !$ ; ln -s ${BACKUP_BAM_PWD}/${PROJECT_NAME}/${BACKUP_DATE}/
 fi 
 
-chmod u+x  ${RUN_PIPELINE_SCRIPT} ;
+#########################################
+####         clean up scratch        ####
+#########################################
 
-echo -e "[Congratulations] The working directory is finally ready: \n${WORKING_DIR}"
+if [ $DO_CLEAN_UP == true ] ; then
+    echo "[info] remove the working directory"
+fi

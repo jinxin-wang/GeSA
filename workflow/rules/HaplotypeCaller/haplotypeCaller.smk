@@ -7,7 +7,7 @@ rule HaplotypeCaller:
         VCF = temp("haplotype_caller_tmp/{sample}_germline_variants_ON_{interval}.vcf.gz"),
         TBI = temp("haplotype_caller_tmp/{sample}_germline_variants_ON_{interval}.vcf.gz.tbi"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         gatk = config["gatk"]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
         gnomad_ref = config["gatk"][config["samples"]]["gnomad_ref"],

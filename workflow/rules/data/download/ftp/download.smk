@@ -7,14 +7,16 @@ rule ftp_download_datasets:
         passwd = config["FTP_PASSWORD"],
         host   = config["FTP_HOST"],
         dataset= config["FTP_DATASET"],
-    threads: 4
+    threads: 1
     resources:
         queue  = "longq",
         mem_mb = 10240,
         disk_mb  = dataset_size * 1024,
         time_min = dataset_size * 2,
     log:
-        out = f"logs/download/ftp/ftp_download_datasets.log"
+        out = "logs/download/ftp/ftp_download_datasets.log"
+    benchmark:
+        out = "logs/benchmark/download/ftp/ftp_download_datasets.tsv"
     run:
         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 

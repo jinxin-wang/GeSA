@@ -1,6 +1,7 @@
 import os
 import csv
 import errno
+from math import ceil 
 
 #### define colors
 OKGREEN = '\033[92m'
@@ -18,6 +19,9 @@ TUMOR_ONLY = False
 ##   TARGET_INTERVAL_BQSR = " -L 1 "
 
 ## Note 2: config["MUTECT_INTERVAL_DIR"] should not be terminated by "/"
+
+## max sample file size
+max_file_size_G = max([ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
 
 ## wildcards for mutect intervals
 mutect_intervals, = glob_wildcards(config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed")

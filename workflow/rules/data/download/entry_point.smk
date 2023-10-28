@@ -28,8 +28,19 @@ STORAGE="backup"
 
 configfile: "workflow/config/download.yaml", 
 
-dataset_size = int(config["DATASET_SIZE"].replace('G','').split('.')[0]) + 1 
+DATASET_SIZE = config["DATASET_SIZE"] 
 
+if type(DATASET_SIZE) == int  or type(DATASET_SIZE) == float :
+    dataset_size = int(DATASET_SIZE)
+elif type(DATASET_SIZE) == str and str(config["DATASET_SIZE"])[-1] == 'G' :
+    dataset_size = int(config["DATASET_SIZE"].replace('G','').split('.')[0]) + 1 
+elif type(DATASET_SIZE) == str and str(config["DATASET_SIZE"])[-1] == 'T' :
+    dataset_size = ( int(config["DATASET_SIZE"].replace('T','').split('.')[0]) + 1 ) * 1024
+elif type(DATASET_SIZE) == str and str(config["DATASET_SIZE"])[-1] == 'M' :
+    dataset_size = int ( ( int(config["DATASET_SIZE"].replace('T','').split('.')[0]) + 1 ) / 1024 )
+else:
+    raise Exception("[Error] Unable to identify data size set in configuration file. ")
+    
 if   config["DATABASE"] == IRODS:
     include: "irods/download.smk"
 elif config["DATABASE"] == AMAZON:

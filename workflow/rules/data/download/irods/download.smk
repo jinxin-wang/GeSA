@@ -75,14 +75,16 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
         params:
             metadata_sid = config["iRODS_METADATA_SAMPLE_ID"],
             metadata_path= config["iRODS_METADATA_PATH"],
-        threads: 4
+        threads: 1
         resources:
             queue  = "shortq",
             mem_mb = 10240,
             disk_mb  = dataset_size * 1024,
-            time_min = dataset_size * 2,
+            time_min = dataset_size * 4,
         log:
-            out = f"logs/data/download/irods/irods_metadata_download.log"
+            out = "logs/data/download/irods/irods_metadata_download.log"
+        benchmark:
+            out = "logs/benchmark/data/download/irods/irods_metadata_download.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
@@ -121,12 +123,14 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             dataset_query_key= config["iRODS_DATASET_QUERY_KEY"],
             bilan_cquery_keys   = config["iRODS_bilan_cquery_keys"],
             dataset_cquery_keys = config["iRODS_dataset_cquery_keys"],
-        threads: 4
+        threads: 1
         resources:
             queue  = "shortq",
             mem_mb = 10240,
         log:
-            out = f"logs/data/download/irods/irods_query_datasets.log"
+            out = "logs/data/download/irods/irods_query_datasets.log"
+        benchmark:
+            out = "logs/benchmark/data/download/irods/irods_query_datasets.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
@@ -175,14 +179,16 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             storage_path = directory(config["STORAGE_PATH"]),
         params:
             bilan_query_key = config["iRODS_BILAN_QUERY_KEY"],
-        threads: 4
+        threads: 1
         resources:
             queue  = "shortq",
             mem_mb = 10240,
             disk_mb  = dataset_size * 1024,
-            time_min = dataset_size * 2,
+            time_min = dataset_size * 4,
         log:
-            out = f"logs/data/download/irods/irods_download_datasets.log"
+            out = "logs/data/download/irods/irods_download_datasets.log"
+        benchmark:
+            out = "logs/benchmark/data/download/irods/irods_download_datasets.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
             

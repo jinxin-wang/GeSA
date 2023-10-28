@@ -10,9 +10,9 @@ rule concat_samplelist:
         samples  = SAMPLES,
         reads_patterns = config["reads_patterns"],
         concat_fastq_dir = config["concat_fastq_dir"],
-    threads: 4
+    threads: 1
     resources: 
-        mem_mb = 51200,
+        mem_mb = 10240,
         queue  = "shortq",
         time_min = dataset_size,
         disk_mb  = dataset_size * 1024,

@@ -3,12 +3,14 @@ rule backup_storage_download_datasets:
         storage_path = directory(config["STORAGE_PATH"]),
     params:
         dataset= config["CLUSTER_STORAGE"],
-    threads: 4
+    threads: 1
     resources:
         queue  = "longq",
         mem_mb = 10240,
     log:
-        out = f"logs/download/ftp/ftp_download_datasets.log"
+        out = "logs/download/ftp/ftp_download_datasets.log"
+    benchmark:
+        out = "logs/benchmark/download/ftp/ftp_download_datasets.tsv"
     run:
         if sys.version_info.major < 3:
             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))

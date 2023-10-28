@@ -7,14 +7,16 @@ rule ega_download_datasets:
         pyega = config["EGA_PYEGA"],
         datasets_list = config["EGA_DATASETS"],
         connections = config["EGA_CONNECTIONS"],
-    threads: 20
+    threads: 4
     resources:
         queue  = "longq",
-        mem_mb = 40960,
+        mem_mb = 10240,
         disk_mb  = dataset_size * 1024,
         time_min = dataset_size * 20,
     log:
-        out = f"logs/data/download/ega/ega_download_datasets.log"
+        out = "logs/data/download/ega/ega_download_datasets.log"
+    benchmark:
+        out = "logs/benchmark/data/download/ega/ega_download_datasets.tsv"
     run:
         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
