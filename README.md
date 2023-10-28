@@ -85,5 +85,4 @@ Job counts:
 
 [Examples of Best Practice](https://snakemake.github.io/snakemake-workflow-catalog/)
 
-
-
+![alt text](https://github.com/jinxin-wang/Genome_Sequencing_Analysis/blob/andrei_modi_final/utils/images/DNA_Routine_Pipeline.png)
