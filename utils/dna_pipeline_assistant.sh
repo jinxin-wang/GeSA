@@ -919,11 +919,10 @@ echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_
 #### if workflow is not ln to src, then create a softlink
 if [ ! -d ${WORKING_DIR}/workflow ] ; then
     if [ ${INTERACT} == true ] ; then
-	echo "[check point] Directory of pipeline is ${ANALYSIS_PIPELINE_SRC_DIR} : y/[n] "
+	echo "[check point] Directory of pipeline is ${ANALYSIS_PIPELINE_SRC_DIR}, is that correct ? [enter to continue or set the path] "
 	read line
-	if [ -z ${line} ] || [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
-	    echo "Please specify the directory of pipeline: "
-	    read ANALYSIS_PIPELINE_SRC_DIR
+	if [ ! -z ${line} ] ; then
+	    ANALYSIS_PIPELINE_SRC_DIR=${line} ;
 	fi
     fi
     # cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/config.json ${WORKING_DIR}/config ;
