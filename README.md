@@ -1,4 +1,4 @@
-# Snakemake:  WGS/WES analysis pipeline for human/mouse samples
+# Snakemake:  DNA routine analysis pipeline for human/mouse samples
 
 [![Snakemake](https://img.shields.io/badge/snakemake-=5.23.0-brightgreen.svg)](https://snakemake.github.io)
 
