@@ -834,7 +834,7 @@ if [ -z ${DATE} ] ; then
 fi
 
 if [ ${INTERACT} == true ] ; then
-    echo "[check point] The species of sample is ${SAMPLES}, is that correct ? [enter to continue or choose by the number]"
+    echo "[check point] The species of sample is ${SAMPLES}, is that correct ? [enter to continue or choose the number]"
     echo -e "1. human\n2. mice"
     read line
     if [ ! -z ${line} ] ; then
@@ -845,7 +845,7 @@ if [ ${INTERACT} == true ] ; then
 	esac
     fi
 
-    echo "[check point] The sequencing protocol is ${SEQ_TYPE}, is that correct ? [enter to continue or choose by the number] "
+    echo "[check point] The sequencing protocol is ${SEQ_TYPE}, is that correct ? [enter to continue or choose the number] "
     echo -e "1. WGS\n2. WES"
     read line
     if [ ! -z ${line} ] ; then
@@ -856,7 +856,7 @@ if [ ${INTERACT} == true ] ; then
 	esac
     fi
 
-    echo "[check point] The analysis mode is ${MODE}, is that correct ? [enter to continue or choose by the number] "
+    echo "[check point] The analysis mode is ${MODE}, is that correct ? [enter to continue or choose the number] "
     echo -e "1. TvN - Tumor vs Normal \n2. T - Tumor Only\n3. Tp - Tumor vs Pon\n4. TvNp - Tumor vs Normal vs Pon"
     read line
     if [ ! -z ${line} ] ; then
@@ -869,7 +869,7 @@ if [ ${INTERACT} == true ] ; then
 	esac
     fi
 
-    echo "[check point] The file type of data is ${DATA_FILETYPE}, is that correct ? [enter to continue or choose by the number] "
+    echo "[check point] The file type of data is ${DATA_FILETYPE}, is that correct ? [enter to continue or choose the number] "
     echo -e "1. fastq files\n2. bam files"
     read line
     if [ ! -z ${line} ] ; then
