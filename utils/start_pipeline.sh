@@ -2,9 +2,24 @@
 
 set -e ; 
 
-SAMPLES="human"
-SEQ_TYPE="WGS"
-MODE="TvN"
+#### samples: [human|mouse], default: human
+HUMAN="human"
+MOUSE="mouse"
+
+#### seq type: [WGS|WES], default: WGS
+WGS="WGS"
+WES="WES"
+
+#### mode: [TvN|TvNp|Tp|T], default: TvN
+TvN="TvN"
+TvNp="TvNp"
+Tp="Tp"
+T="T"
+
+#### pipeline default settings: 
+SAMPLES="${HUMAN}"
+SEQ_TYPE="${WES}"
+MODE="${TvN}"
 
 CONFIG_OPTIONS="samples=${SAMPLES} seq_type=${SEQ_TYPE} mode=${MODE}"
 
