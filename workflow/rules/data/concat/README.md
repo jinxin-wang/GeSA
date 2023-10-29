@@ -1,9 +1,8 @@
 example of [configuration file](https://github.com/jinxin-wang/Genome_Sequencing_Analysis/blob/andrei_modi_final/workflow/config/concat.yaml)
 
-#### sample list is mandatory
-the variant call table can be a sample list table. 
+#### the variant call table can be a sample list. 
 
-#### 1. concatenated by sample meta information table such as in the following example: 
+#### 1. concatenated by sample table such as in the following example: 
 ```
 $ cat sample_sheet.tsv
 'sampleId\t'protocol'\t'R1'\'R2'
