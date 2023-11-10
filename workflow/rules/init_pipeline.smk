@@ -13,6 +13,7 @@ print(OKGREEN + "[message] Initializing %s analysis pipeline for %s samples in %
 
 ## Tumor vs Normal mode by default
 TUMOR_ONLY = False
+NORMAL_ONLY= False
 
 ## Note 1: default values for target interval
 ##   TARGET_INTERVAL_GATK = ""
@@ -107,7 +108,7 @@ def build_Tonly_targets(tsample):
             
     elif config["samples"] == "mouse":
         ANNOVAR.append("annovar_mutect2_T/" + tsample  + ".avinput")
-            
+
 if config["mode"] == "TvN": 
     print(OKGREEN + "[message] Pipeline runs in Tumor vs Normal mode." + ENDC)
     VARIANT_CALL_TABLE = "config/variant_call_list_TvN.tsv"
@@ -151,7 +152,7 @@ if config["mode"] == "T":
     TUMOR_ONLY = True
     VARIANT_CALL_TABLE = "config/variant_call_list_T.tsv"
     print(OKGREEN + "[message] Pipeline runs in Tumor Only mode." + ENDC)
-    if os.path.isfile("VARIANT_CALL_TABLE"):
+    if os.path.isfile(VARIANT_CALL_TABLE):
         print(OKGREEN + "[message] Configuration file variant_call_list_T.tsv is detected. " + ENDC)
         with open(VARIANT_CALL_TABLE,'r') as fd: 
             rd = csv.reader(fd, delimiter="\t", quotechar='"')
@@ -170,4 +171,16 @@ if config["mode"] == "T":
         for tsample in TSAMPLE:
             build_Tonly_targets(tsample)
 
+if config["mode"] == "N":
+    NORMAL_ONLY = True
+    VARIANT_CALL_TABLE = "config/variant_call_list_N.tsv"
+    print(OKGREEN + "[message] Pipeline runs in Normal Only mode." + ENDC)
+    if os.path.isfile(VARIANT_CALL_TABLE):
+        print(OKGREEN + f"[message] Configuration file {VARIANT_CALL_TABLE} is detected. " + ENDC)
+        with open(VARIANT_CALL_TABLE,'r') as fd: 
+            rd = csv.reader(fd, delimiter="\t", quotechar='"')
+            for row in rd:
+                nsample = row[0]
+                NSAMPLE.append(nsample)
+                
 SAMPLES = list(set(TSAMPLE + NSAMPLE))

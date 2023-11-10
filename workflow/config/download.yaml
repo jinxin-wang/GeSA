@@ -21,7 +21,7 @@ iRODS_dataset_cquery_keys: ["patientAlias","protocol", "sampleType"]
 
 ## S3
 S3_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd
-S3_dataset: homlsxyr-598731762349/F23A430001132-04_HOMlsxyR
+S3_PATH: s3://homlsxyr-598731762349/F23A430001132-04_HOMlsxyR
 S3_CONFIG_FILE: /mnt/beegfs/scratch/j_wang/03_Results/04_XP_skin/20231023_human_WGS_TvN/config/s3_config.yaml
 
 ## BGI GENEAN

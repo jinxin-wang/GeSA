@@ -5,11 +5,6 @@ configfile: "workflow/config/config.json"
 include: "rules/init_pipeline.smk"
 
 include: "rules/data/utils/gz.smk"
-
-# include: "rules/data/concat/entry_point.smk"
-
-# if config["do_clinic"]:
-#     include: "rule/Clinic/entry_point.smk"
     
 if config["sam2fastq"]:
     include: "rules/Sam2fq/sam2fq.smk"
@@ -32,7 +27,7 @@ include: "rules/BQSR/BQSR.smk"
 if config["do_cnvfacet"]:
     include: "rules/Facets/cnvfacets.smk"
     
-if TUMOR_ONLY == False: 
+if TUMOR_ONLY == False or NORMAL_ONLY == False : 
     include: "rules/Facets/facets.smk"
 
 ######## HaplotypeCaller and Annovar ########
@@ -42,64 +37,69 @@ include: "rules/HaplotypeCaller/haplotypeCaller.smk"
 
 ## Annovar on Haplotype caller, only to normal samples
 include: "rules/Annovar/annovar.smk"
+
+if NORMAL_ONLY == False : 
+    ######## Mapping QC ########
     
-######## Mapping QC ########
-
-## check mapping stats, with GATK CollectHsMetrics
-include: "rules/HsMetrics/hsMetrics.smk"
-
-## check mapping metrics with samtools flagstat
-include: "rules/Flagstat/flagstat.smk"
-
-######## Annotate on Mutect2 ########
-
-## common rules for mutect2
-include: "rules/Mutect2/Common/collectSeqAM.smk"
-include: "rules/Mutect2/Common/estiContamination.smk"
-
-## Tumor vs Normal mode
-if TUMOR_ONLY == False:
-    include: "rules/Mutect2/Std/mutect2.smk"
+    ## check mapping stats, with GATK CollectHsMetrics
+    include: "rules/HsMetrics/hsMetrics.smk"
     
-    if config["samples"] == "human":
-        include: "rules/Mutect2/Std/Split/oncotator.smk"
-
-        if config["seq_type"] == "WGS":
-            include: "rules/Mutect2/Std/Exom/oncotator.smk"
-
-    elif config["samples"] == "mouse":
-        include: "rules/Mutect2/Std/Annovar/annovar.smk"
+    ## check mapping metrics with samtools flagstat
+    include: "rules/Flagstat/flagstat.smk"
     
-    ## Tumor vs Normal with panel of normals (PON)
-    include: "rules/Mutect2/Pon/mutect2.smk"
-
-    if config["samples"] == "human":
-        include: "rules/Mutect2/Pon/Split/oncotator.smk"
+    ######## Annotate on Mutect2 ########
+    
+    ## common rules for mutect2
+    include: "rules/Mutect2/Common/collectSeqAM.smk"
+    include: "rules/Mutect2/Common/estiContamination.smk"
+    
+    ## Tumor vs Normal mode
+    if TUMOR_ONLY == False:
+        include: "rules/Mutect2/Std/mutect2.smk"
         
-        if config["seq_type"] == "WGS":
-            include: "rules/Mutect2/Pon/Exom/oncotator.smk"
-
-## Tumor Only mode
-elif TUMOR_ONLY == True: 
-    include: "rules/Mutect2/TumorOnly/mutect2.smk"
-
-    if config["samples"] == "human":
-        include: "rules/Mutect2/TumorOnly/Split/oncotator.smk"
-
-        if config["seq_type"] == "WGS":
-            include: "rules/Mutect2/TumorOnly/Exom/oncotator.smk"
+        if config["samples"] == "human":
+            include: "rules/Mutect2/Std/Split/oncotator.smk"
     
-    elif config["samples"] == "mouse":
-        include: "rules/Mutect2/TumorOnly/Annovar/annovar.smk"
+            if config["seq_type"] == "WGS":
+                include: "rules/Mutect2/Std/Exom/oncotator.smk"
     
-    ## Tumor Only with panel of normals (PON)
-    include: "rules/Mutect2/TumorOnlyPon/mutect2.smk"
-
-    if config["samples"] == "human":
-        include: "rules/Mutect2/TumorOnlyPon/Split/oncotator.smk"
+        elif config["samples"] == "mouse":
+            include: "rules/Mutect2/Std/Annovar/annovar.smk"
         
-        if config["seq_type"] == "WGS":
-            include: "rules/Mutect2/TumorOnlyPon/Exom/oncotator.smk"
+        ## Tumor vs Normal with panel of normals (PON)
+        include: "rules/Mutect2/Pon/mutect2.smk"
+    
+        if config["samples"] == "human":
+            include: "rules/Mutect2/Pon/Split/oncotator.smk"
+            
+            if config["seq_type"] == "WGS":
+                include: "rules/Mutect2/Pon/Exom/oncotator.smk"
+    
+    ## Tumor Only mode
+    elif TUMOR_ONLY == True: 
+        include: "rules/Mutect2/TumorOnly/mutect2.smk"
+    
+        if config["samples"] == "human":
+            include: "rules/Mutect2/TumorOnly/Split/oncotator.smk"
+    
+            if config["seq_type"] == "WGS":
+                include: "rules/Mutect2/TumorOnly/Exom/oncotator.smk"
+        
+        elif config["samples"] == "mouse":
+            include: "rules/Mutect2/TumorOnly/Annovar/annovar.smk"
+        
+        ## Tumor Only with panel of normals (PON)
+        include: "rules/Mutect2/TumorOnlyPon/mutect2.smk"
+    
+        if config["samples"] == "human":
+            include: "rules/Mutect2/TumorOnlyPon/Split/oncotator.smk"
+            
+            if config["seq_type"] == "WGS":
+                include: "rules/Mutect2/TumorOnlyPon/Exom/oncotator.smk"
+    
+## tag in snakemake log, please don't modify
+onsuccess:
+    print("[TAG] DNA routine analysis complete")
 
 rule all:
     input:
@@ -108,8 +108,8 @@ rule all:
         expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE),
         expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE),
         expand("annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"], sample = NSAMPLE if config["samples"] == "human" else []),
-        expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE),
-        expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE),
+        expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE if NORMAL_ONLY == False else []),
+        expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE if NORMAL_ONLY == False else []),
         expand(ANNOVAR),
         expand(FACETS),
         expand(CNV_FACETS),

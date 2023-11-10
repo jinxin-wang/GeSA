@@ -27,6 +27,8 @@ rule concat_samplesheet:
         sample_grps = sample_df.groupby(['sampleId', 'protocol'])
 
         logging.info(f"list of sample : \n%s"%("\n".join(sample_df.sampleId)))
+        
+        os.system(f" mkdir -p {params.concat_fastq_dir} ")
 
         for (sample_id, protocol), grp in sample_grps:
             r1_list = grp['R1'].tolist()

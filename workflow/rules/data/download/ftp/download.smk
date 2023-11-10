@@ -16,7 +16,7 @@ rule ftp_download_datasets:
     log:
         out = "logs/download/ftp/ftp_download_datasets.log"
     benchmark:
-        out = "logs/benchmark/download/ftp/ftp_download_datasets.tsv"
+        "logs/benchmark/download/ftp/ftp_download_datasets.tsv"
     run:
         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 

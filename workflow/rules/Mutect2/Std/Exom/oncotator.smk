@@ -124,12 +124,13 @@ rule oncotator_reformat_TvN_exom:
         "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.log"
     params:
         queue = "shortq",
+        python= config["python"]["2.7"],
         oncotator_extract_TvN = config["oncotator"]["scripts"]["extract_tumor_vs_normal"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.oncotator_extract_TvN} {input.maf} {output.maf} {output.tsv} 2> {log}'
+        '{params.python} {params.oncotator_extract_TvN} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
 ## A rule to cross oncotator output on tumor vs normal samples with pileup information
 rule oncotator_with_pileup_TvN_exom:

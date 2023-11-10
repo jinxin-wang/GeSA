@@ -80,11 +80,11 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
             queue  = "shortq",
             mem_mb = 10240,
             disk_mb  = dataset_size * 1024,
-            time_min = dataset_size * 4,
+            time_min = dataset_size,
         log:
             out = "logs/data/download/irods/irods_metadata_download.log"
         benchmark:
-            out = "logs/benchmark/data/download/irods/irods_metadata_download.tsv"
+            "logs/benchmark/data/download/irods/irods_metadata_download.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
@@ -92,7 +92,7 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
                 logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
 
             exten = str(input.meta).strip().split(".")[-1]
-            meta_df   = None
+            meta_df = None
             
             dtypes = {COLUMN_DATASETS: str}
 
@@ -107,7 +107,9 @@ if os.path.isfile(config["iRODS_datasets_metadata"]):
                 raise Exception(f"Unable to identify the format of input file: {input.meta}")
 
             for idx, row in meta_df.iterrows():
-                save_to_dir = Path(f"{str(output.storage_path)}/{row[params.metadata_sid]}")
+                logging.info(f"sample id: {row[str(params.metadata_sid)]}")
+                save_to_dir = Path(output.storage_path).joinpath(row[str(params.metadata_sid)])
+                logging.info(f"saving to dir {save_to_dir}")
                 download_to_dir(row[params.metadata_path], save_to_dir)
 
 
@@ -130,7 +132,7 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
         log:
             out = "logs/data/download/irods/irods_query_datasets.log"
         benchmark:
-            out = "logs/benchmark/data/download/irods/irods_query_datasets.tsv"
+            "logs/benchmark/data/download/irods/irods_query_datasets.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 
@@ -184,11 +186,11 @@ elif os.path.isfile(config["iRODS_sample_bilan"]):
             queue  = "shortq",
             mem_mb = 10240,
             disk_mb  = dataset_size * 1024,
-            time_min = dataset_size * 4,
+            time_min = dataset_size,
         log:
             out = "logs/data/download/irods/irods_download_datasets.log"
         benchmark:
-            out = "logs/benchmark/data/download/irods/irods_download_datasets.tsv"
+            "logs/benchmark/data/download/irods/irods_download_datasets.tsv"
         run:
             logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
             

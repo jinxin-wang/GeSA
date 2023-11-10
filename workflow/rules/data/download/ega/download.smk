@@ -16,7 +16,7 @@ rule ega_download_datasets:
     log:
         out = "logs/data/download/ega/ega_download_datasets.log"
     benchmark:
-        out = "logs/benchmark/data/download/ega/ega_download_datasets.tsv"
+        "logs/benchmark/data/download/ega/ega_download_datasets.tsv"
     run:
         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
 

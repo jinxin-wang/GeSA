@@ -26,6 +26,8 @@ rule concat_samplelist:
 
         logging.info(f"list of sample : \n%s"%("\n".join(params.samples)))
 
+        os.system(f" mkdir -p {params.concat_fastq_dir} ")
+        
         for sample in params.samples:
             
             logging.info("build concat cmd for sample %s"%sample)
