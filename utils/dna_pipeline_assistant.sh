@@ -1054,6 +1054,7 @@ if [ ${INTERACT} == true ] ; then
 
     echo -e "${WARNING}[check point]${ENDC} The analysis mode is ${MODE}, is that correct ? [enter to continue or choose the number to change] "
     echo -e "1. TvN - Tumor vs Normal \n2. T - Tumor Only\n3. N - Normal Only \n4. Tp - Tumor vs Pon\n5. TvNp - Tumor vs Normal vs Pon"
+
     read line
     if [ ! -z ${line} ] ; then
     	case ${line} in 

@@ -1,4 +1,4 @@
-# Snakemake:  WGS/WES analysis pipeline for human/mouse samples
+# DNA routine analysis for human/mouse samples
 
 [![Snakemake](https://img.shields.io/badge/snakemake-=5.23.0-brightgreen.svg)](https://snakemake.github.io)
 
@@ -85,5 +85,4 @@ Job counts:
 
 [Examples of Best Practice](https://snakemake.github.io/snakemake-workflow-catalog/)
 
-
-
+![alt text](https://github.com/jinxin-wang/Genome_Sequencing_Analysis/blob/andrei_modi_final/utils/images/DNA_Routine_Pipeline.png)
