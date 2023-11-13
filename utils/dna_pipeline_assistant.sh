@@ -12,6 +12,12 @@ set -e
 ####                 PATH CONVENTION               #### 
 #######################################################
 
+DOWNLOAD_TAG="logs/.download.tag"
+CONCAT_TAG="logs/.concat.tag"
+DNA_PIPELINE_TAG="logs/.dna_pipeline.tag"
+CLINIC_TAG="logs/.clinic.tag"
+BACKUP_TAG="logs/.backup.tag"
+
 ## Convention: Path should not terminated by /
 
 FASTQS_DIR="01_RawData"
@@ -515,11 +521,12 @@ function build_download_cmd {
     #   --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
     
     echo "
-if [ ! -d ${STORAGE_DIR} ] ; then 
+touch ${DOWNLOAD_TAG} ;
+DOWNLOAD_TAG=\$(grep 'complete' ${DOWNLOAD_TAG} | wc -l) ;
+if [ ! -d ${STORAGE_DIR} ] && [ ${DOWNLOAD_TAG} -eq 0 ] ; then 
     echo 'downloading raw data to ${STORAGE_DIR}' ;
     module load java ;
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;	
-    mkdir -p logs/slurm ; 
     CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_DIR} ' ;
     snakemake \\
         --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
@@ -527,6 +534,7 @@ if [ ! -d ${STORAGE_DIR} ] ; then
         --configfile config/download.yaml \\
         --config \${CONFIG_OPTIONS} ;
     conda deactivate ;
+    echo 'complete' > ${DOWNLOAD_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
 
 }
@@ -591,7 +599,10 @@ function build_concat_cmd {
     PIPELINE_SCRIPT=$3 ;
     
     echo "
-if [ ! -d ${CONCAT_DIR} ] ; then 
+touch ${CONCAT_TAG} ;
+concat_success=\$(grep 'complete' ${CONCAT_TAG} | wc -l) ;
+
+if [ ! -d ${CONCAT_DIR} ] && [[ ${concat_success} -eq 0 ]] ; then 
     echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
     module load java ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
@@ -601,6 +612,7 @@ if [ ! -d ${CONCAT_DIR} ] ; then
         --configfile workflow/config/concat.yaml \\
         --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ;
     conda deactivate ;
+    echo 'complete' > ${CONCAT_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
 }
 
@@ -614,7 +626,10 @@ function prepare_variant_call_table {
 
     #### if variant call table is given, then cp to current dir, otherwise create an empty table
     echo "
-if [ -f ${VARIANT_CALL_TABLE} ] ; then
+touch ${DNA_PIPELINE_TAG} ;
+dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l)
+
+if [ -f ${VARIANT_CALL_TABLE} ] && [[ ${dna_pipeline_success} -eq 0 ]] ; then
     echo '[info] variant call table is ready, please check if it is correct. '
     cat ${VARIANT_CALL_TABLE} ;
 
@@ -694,20 +709,21 @@ fi ' >> ${PIPELINE_SCRIPT} ;
     fi 
     
     echo "
-pipeline_success=\$(grep 'TAG' .snakemake/log/* | grep 'DNA routine analysis complete' | wc -l)
+touch ${DNA_PIPELINE_TAG} ;
+dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l) ;
 
-if [[ ${pipeline_success} -eq 0 ]] ; then 
+if [[ ${dna_pipeline_success} -eq 0 ]] ; then 
     echo '${WARNING}[check point]${ENDC} Please check if the variant call table is correct: [enter to continue]'
     cat config/variant_call_list*tsv ;
 
     echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
     module load java ;
-    mkdir -p logs/slurm/ ; 
     rm -f bam/*tmp* ;
     ${APP_SNAKEMAKE} \\
         --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
     	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \\
     	--config ${CONFIG_OPTIONS}
+    echo 'complete' > ${DNA_PIPELINE_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
     
 }
@@ -725,7 +741,10 @@ if [ ! -f config/patients.tsv ] ; then
     fi 
 fi
 
-if [ -f config/patients.tsv ] ; then
+touch ${CLINIC_TAG} ;
+clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ;
+
+if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then
     echo "Starting oncokb and civic annotation" ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
@@ -734,8 +753,10 @@ if [ -f config/patients.tsv ] ; then
     snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk ;
     ## 2.2 cna. oncokb and civic annotations
     snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk     ;
-    conda deactivate ;
-fi' >> ${PIPELINE_SCRIPT}
+    conda deactivate ; ' >> ${PIPELINE_SCRIPT}
+
+    echo "    echo 'complete' > ${CLINIC_TAG} ;
+fi" >> ${PIPELINE_SCRIPT}
 
 }
 
@@ -1431,7 +1452,7 @@ if [ ${DO_PIPELINE} == true ] ; then
     fi
 
     if  [ ${DATA_FILETYPE} == ${FASTQ} ] ; then 
-	prepare_variant_call_table ${MODE} ${WORKING_DIR} ${PIPELINE_SCRIPT}
+	prepare_variant_call_table ${MODE} ${WORKING_DIR} ${PIPELINE_SCRIPT} ;
         build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ;
     elif [ ${DATA_FILETYPE} == ${BAM} ] ; then 
         build_pipeline_cmd "${CONFIG_OPTIONS} sam2fastq=True " ${STORAGE_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ;
@@ -1562,7 +1583,7 @@ fi
 ##  global: RUN_PIPELINE_SCRIPT
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2')
+BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2', 'BQSR', 'fastp_reports', 'remove_duplicate_metrics')
 
 BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}" 
 BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" 
@@ -1617,5 +1638,7 @@ fi
 echo -e "\necho '[Congratulations] Everything has been done. '" >> ${RUN_PIPELINE_SCRIPT} ;
 
 chmod u+x  ${RUN_PIPELINE_SCRIPT} ;
+
+mkdir -p ${WORKING_DIR}/logs/slurm/ ${WORKING_DIR}/logs/tags/ ; 
 
 echo -e "${OKGREEN}[Congratulations]${ENDC} The working directory is finally ready, to start the pipeline, please execute the commands as follow: \n\t cd ${WORKING_DIR}\n\t ./run.sh "
