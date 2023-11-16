@@ -22,7 +22,8 @@ NORMAL_ONLY= False
 ## Note 2: config["MUTECT_INTERVAL_DIR"] should not be terminated by "/"
 
 ## max sample file size
-max_file_size_G = max([ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
+if os.path.isdir('DNA_samples'):
+    max_file_size_G = max([ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
 
 ## wildcards for mutect intervals
 mutect_intervals, = glob_wildcards(config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed")

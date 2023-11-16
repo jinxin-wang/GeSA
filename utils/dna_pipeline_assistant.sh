@@ -117,6 +117,7 @@ PATIENTS_TABLE="config/patients.tsv"
 
 DO_BAM2FASTQ=false
 
+DO_BACKUP=false
 DO_BACKUP_FASTQ=false
 DO_BACKUP_CONCAT=false
 DO_BACKUP_BAM=false
@@ -131,10 +132,19 @@ INTERACT=false
 #### #### #### #### #### #### #### #### ####
 
 function enable_all_backup {
+    DO_BACKUP=true ;
     DO_BACKUP_FASTQ=true ;
     DO_BACKUP_CONCAT=true ;
     DO_BACKUP_BAM=true ;
     DO_BACKUP_RESULTS=true ;
+}
+
+function disable_all_backup {
+    DO_BACKUP=false ;
+    DO_BACKUP_FASTQ=false ;
+    DO_BACKUP_CONCAT=false ;
+    DO_BACKUP_BAM=false ;
+    DO_BACKUP_RESULTS=false ;
 }
 
 function enable_all_tasks {
@@ -152,6 +162,7 @@ function disable_all_tasks {
     DO_MD5SUM=false ;
     DO_CONCAT=false ;
     DO_CLINIC=false ;
+    DO_BACKUP=false ;
     DO_BACKUP_FASTQ=false ; 
     DO_BACKUP_CONCAT=false ; 
     DO_BACKUP_BAM=false ; 
@@ -698,22 +709,42 @@ function build_pipeline_cmd {
 fi ' >> ${PIPELINE_SCRIPT} ;
 
     elif [  ${DATAFILES_TYPE} == ${BAM} ] ; then 
-        echo "if [ -z \"\$(ls ${bam_dir})\"  ] ; then 
-    ln -s ${DATASOURCE_DIR}/*bam ${bam_dir} ;  " >> ${PIPELINE_SCRIPT} ;
+        #     echo "if [ -z \"\$(ls ${bam_dir})\"  ] ; then 
+        # ln -s ${DATASOURCE_DIR}/*bam ${bam_dir} ;
+	# fi " >> ${PIPELINE_SCRIPT} ;
 
-#         if [ ${DO_BAM2FASTQ} == false ] ; then 
-#             echo "for bam in ${bam_dir}/*bam ; do 
-#     mv \$bam \${bam/.bam/nodup.recal.bam} ;
-# done  " >> ${PIPELINE_SCRIPT} ;
-#         fi
+	mkdir -p ${bam_dir} ; 
+	bam_files=$(find ${DATASOURCE_DIR} -name "*bam") ; 
+	bai_files=$(find ${DATASOURCE_DIR} -name "*bai") ;
+
+	if [ ! -z "${bam_files}" ] ; then
+	    echo -e "${OKGREEN}[info]${ENDC} starting to identify the bam files: "
+	    for f in ${bam_files} ; do
+		echo -e "${OKGREEN}[info]${ENDC} ${f} "
+		ln -s ${f} ${bam_dir} ;
+	    done
+	else
+	    echo -e "${FAIL}[WARNING]${ENDC} bam files are NOT found ! "
+	fi
+
+	if [ ! -z "${bai_files}" ] ; then
+	    echo -e "${OKGREEN}[info]${ENDC} starting to identify the following bai files: "
+	    for f in ${bai_files} ; do
+		echo -e "${OKGREEN}[info]${ENDC} ${f} "		
+		ln -s ${f} ${bam_dir} ;
+	    done
+	else
+	    echo -e "${WARNING}[warning]${ENDC} bam files are NOT found ! "	    
+	fi
+
     fi 
     
     echo "
 touch ${DNA_PIPELINE_TAG} ;
 dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l) ;
 
-if [[ ${dna_pipeline_success} -eq 0 ]] ; then 
-    echo '${WARNING}[check point]${ENDC} Please check if the variant call table is correct: [enter to continue]'
+if [[ \${dna_pipeline_success} -eq 0 ]] ; then 
+    echo '${WARNING}[check point]${ENDC} Please check if the variant call table is correct: [ctrl+C to cancel if it is NOT correct]'
     cat config/variant_call_list*tsv ;
 
     echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
@@ -721,7 +752,7 @@ if [[ ${dna_pipeline_success} -eq 0 ]] ; then
     rm -f bam/*tmp* ;
     ${APP_SNAKEMAKE} \\
         --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
-    	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \\
+    	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete --use-conda \\
     	--config ${CONFIG_OPTIONS}
     echo 'complete' > ${DNA_PIPELINE_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
@@ -731,7 +762,7 @@ fi " >> ${PIPELINE_SCRIPT} ;
 function build_oncokb_civic_cmd {
 
     PIPELINE_SCRIPT=$1
-    
+    CLINIC_TAG=$2
     echo '
 if [ ! -f config/patients.tsv ] ; then
     echo -e "${WARNING}[check point]${ENDC} please provide patients table" ;
@@ -739,12 +770,14 @@ if [ ! -f config/patients.tsv ] ; then
     if [ -f ${line} ] ; then
         cp ${line} config/patients.tsv
     fi 
-fi
+fi ' >> ${PIPELINE_SCRIPT}
 
+    echo "
 touch ${CLINIC_TAG} ;
-clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ;
+clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ; 
+if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then " >> ${PIPELINE_SCRIPT}
 
-if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then
+    echo '
     echo "Starting oncokb and civic annotation" ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
@@ -975,15 +1008,19 @@ while true ; do
 	    enable_all_backup ;
 	    shift ;; 
 	--backupFASTQ )
+	    DO_BACKUP=true ;
 	    DO_BACKUP_FASTQ=true ;
 	    shift ;; 
 	--backupCONCAT )
+	    DO_BACKUP=true ;
 	    DO_BACKUP_CONCAT=true ;
 	    shift ;; 
 	--backupBAM )
+	    DO_BACKUP=true ;
 	    DO_BACKUP_BAM=true ;
 	    shift ;; 
 	--backupRESULTS )
+	    DO_BACKUP=true ;
 	    DO_BACKUP_RESULTS=true ;
 	    shift ;;
 	
@@ -1298,6 +1335,7 @@ fi
 ##################################################################################
 if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup concat submodule ? [y]/n"
+    read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
 	DO_CONCAT=true ; 
 	DO_PIPELINE=true ; 
@@ -1368,6 +1406,7 @@ fi
 
 if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] && [ ${DO_CONCAT} == false ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup dna routine analysis pipeline submodule ? [y]/n"
+    read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
 	DO_PIPELINE=true ; 
 	enable_all_backup ;
@@ -1455,7 +1494,7 @@ if [ ${DO_PIPELINE} == true ] ; then
 	prepare_variant_call_table ${MODE} ${WORKING_DIR} ${PIPELINE_SCRIPT} ;
         build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ;
     elif [ ${DATA_FILETYPE} == ${BAM} ] ; then 
-        build_pipeline_cmd "${CONFIG_OPTIONS} sam2fastq=True " ${STORAGE_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ;
+        build_pipeline_cmd "${CONFIG_OPTIONS} sam2fastq=True " ${STORAGE_DIR} ${BAM} ${RUN_PIPELINE_SCRIPT} ;
     fi
 
 fi
@@ -1466,6 +1505,7 @@ fi
 
 if [ ${INTERACT} == true ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup Oncokb and CIVIC submodule ? [y]/n"
+    read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
 	DO_CLINIC=true
     else
@@ -1524,49 +1564,56 @@ location of the table: [enter to continue and set the table later, or set the pa
 
     cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/clinic.yaml ${WORKING_DIR}/config/ ;
 
-    build_oncokb_civic_cmd ${RUN_PIPELINE_SCRIPT} ;
+    build_oncokb_civic_cmd ${RUN_PIPELINE_SCRIPT} ${CLINIC_TAG} ;
 fi
 
 ######################################################
 ####       setup backup to storage block          ####
 ######################################################
 
-if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] && [ ${DO_CONCAT} == false ] && [ ${DO_PIPELINE} == false ] && [ ${DO_CLINIC} == false ] ; then
+# if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] && [ ${DO_CONCAT} == false ] && [ ${DO_PIPELINE} == false ] && [ ${DO_CLINIC} == false ] ; then
+if [ ${INTERACT} == true ] ; then
+    disable_all_backup ;
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup backup to storage ? [y]/n"
+    read line
     if [ ! -z ${line} ] || [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
-	echo "${FAIL}[warning]${ENDC} Noting to be done."
-	exit 0
+	# echo -e "${FAIL}[warning]${ENDC} Noting to be done."
+	DO_BACKUP=false ;
+    else
+	DO_BACKUP=true ;
     fi
 fi
 
-echo -e "${WARNING}[check point]${ENDC} Please set the path of backup storage [enter to continue with default path : ${BACKUP_PWD} ]"
-read line ;
-if [ ! -z ${line} ]  ; then
-    BACKUP_PWD=${line} ;
-fi
-
-echo -e "${WARNING}[check point]${ENDC} Do you need to backup raw data ? [y]/n"
-read line ;
-if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-    DO_BACKUP_FASTQ=true
-fi
-
-echo -e "${WARNING}[check point]${ENDC} Do you need to backup concatenated data ? [y]/n"
-read line ;
-if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-    DO_BACKUP_CONCAT=true
-fi
-
-echo -e "${WARNING}[check point]${ENDC} Do you need to backup bam files ? [y]/n"
-read line ;
-if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-    DO_BACKUP_BAM=true
-fi
-
-echo -e "${WARNING}[check point]${ENDC} Do you need to backup analysis results of DNA pipeline ? [y]/n"
-read line ;
-if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-    DO_BACKUP_RESULTS=true
+if [ ${DO_BACKUP} == true ] ; then 
+    echo -e "${WARNING}[check point]${ENDC} Please set the path of backup storage [enter to continue with default path : ${BACKUP_PWD} ]"
+    read line ;
+    if [ ! -z ${line} ]  ; then
+	BACKUP_PWD=${line} ;
+    fi
+    
+    echo -e "${WARNING}[check point]${ENDC} Do you need to backup raw data ? [y]/n"
+    read line ;
+    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	DO_BACKUP_FASTQ=true
+    fi
+    
+    echo -e "${WARNING}[check point]${ENDC} Do you need to backup concatenated data ? [y]/n"
+    read line ;
+    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	DO_BACKUP_CONCAT=true
+    fi
+    
+    echo -e "${WARNING}[check point]${ENDC} Do you need to backup bam files ? [y]/n"
+    read line ;
+    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	DO_BACKUP_BAM=true
+    fi
+    
+    echo -e "${WARNING}[check point]${ENDC} Do you need to backup analysis results of DNA pipeline ? [y]/n"
+    read line ;
+    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	DO_BACKUP_RESULTS=true
+    fi
 fi
 
 ## Global variables:

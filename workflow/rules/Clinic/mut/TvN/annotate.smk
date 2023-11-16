@@ -1,7 +1,7 @@
 # Add a filter for variants not in the intersection of all target files of the project.
 rule somatic_maf_filter_outside_intersection:
     input:
-        vcf="Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz",
+        vcf="Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
         bed=config["target_files"]["bed_padded"][config["general"]["bed_intersection"]],
     output:
         vcf=temp("calling/somatic_maf_filter_outside_intersection/{tsample}_vs_{nsample}.vcf.gz" ),
@@ -19,19 +19,18 @@ rule somatic_maf_filter_outside_intersection:
         mem_mb=5000,
     shell:
         """
-        header="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_header.vcf"
-        inbed="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_inbed.vcf"
-        offbed="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_offbed.vcf"
-        offbed_ann="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_offbed_ann.vcf"
+        header="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_header.vcf" ;
+        inbed="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_inbed.vcf" ;
+        offbed="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_offbed.vcf" ;
+        offbed_ann="{params.dir}/{wildcards.tsample}_vs_{wildcards.nsample}_content_offbed_ann.vcf" ;
         
-        {params.bedtools} intersect -a {input.vcf} -b {input.bed} -wa | sort | uniq > $inbed
-        {params.bedtools} intersect -a {input.vcf} -b {input.bed} -v | sort | uniq > $offbed
-        zgrep "^#" {input.vcf} > $header
-        gawk 'BEGIN{{FS="\\t"; OFS="\\t"}} {{if ($7=="PASS") $7="OFF_TARGETS_INTERSECTION"; else $7="OFF_TARGETS_INTERSECTION;"$7; print}}' $offbed > $offbed_ann
-        sed -i '3 i ##FILTER=<ID=OFF_TARGETS_INTERSECTION,Description='"\\"Variant is outside the bed file {input.bed}.\\""'>' $header
-        cat $header $inbed $offbed_ann | {params.bgzip} -c > {output.vcf}
-        rm $header $inbed $offbed $offbed_ann
-        {params.picard} SortVcf I={output.vcf} O={output.vcf}
+        {params.bedtools} intersect -a {input.vcf} -b {input.bed} -wa | sort | uniq > $inbed ;
+        {params.bedtools} intersect -a {input.vcf} -b {input.bed} -v | sort | uniq > $offbed ;
+        zgrep "^#" {input.vcf} > $header ;
+        gawk 'BEGIN{{FS="\\t"; OFS="\\t"}} {{if ($7=="PASS") $7="OFF_TARGETS_INTERSECTION"; else $7="OFF_TARGETS_INTERSECTION;"$7; print}}' $offbed > $offbed_ann ;
+        sed -i '3 i ##FILTER=<ID=OFF_TARGETS_INTERSECTION,Description='"\\"Variant is outside the bed file {input.bed}.\\""'>' $header ;
+        cat $header $inbed $offbed_ann | {params.bgzip} -c > {output.vcf} && {params.picard} SortVcf I={output.vcf} O={output.vcf} ;        
+        rm $header $inbed $offbed $offbed_ann ;
         """
 
 # Save VCF after all filtering.
@@ -303,6 +302,7 @@ rule somatic_maf:
             --keep_vep_header \
             --output {output} &> {log}
         """
+
 
 # prepare a table for each pair tsample_vs_nsample
 rule somatic_maf_civic:

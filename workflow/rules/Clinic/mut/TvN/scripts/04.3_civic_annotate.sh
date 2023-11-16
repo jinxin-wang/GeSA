@@ -53,9 +53,8 @@ python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_civic_preprocess.py \
     --category ${category} \
     --output ${table_pre}
 
-mkdir -p ~/tmp
-
-cp ${table_pre} ~/tmp/
+# mkdir -p tmp
+# cp ${table_pre} tmp/
 
 # run CIViC annotator
 printf -- "-INFO: running CIViC annotator...\n"
