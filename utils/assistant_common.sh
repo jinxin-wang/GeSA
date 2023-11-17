@@ -78,7 +78,7 @@ DO_CONCAT=false
 ###################### do genome routine analysis ##########################
 DO_PIPELINE=false
 # ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Genome_Sequencing_Analysis"
-ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final"
+# ANALYSIS_PIPELINE_SRC_DIR="/home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final"
 
 #### snakemake settings
 APP_SNAKEMAKE="/mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake"
@@ -548,6 +548,8 @@ function build_download_cmd {
     #   --jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete  --use-conda \
     
     echo "
+rm -f workflow ;
+ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${DOWNLOAD_TAG} ;
 DOWNLOAD_TAG=\$(grep 'complete' ${DOWNLOAD_TAG} | wc -l) ;
 if [ ! -d ${STORAGE_DIR} ] && [ ${DOWNLOAD_TAG} -eq 0 ] ; then 
@@ -618,14 +620,14 @@ fi ' >> ${RUN_PIPELINE_SCRIPT} ;
 }
 
 function build_concat_cmd {
-    # 	--cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \
-    #	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete \
 
     STORAGE_DIR=$1 ;
     CONCAT_DIR=$2  ;
     PIPELINE_SCRIPT=$3 ;
     
     echo "
+rm -f workflow ;
+ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CONCAT_TAG} ;
 concat_success=\$(grep 'complete' ${CONCAT_TAG} | wc -l) ;
 
@@ -641,6 +643,113 @@ if [ ! -d ${CONCAT_DIR} ] && [[ ${concat_success} -eq 0 ]] ; then
     conda deactivate ;
     echo 'complete' > ${CONCAT_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
+}
+
+function setup_backup_submodule {
+    # if [ ${INTERACT} != false ] && [ ${DO_DOWNLOAD} == false ] && [ ${DO_CONCAT} == false ] && [ ${DO_PIPELINE} == false ] && [ ${DO_CLINIC} == false ] ; then
+    if [ ${INTERACT} != false ] ; then
+	disable_all_backup ;
+	echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup backup to storage ? [y]/n"
+	read line
+	if [ ! -z ${line} ] || [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
+	    # echo -e "${FAIL}[warning]${ENDC} Noting to be done."
+	    DO_BACKUP=false ;
+	else
+	    DO_BACKUP=true ;
+	fi
+    fi
+
+    if [ ${DO_BACKUP} == true ] ; then 
+	echo -e "${WARNING}[check point]${ENDC} Please set the path of backup storage [enter to continue with default path : ${BACKUP_PWD} ]"
+	read line ;
+	if [ ! -z ${line} ]  ; then
+	    BACKUP_PWD=${line} ;
+	fi
+
+	echo -e "${WARNING}[check point]${ENDC} Do you need to backup raw data ? [y]/n"
+	read line ;
+	if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    DO_BACKUP_FASTQ=true
+	fi
+
+	echo -e "${WARNING}[check point]${ENDC} Do you need to backup concatenated data ? [y]/n"
+	read line ;
+	if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    DO_BACKUP_CONCAT=true
+	fi
+
+	echo -e "${WARNING}[check point]${ENDC} Do you need to backup bam files ? [y]/n"
+	read line ;
+	if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    DO_BACKUP_BAM=true
+	fi
+
+	echo -e "${WARNING}[check point]${ENDC} Do you need to backup analysis results of pipeline ? [y]/n"
+	read line ;
+	if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
+	    DO_BACKUP_RESULTS=true
+	fi
+    fi
+}
+
+function backup_results {
+    if [ $DO_BACKUP_RESULTS == true ] ; then
+	echo -e "${OKGREEN}[info]${ENDC} backup analysis results to storage"
+	mkdir -p ${BACKUP_RESULTS_PWD} ;
+	echo "echo '[info] starting to backup analysis results to storage: ${BACKUP_RESULTS_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
+	for dir in ${BACKUP_TARGETS[@]} ; do
+	    echo "
+    if [ -d ${dir} ] ; then 
+	rsync -avh --progress ${dir} ${BACKUP_RESULTS_PWD} ; 
+    fi " >> ${RUN_PIPELINE_SCRIPT} ;
+	done
+    fi
+}
+
+function backup_raw {
+    #### do backup of fastq raw data
+    if [ $DO_BACKUP_FASTQ == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
+	echo -e "${OKGREEN}[info]${ENDC} backup raw fastq files to storage"
+	mkdir -p ${BACKUP_FASTQ_PWD} ;
+	echo "echo '[info] starting to backup raw data to storage: ${BACKUP_FASTQ_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
+	echo "rsync -avh --progress ${STORAGE_DIR} ${BACKUP_FASTQ_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+	if  [ ${DO_BACKUP_RESULTS} == true ] ; then 
+	    echo "ln -s  ${BACKUP_FASTQ_PWD} ${BACKUP_RESULTS_PWD}/RAW_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ; 
+	fi
+    fi
+}
+
+function backup_concat {
+    #### do backup of concatenated fastq raw data
+    if [ $DO_BACKUP_CONCAT == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
+	echo -e "${OKGREEN}[info]${ENDC} backup concat fastq files to storage"
+	mkdir -p ${BACKUP_CONCATS_PWD} ;
+	echo "echo '[info] starting to backup concatenated fastq to storage: ${BACKUP_CONCATS_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
+	echo "rsync -avh --progress ${CONCAT_DIR} ${BACKUP_CONCATS_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+	if [ ${DO_BACKUP_RESULTS} == true ] ; then
+	    echo "ln -s ${BACKUP_CONCATS_PWD} ${BACKUP_RESULTS_PWD}/CONCAT_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ;
+	fi
+    fi
+}
+
+function backup_bam {
+    #### do backup of bam file
+    if [ $DO_BACKUP_BAM == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
+	echo -e "${OKGREEN}[info]${ENDC} backup bam files to storage"
+	mkdir -p ${BACKUP_BAM_PWD} ;
+	echo "echo '[info] starting to backup bam files to storage: ${BACKUP_BAM_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
+	echo "rsync -avh --progress bam ${BACKUP_BAM_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
+	if [ ${DO_BACKUP_RESULTS} == true ] ; then
+	    echo "ln -s ${BACKUP_BAM_PWD} ${BACKUP_RESULTS_PWD}/bam ; " >> ${RUN_PIPELINE_SCRIPT} ;
+	fi
+    fi 
+} 
+
+function pipeline_complete {
+    echo -e "\necho '[Congratulations] Everything has been done. '" >> ${RUN_PIPELINE_SCRIPT} ;
+    chmod u+x  ${RUN_PIPELINE_SCRIPT} ;
+    mkdir -p ${WORKING_DIR}/logs/slurm/ ${WORKING_DIR}/logs/tags/ ; 
+    echo -e "${OKGREEN}[Congratulations]${ENDC} The working directory is finally ready, to start the pipeline, please execute the commands as follow: \n\t cd ${WORKING_DIR}\n\t ./run.sh "
 }
 
 #######################################
@@ -1008,17 +1117,17 @@ if [ ${INTERACT} == true ] ; then
     		* ) echo "Unknown choice !" ; exit -1 ;;
     	    esac
 	fi
-    fi
-
-    echo -e "${WARNING}[check point]${ENDC} The file type of data is ${DATA_FILETYPE}, is that correct ? [enter to continue or choose the number to change] "
-    echo -e "1. fastq files\n2. bam files"
-    read line
-    if [ ! -z ${line} ] ; then
-    	case ${line} in 
-    	    1 ) DATA_FILETYPE=${FASTQ} ;;
-    	    2 ) DATA_FILETYPE=${BAM} ;;
-    	    * ) echo "Unknown choice !" ; exit -1 ;;
-    	esac
+	
+	echo -e "${WARNING}[check point]${ENDC} The file type of data is ${DATA_FILETYPE}, is that correct ? [enter to continue or choose the number to change] "
+	echo -e "1. fastq files\n2. bam files"
+	read line
+	if [ ! -z ${line} ] ; then
+    	    case ${line} in 
+    		1 ) DATA_FILETYPE=${FASTQ} ;;
+    		2 ) DATA_FILETYPE=${BAM} ;;
+    		* ) echo "Unknown choice !" ; exit -1 ;;
+    	    esac
+	fi
     fi
 
     if [ ! -z ${BATCH_POSTFIX} ] ; then 

@@ -103,6 +103,8 @@ fi ' >> ${PIPELINE_SCRIPT} ;
     fi 
     
     echo "
+rm -f workflow ;
+ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${DNA_PIPELINE_TAG} ;
 dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l) ;
 
@@ -136,6 +138,8 @@ if [ ! -f config/patients.tsv ] ; then
 fi ' >> ${PIPELINE_SCRIPT}
 
     echo "
+rm -f workflow ;
+ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CLINIC_TAG} ;
 clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ; 
 if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then " >> ${PIPELINE_SCRIPT}
@@ -332,51 +336,6 @@ fi
 ####       setup backup to storage block          ####
 ######################################################
 
-# if [ ${INTERACT} != false ] && [ ${DO_DOWNLOAD} == false ] && [ ${DO_CONCAT} == false ] && [ ${DO_PIPELINE} == false ] && [ ${DO_CLINIC} == false ] ; then
-if [ ${INTERACT} != false ] ; then
-    disable_all_backup ;
-    echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup backup to storage ? [y]/n"
-    read line
-    if [ ! -z ${line} ] || [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
-	# echo -e "${FAIL}[warning]${ENDC} Noting to be done."
-	DO_BACKUP=false ;
-    else
-	DO_BACKUP=true ;
-    fi
-fi
-
-if [ ${DO_BACKUP} == true ] ; then 
-    echo -e "${WARNING}[check point]${ENDC} Please set the path of backup storage [enter to continue with default path : ${BACKUP_PWD} ]"
-    read line ;
-    if [ ! -z ${line} ]  ; then
-	BACKUP_PWD=${line} ;
-    fi
-    
-    echo -e "${WARNING}[check point]${ENDC} Do you need to backup raw data ? [y]/n"
-    read line ;
-    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-	DO_BACKUP_FASTQ=true
-    fi
-    
-    echo -e "${WARNING}[check point]${ENDC} Do you need to backup concatenated data ? [y]/n"
-    read line ;
-    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-	DO_BACKUP_CONCAT=true
-    fi
-    
-    echo -e "${WARNING}[check point]${ENDC} Do you need to backup bam files ? [y]/n"
-    read line ;
-    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-	DO_BACKUP_BAM=true
-    fi
-    
-    echo -e "${WARNING}[check point]${ENDC} Do you need to backup analysis results of DNA pipeline ? [y]/n"
-    read line ;
-    if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-	DO_BACKUP_RESULTS=true
-    fi
-fi
-
 ## Global variables:
 ## DATE
 ## MODE
@@ -398,55 +357,11 @@ BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DAT
 BACKUP_BAM_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${BAMS_DIR}/${DATE}_${DATABASE}"
 BACKUP_RESULTS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${RESULTS_DIR}/${RESULT_BATCH_NAME}"
 
-if [ $DO_BACKUP_RESULTS == true ] ; then
-    echo -e "${OKGREEN}[info]${ENDC} backup analysis results to storage"
-    mkdir -p ${BACKUP_RESULTS_PWD} ;
-    echo "echo '[info] starting to backup analysis results to storage: ${BACKUP_RESULTS_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
-    for dir in ${BACKUP_TARGETS[@]} ; do
-        echo "
-if [ -d ${dir} ] ; then 
-    rsync -avh --progress ${dir} ${BACKUP_RESULTS_PWD} ; 
-fi " >> ${RUN_PIPELINE_SCRIPT} ;
-    done
-fi
+# setup_backup_submodule ;
 
-#### do backup of fastq raw data
-if [ $DO_BACKUP_FASTQ == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
-    echo -e "${OKGREEN}[info]${ENDC} backup raw fastq files to storage"
-    mkdir -p ${BACKUP_FASTQ_PWD} ;
-    echo "echo '[info] starting to backup raw data to storage: ${BACKUP_FASTQ_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
-    echo "rsync -avh --progress ${STORAGE_DIR} ${BACKUP_FASTQ_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if  [ ${DO_BACKUP_RESULTS} == true ] ; then 
-        echo "ln -s  ${BACKUP_FASTQ_PWD} ${BACKUP_RESULTS_PWD}/RAW_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ; 
-    fi
-fi
+# backup_results ;
+# backup_raw ;
+# backup_concat ;
+# backup_bam ;
 
-#### do backup of concatenated fastq raw data
-if [ $DO_BACKUP_CONCAT == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
-    echo -e "${OKGREEN}[info]${ENDC} backup concat fastq files to storage"
-    mkdir -p ${BACKUP_CONCATS_PWD} ;
-    echo "echo '[info] starting to backup concatenated fastq to storage: ${BACKUP_CONCATS_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
-    echo "rsync -avh --progress ${CONCAT_DIR} ${BACKUP_CONCATS_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if [ ${DO_BACKUP_RESULTS} == true ] ; then
-        echo "ln -s ${BACKUP_CONCATS_PWD} ${BACKUP_RESULTS_PWD}/CONCAT_FASTQ ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    fi
-fi
-
-#### do backup of bam file
-if [ $DO_BACKUP_BAM == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
-    echo -e "${OKGREEN}[info]${ENDC} backup bam files to storage"
-    mkdir -p ${BACKUP_BAM_PWD} ;
-    echo "echo '[info] starting to backup bam files to storage: ${BACKUP_BAM_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;
-    echo "rsync -avh --progress bam ${BACKUP_BAM_PWD} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    if [ ${DO_BACKUP_RESULTS} == true ] ; then
-        echo "ln -s ${BACKUP_BAM_PWD} ${BACKUP_RESULTS_PWD}/bam ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    fi
-fi 
-
-echo -e "\necho '[Congratulations] Everything has been done. '" >> ${RUN_PIPELINE_SCRIPT} ;
-
-chmod u+x  ${RUN_PIPELINE_SCRIPT} ;
-
-mkdir -p ${WORKING_DIR}/logs/slurm/ ${WORKING_DIR}/logs/tags/ ; 
-
-echo -e "${OKGREEN}[Congratulations]${ENDC} The working directory is finally ready, to start the pipeline, please execute the commands as follow: \n\t cd ${WORKING_DIR}\n\t ./run.sh "
+# pipeline_complete ;

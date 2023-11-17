@@ -1,9 +1,19 @@
-source /home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final/utils/assistant_common.sh
+ANALYSIS_PIPELINE_SRC_DIR="/mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline"
+
+source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/assistant_common.sh
 
 if [ ${SEQ_TYPE} == ${WGS} ] || [ ${SEQ_TYPE} == ${WES} ] ; then
-    source /home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final/utils/dna_pipeline_block.sh
+    source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/dna_pipeline_block.sh
 elif [ ${MODE} == ${RNAFUS} ] ; then
-    source /home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final/utils/rnafusion_pipeline_block.sh
+    source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/rnafusion_pipeline_block.sh
 elif [ ${MODE} == ${RNASEQ} ] ; then
-    source /home/j_wang@intra.igr.fr/Workspace/GSA_AndreiM_Final/utils/rnaseq_pipeline_block.sh
+    source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/rnaseq_pipeline_block.sh
 fi
+
+setup_backup_submodule ;
+
+backup_results ;
+backup_raw ;
+backup_concat ;
+
+pipeline_complete ;
