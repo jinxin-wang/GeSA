@@ -110,8 +110,8 @@ RNAFUS="RNAfusion"
 RNASEQ="RNAseq"
 
 NFCORE_VERSION=
-NFCORE_VERSION_1P2="1.2"
-NFCORE_VERSION_2P3="2.3"
+NFCORE_VERSION_1P2="nfcore_1.2"
+NFCORE_VERSION_2P3="nfcore_2.3"
 
 #### pipeline default settings: 
 SAMPLES="${HUMAN}"
@@ -1152,8 +1152,14 @@ fi
 
 RESULT_BATCH_NAME="${DATE}_${SAMPLES}_${SEQ_TYPE}_${MODE}"
 
+if [ ${MODE} == ${RNAFUS} ] && [ ! -z ${NFCORE_VERSION} ] ; then 
+    RESULT_BATCH_NAME="${DATE}_${SAMPLES}_${RNAFUS}_${NFCORE_VERSION}" ;
+elif [ ${MODE} == ${RNASEQ} ] ; then 
+    RESULT_BATCH_NAME="${DATE}_${SAMPLES}_${RNASEQ}" ;
+fi
+
 if [ ! -z ${BATCH_POSTFIX} ] ; then
-    RESULT_BATCH_NAME="${RESULT_BATCH_NAME}_${BATCH_POSTFIX}"
+    RESULT_BATCH_NAME="${RESULT_BATCH_NAME}_${BATCH_POSTFIX}" ;
 fi
 
 # if not abs. path, convert rela. path to abs.
