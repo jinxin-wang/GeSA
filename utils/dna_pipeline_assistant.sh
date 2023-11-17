@@ -197,7 +197,7 @@ function setup_concat_dir {
 
     DEFAULT_CONCAT_DIR=${SCRATCH_CONCAT_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}
     echo -e "${WARNING}[check point]${ENDC} Please provide the directory for the concatenation of raw data. [enter to continue with default path: ${OKGREEN}${DEFAULT_CONCAT_DIR}${ENDC} ] " >> `tty`
-    read line
+    read line ;
     if [ -z ${line} ] ; then
         CONCAT_DIR="${DEFAULT_CONCAT_DIR}" ;
     else
@@ -463,10 +463,10 @@ function prepare_download_from_backup_storage {
     STORAGE_DIR=$1
 
     if [ -z ${CLUSTER_STORAGE} ] ; then 
-	echo -e "${WARNING}[check point]${ENDC} Please provide the directory on the backup storage: "
+	echo -e "${WARNING}[check point]${ENDC} Please provide the directory on the backup storage: " >> `tty`
 	read CLUSTER_STORAGE
     else
-	echo -e "${WARNING}[check point]${ENDC} the directory on the backup storage is ${CLUSTER_STORAGE}, is that correct ? [enter to continue, or provide the directory] "
+	echo -e "${WARNING}[check point]${ENDC} the directory on the backup storage is ${CLUSTER_STORAGE}, is that correct ? [enter to continue, or provide the directory] " >> `tty`
 	read line
 	if [ ! -z ${line} ] ; then
 	    CLUSTER_STORAGE=${line} ;
@@ -475,6 +475,7 @@ function prepare_download_from_backup_storage {
 
     # echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\n" > ${WORKING_DIR}/config/download.yaml
     # echo -e "CLUSTER_STORAGE: ${cluster_storage}" >> ${WORKING_DIR}/config/download.yaml
+    mkdir -p ${STORAGE_DIR} ; 
     echo "rsync -avh --progress ${CLUSTER_STORAGE} ${STORAGE_DIR} ; "
 }
 
@@ -676,7 +677,7 @@ else
     done " >> ${PIPELINE_SCRIPT} ;
     fi
     
-echo "
+    echo "
     echo '[info] variant call table is done, please check if it is correct. [enter to start the DNA pipeline]'
     cat ${VARIANT_CALL_TABLE} ;
     read line
@@ -690,6 +691,7 @@ function build_pipeline_cmd {
     DATASOURCE_DIR="$2"
     DATAFILES_TYPE="$3"
     PIPELINE_SCRIPT="$4"
+    MODE=$5
 
     if [ ${DATAFILES_TYPE} == ${FASTQ} ] ; then
 
@@ -745,7 +747,7 @@ dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l) ;
 
 if [[ \${dna_pipeline_success} -eq 0 ]] ; then 
     echo '${WARNING}[check point]${ENDC} Please check if the variant call table is correct: [ctrl+C to cancel if it is NOT correct]'
-    cat config/variant_call_list*tsv ;
+    cat config/variant_call_list_${MODE}.tsv ;
 
     echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
     module load java ;
@@ -1483,18 +1485,22 @@ if [ ${DO_PIPELINE} == true ] ; then
 
     if [ ${INTERACT} == true ] ; then         
         echo -e "${WARNING}[check point]${ENDC} Please confirm if enable oncotator submodule: [y]/n "
-        read line
+        read line ;
         if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
-            DO_ONCOTATOR=true
+            DO_ONCOTATOR=true ;
             CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_oncotator=True "
+	else 
+            DO_ONCOTATOR=false ;
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_oncotator=False "
         fi
     fi
 
     if  [ ${DATA_FILETYPE} == ${FASTQ} ] ; then 
-	prepare_variant_call_table ${MODE} ${WORKING_DIR} ${PIPELINE_SCRIPT} ;
-        build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ;
+	prepare_variant_call_table ${MODE} ${WORKING_DIR} ${RUN_PIPELINE_SCRIPT} ;
+        build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ${MODE} ;
     elif [ ${DATA_FILETYPE} == ${BAM} ] ; then 
-        build_pipeline_cmd "${CONFIG_OPTIONS} sam2fastq=True " ${STORAGE_DIR} ${BAM} ${RUN_PIPELINE_SCRIPT} ;
+        # build_pipeline_cmd "${CONFIG_OPTIONS} sam2fastq=True " ${STORAGE_DIR} ${BAM} ${RUN_PIPELINE_SCRIPT} ${MODE} ;
+	build_pipeline_cmd "${CONFIG_OPTIONS}" ${STORAGE_DIR} ${BAM} ${RUN_PIPELINE_SCRIPT} ${MODE} ;
     fi
 
 fi

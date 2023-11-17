@@ -114,8 +114,8 @@ rule all:
         expand(FACETS),
         expand(CNV_FACETS),
         expand(MUTECT2),
-        expand(ONCOTATOR_MAF),
-        expand(ONCOTATOR_EXOM_MAF),
-        expand(ONCOTATOR_COSMIC),
-        expand(ONCOTATOR_EXOM_COSMIC),
+        expand(ONCOTATOR_MAF if config["do_oncotator"] == True else []),
+        expand(ONCOTATOR_EXOM_MAF if config["do_oncotator"] == True else []),
+        expand(ONCOTATOR_COSMIC if config["do_oncotator"] == True else []),
+        expand(ONCOTATOR_EXOM_COSMIC if config["do_oncotator"] == True else []),
         

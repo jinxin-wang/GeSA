@@ -57,7 +57,7 @@ def build_TvN_targets(tsample, nsample):
     FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_TvN/" + tsample + "_Vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
 
-    if config["samples"] == "human":
+    if config["samples"] == "human" and config["do_oncotator"] == True:
         ONCOTATOR_MAF.append("oncotator_TvN_maf/" + tsample + "_Vs_" + nsample + "_TvN_selection.TCGAMAF")
         ONCOTATOR_COSMIC.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
         if config["seq_type"] == "WGS":
@@ -71,7 +71,7 @@ def build_Tp_targets(tsample, PoN):
     FACETS.append("facets_Tp/" + tsample + "_PON_" + Pon + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_Tp/" + tsample + "_PON_" + Pon + "_twicefiltered_Tp.vcf.gz")
     
-    if config["samples"] == "human":
+    if config["samples"] == "human" and config["do_oncotator"] == True:
         ONCOTATOR.append("oncotator_Tp_tsv_COSMIC/" + tsample  + "_PON_" + PoN + "_Tp_with_COSMIC.tsv.gz")
         
         if config["seq_type"] == "WGS":
@@ -87,7 +87,7 @@ def build_TvNp_targets(tsample, nsample, PoN):
     FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_TvNp/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_twicefiltered_TvNp.vcf.gz")
 
-    if config["samples"] == "human":
+    if config["samples"] == "human" and config["do_oncotator"] == True:
         ONCOTATOR.append("oncotator_TvNp_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_TvNp_with_COSMIC.tsv.gz")
 
         if config["seq_type"] == "WGS":
@@ -99,7 +99,7 @@ def build_TvNp_targets(tsample, nsample, PoN):
 def build_Tonly_targets(tsample):
     MUTECT2.append("Mutect2_T/" + tsample+ "_tumor_only_T.vcf.gz")
 
-    if config["samples"] == "human":
+    if config["samples"] == "human" and config["do_oncotator"] == True:
         ONCOTATOR_COSMIC.append("oncotator_T_tsv_COSMIC/" + tsample + "_tumor_only_T_with_COSMIC.tsv.gz")
         ONCOTATOR_MAF.append("oncotator_T_maf/" + tsample + "_tumor_only_T_selection.TCGAMAF.gz")
 
