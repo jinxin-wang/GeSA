@@ -57,30 +57,61 @@ if [[ \${fusion_pipeline_success} -eq 0 ]] ; then
 fi" >> ${RUN_PIPELINE_SCRIPT}
 }
 
-function nfcore2.3 {
-    echo "TODO nfcore 2.3"
+function nfcore2.1 {
+
+    RNA_FUS_PIPELINE_TAG=$1 ;
+    NFCORE_SAMPLE_SHEET=$2 ;
+    RUN_PIPELINE_SCRIPT=$3 ;
+    
+    echo "
+rm -f workflow ;
+
+touch ${RNA_FUS_PIPELINE_TAG} ;
+fusion_pipeline_success=\$(grep 'complete' ${RNA_FUS_PIPELINE_TAG} | wc -l) ;
+if [[ \${fusion_pipeline_success} -eq 0 ]] ; then 
+    module load java/17.0.4.1 ;
+    module load singularity/3.6.3 ;
+    module load nextflow/21.10.6 ;
+
+    nextflow run /home/j_wang@intra.igr.fr/lib/nfcore/rnafusion/2.1.0/main.nf --starindex --genome GRCh38 -profile singularity --outdir $PWD/results -resume ;
+    echo 'complete' > ${RNA_FUS_PIPELINE_TAG} ;
+fi " >> ${RUN_PIPELINE_SCRIPT}
 }
 
 function format_samples_name {
+    
+    LOCAL_FASTQ_DIR=$1 ;
+    RUN_PIPELINE_SCRIPT=$2 ;
+    
     echo "
 for fastq in ${LOCAL_FASTQ_DIR}/* ; do
-    if [ \$fastq != \${fastq/-/_} ] ; then
-        mv \$fastq \${fastq/-/_} ;
+    if [ \$fastq != \${fastq//-/_} ] ; then
+        mv \$fastq \${fastq//-/_} ;
+    fi 
+    
+    if [ \$fastq != \${fastq//__/_} ] ; then
+        mv \$fastq \${fastq//__/_} ;
     fi 
 done
 
 for fastq in ${LOCAL_FASTQ_DIR}/* ; do
     if [ \$fastq != \${fastq/_1.fastq/_R1.fastq} ] ; then
-	mv \$fastq \${fastq/_1.fastq/_R1.fastq} ;
+        mv \$fastq \${fastq/_1.fastq/_R1.fastq} ;
     fi
 
     if [ \$fastq != \${fastq/_2.fastq/_R2.fastq} ] ; then
-	mv \$fastq \${fastq/_2.fastq/_R2.fastq} ;
+        mv \$fastq \${fastq/_2.fastq/_R2.fastq} ;
     fi
 done " >> ${RUN_PIPELINE_SCRIPT} ;
 }
 
 function generate_nfcore_samplesheet {
+
+    LOCAL_FASTQ_DIR=$1 ;
+    NFCORE_SAMPLE_SHEET=$2 ;
+    RUN_PIPELINE_SCRIPT=$3 ;
+    WORKING_DIR=$4 ;
+
     echo "
 cd ${WORKING_DIR}/${LOCAL_FASTQ_DIR} ;
 r1_list=\$(ls *1.fastq.gz) ;
@@ -115,7 +146,7 @@ rm -f workflow ;
 ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CLINIC_TAG} ;
 clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ; 
-if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then " >> ${PIPELINE_SCRIPT}
+if [ -f config/patients.tsv ] && [ \${clinic_success} -eq 0 ] ; then " >> ${PIPELINE_SCRIPT}
 
     echo '
     echo "Starting oncokb and civic annotation" ; 
@@ -169,30 +200,41 @@ fi
 if [ ${DO_PIPELINE} == true ] ; then 
 
     if [ -z ${DATABASE} ] && [ ${INTERACT} != false ] ; then
-	DATABASE=$(choose_database) ;
+        DATABASE=$(choose_database) ;
     fi
 
+    if [ ${DO_CONCAT} != true ] && [ ${INTERACT} != false ] && [ -z "${CONCAT_DIR}" ] ; then
+        CONCAT_DIR=$(setup_concat_dir ${SCRATCH_FASTQ_PWD} ${PROJECT_NAME} ${DATE} ${DATABASE}) ;
+        echo -e "${OKGREEN}[info]${ENDC} The directory for the concatenated data : ${OKGREEN}${CONCAT_DIR}${ENDC}  "
+    fi    
+    
     if [ ${NFCORE_VERSION} == ${NFCORE_VERSION_1P2} ] ; then
-	LOCAL_FASTQ_DIR="results/data/fastq"
-	mkdir -p ${WORKING_DIR}/config ${WORKING_DIR}/${LOCAL_FASTQ_DIR} ;
+        LOCAL_FASTQ_DIR="results/data/fastq" ;
+        mkdir -p ${WORKING_DIR}/config ${WORKING_DIR}/${LOCAL_FASTQ_DIR} ;
 
-	if [ ${DO_CONCAT} != true ] && [ ${INTERACT} != false ] && [ -z "${CONCAT_DIR}" ] ; then
-	    CONCAT_DIR=$(setup_concat_dir ${SCRATCH_FASTQ_PWD} ${PROJECT_NAME} ${DATE} ${DATABASE}) ;
-	    echo -e "${OKGREEN}[info]${ENDC} The directory for the concatenated data : ${OKGREEN}${CONCAT_DIR}${ENDC}  "
-	fi
-
-	echo "
+        echo "
 mkdir -p ${LOCAL_FASTQ_DIR} ;
 if [ -z \"\$(ls ${LOCAL_FASTQ_DIR})\" ] ; then 
     ln -s ${CONCAT_DIR}/*gz ${LOCAL_FASTQ_DIR} ;
 fi " >> ${RUN_PIPELINE_SCRIPT} ;
 
-	format_samples_name ;
-	generate_nfcore_samplesheet ;
-	nfcore1.2 ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+        format_samples_name ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+        generate_nfcore_samplesheet ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+        nfcore1.2 ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
 
-    elif [ ${NFCORE_VERSION} == ${NFCORE_VERSION_2P3} ] ; then
-	nfcore2.3 ;
+    elif [ ${NFCORE_VERSION} == ${NFCORE_VERSION_2P1} ] ; then
+        LOCAL_FASTQ_DIR="data" ;
+        mkdir -p ${WORKING_DIR}/${LOCAL_FASTQ_DIR} ;
+
+        echo "
+mkdir -p ${LOCAL_FASTQ_DIR} ;
+if [ -z \"\$(ls ${LOCAL_FASTQ_DIR})\" ] ; then 
+    ln -s ${CONCAT_DIR}/*gz ${LOCAL_FASTQ_DIR} ;
+fi " >> ${RUN_PIPELINE_SCRIPT} ;
+
+        format_samples_name ${LOCAL_FASTQ_DIR} ${RUN_PIPELINE_SCRIPT} ;
+        generate_nfcore_samplesheet ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+    	nfcore2.1 ${RNA_FUS_PIPELINE_TAG} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ;
     fi 
 fi
 
@@ -202,13 +244,13 @@ fi
 ####         setup oncokb and civic submodule      ####
 #######################################################
 
-if [ ${INTERACT} != false ] ; then
+if [ ${INTERACT} != false ] && [ ${NFCORE_VERSION} == ${NFCORE_VERSION_1P2} ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup Oncokb and CIVIC submodule ? [y]/n"
-    read line
+    read line ;
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
-	DO_CLINIC=true
+        DO_CLINIC=true ;
     else
-	DO_CLINIC=false
+        DO_CLINIC=false ;
     fi
 fi
 
@@ -284,12 +326,16 @@ fi
 ##  global: RUN_PIPELINE_SCRIPT
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('some dir')
+if  [ ${NFCORE_VERSION} == ${NFCORE_VERSION_1P2} ] ; then 
+    BACKUP_TARGETS=('some dir') ;
+elif [ ${NFCORE_VERSION} == ${NFCORE_VERSION_2P1} ] ; then 
+    BACKUP_TARGETS=('some dir') ;
+fi
 
-BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}" 
-BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" 
-BACKUP_BAM_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${BAMS_DIR}/${DATE}_${DATABASE}"
-BACKUP_RESULTS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${RESULTS_DIR}/${RESULT_BATCH_NAME}"
+BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}"  ; 
+BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" ; 
+BACKUP_BAM_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${BAMS_DIR}/${DATE}_${DATABASE}" ; 
+BACKUP_RESULTS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${RESULTS_DIR}/${RESULT_BATCH_NAME}" ;
 
 
 

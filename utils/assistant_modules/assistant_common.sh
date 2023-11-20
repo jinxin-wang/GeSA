@@ -111,7 +111,7 @@ RNASEQ="RNAseq"
 
 NFCORE_VERSION=
 NFCORE_VERSION_1P2="nfcore_1.2"
-NFCORE_VERSION_2P3="nfcore_2.3"
+NFCORE_VERSION_2P1="nfcore_2.1"
 
 #### pipeline default settings: 
 SAMPLES="${HUMAN}"
@@ -789,7 +789,7 @@ function help {
 	    TvNp - Tumor vs Normal vs Pon
 
 	for RNA-seq:
-	    RNAfusion analysis (nfcore version 1.2 or 2.3)
+	    RNAfusion analysis (nfcore version 1.2 or 2.1)
 	    RNAseq analysis
 
     optional arguments :
@@ -1096,7 +1096,7 @@ if [ ${INTERACT} == true ] ; then
             if [ ! -z ${line} ] ; then
 		case ${line} in
                     1 ) NFCORE_VERSION=${NFCORE_VERSION_1P2} ;;
-                    2 ) NFCORE_VERSION=${NFCORE_VERSION_2P3} ;;
+                    2 ) NFCORE_VERSION=${NFCORE_VERSION_2P1} ;;
                     * ) echo "Unknown choice !" ; exit -1    ;;
 		esac
             fi
