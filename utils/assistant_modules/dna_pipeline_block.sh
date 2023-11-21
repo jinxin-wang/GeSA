@@ -268,7 +268,7 @@ fi
 ####         setup oncokb and civic submodule      ####
 #######################################################
 
-if [ ${INTERACT} != false ] ; then
+if [ ${INTERACT} != false ] && [ ${SAMPLES} == ${HUMAN} ] && [ ${MODE} == ${TvN} ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup Oncokb and CIVIC submodule ? [y]/n"
     read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then

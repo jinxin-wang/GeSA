@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import math
 import logging
 import subprocess
 import pandas as pd
@@ -63,7 +64,7 @@ def do_softlink(fastq_file, concat_dir, sample_id, read12):
 raw_fastq_dir = config["raw_fastq_dir"]
 proc = subprocess.Popen(f"du -sh {raw_fastq_dir}", stdout = subprocess.PIPE, shell = True)
 (out, err) = proc.communicate()
-dataset_size = int(out.decode('UTF-8').split("\t")[0].replace('G',''))
+dataset_size = int(math.ceil(float(out.decode('UTF-8').split("\t")[0].replace('G','').replace(',','.'))))
     
 if os.path.isfile(config["sample_list"]):
     samples_df = pd.read_csv(config["sample_list"], sep="\t", header=None)

@@ -62,7 +62,8 @@ function nfcore2.1 {
     RNA_FUS_PIPELINE_TAG=$1 ;
     NFCORE_SAMPLE_SHEET=$2 ;
     RUN_PIPELINE_SCRIPT=$3 ;
-    
+    WORKING_DIR=$4 ;
+
     echo "
 rm -f workflow ;
 
@@ -73,9 +74,9 @@ if [[ \${fusion_pipeline_success} -eq 0 ]] ; then
     module load singularity/3.6.3 ;
     module load nextflow/21.10.6 ;
 
-    nextflow run /home/j_wang@intra.igr.fr/lib/nfcore/rnafusion/2.1.0/main.nf --starindex --genome GRCh38 -profile singularity --outdir $PWD/results -resume ;
+    nextflow run /mnt/beegfs/userdata/j_wang/lib/nfcore/rnafusion/2.1.0/main.nf --starindex --genome GRCh38 -profile singularity --outdir ${WORKING_DIR}/results -resume ;
     echo 'complete' > ${RNA_FUS_PIPELINE_TAG} ;
-fi " >> ${RUN_PIPELINE_SCRIPT}
+fi " >> ${RUN_PIPELINE_SCRIPT} ;
 }
 
 function format_samples_name {
@@ -142,14 +143,14 @@ if [ ! -f config/patients.tsv ] ; then
 fi ' >> ${PIPELINE_SCRIPT}
 
     echo "
-rm -f workflow ;
-ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CLINIC_TAG} ;
 clinic_success=\$(grep 'complete' ${CLINIC_TAG} | wc -l) ; 
 if [ -f config/patients.tsv ] && [ \${clinic_success} -eq 0 ] ; then " >> ${PIPELINE_SCRIPT}
 
     echo '
     echo "Starting oncokb and civic annotation" ; 
+    rm -f workflow ;
+    ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
     snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
@@ -218,7 +219,7 @@ if [ -z \"\$(ls ${LOCAL_FASTQ_DIR})\" ] ; then
     ln -s ${CONCAT_DIR}/*gz ${LOCAL_FASTQ_DIR} ;
 fi " >> ${RUN_PIPELINE_SCRIPT} ;
 
-        format_samples_name ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
+        format_samples_name ${LOCAL_FASTQ_DIR} ${RUN_PIPELINE_SCRIPT} ;
         generate_nfcore_samplesheet ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
         nfcore1.2 ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
 
@@ -234,7 +235,7 @@ fi " >> ${RUN_PIPELINE_SCRIPT} ;
 
         format_samples_name ${LOCAL_FASTQ_DIR} ${RUN_PIPELINE_SCRIPT} ;
         generate_nfcore_samplesheet ${LOCAL_FASTQ_DIR} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
-    	nfcore2.1 ${RNA_FUS_PIPELINE_TAG} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ;
+    	nfcore2.1 ${RNA_FUS_PIPELINE_TAG} ${NFCORE_SAMPLE_SHEET} ${RUN_PIPELINE_SCRIPT} ${WORKING_DIR} ;
     fi 
 fi
 

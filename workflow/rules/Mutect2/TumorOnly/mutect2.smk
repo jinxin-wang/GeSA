@@ -16,6 +16,7 @@ rule Mutect2_tumor_only:
     params:
         queue = "shortq",
         gatk        = config["gatk"]["app"],
+        samtools    = config["samtools"]["app"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"]
@@ -25,7 +26,7 @@ rule Mutect2_tumor_only:
     resources:
         mem_mb = 10240
     shell:
-        "read readGroup_{wildcards.tsample} < <(samtools view -H {input.tumor_bam}| grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
+        "read readGroup_{wildcards.tsample} < <({params.samtools} view -H {input.tumor_bam}| grep \'^@RG\' | awk -F\'SM:\' \'{{split($2,a,\" \"); print a[1]}}\' -);"
         "{params.gatk} --java-options \"-Xmx10g  -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" Mutect2"
         " --native-pair-hmm-threads {threads} "
         " --dont-use-soft-clipped-bases true"
@@ -86,8 +87,8 @@ rule filter_mutect_calls_tumor_only:
         INDEX = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.tbi"),
     params:
         queue = "mediumq",
-        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
-        # gatk  = config["gatk"]["app"],
+        # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        gatk  = config["gatk"]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.log"
@@ -112,7 +113,8 @@ rule Filter_By_Orientation_Bias_tumor_only:
         filtered_vcf_index = "Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz.tbi",
     params:
         queue = "mediumq",
-        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        gatk  = config["gatk"]["app"],
     log:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz.log"
     threads : 4

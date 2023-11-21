@@ -33,7 +33,7 @@
             "index": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/gatk/human_g1k_v37.fasta",
         },
         "mouse": {
-            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
+            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa2_mm9_from_sanger/NCBIM37_um.fa",
         },
     },
 

@@ -125,7 +125,7 @@ DO_ONCOTATOR=false
 VAR_TABLE="variant_call_list_${MODE}.tsv"
 
 #### nfcore sample sheet
-NFCORE_SAMPLE_SHEET="config/sample_sheet.csv"
+NFCORE_SAMPLE_SHEET="config/nfcore_fusion_samplesheet.csv"
 
 DO_CLINIC=false
 PATIENTS_TABLE="config/patients.tsv"
@@ -574,49 +574,31 @@ function build_md5sum_cmd {
     STORAGE_DIR=$2
     PIPELINE_SCRIPT=$3
 
-    echo "find_arr=(\$(find ${STORAGE_DIR} -name \"*md5sum*txt\")) ; " >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo '
-if [ ${#find_arr[@]} == 1 ] ; then
-    line=${find_arr[0]}
+    echo "MD5SUM_LOG=${WORKING_DIR}/config/md5sum_check.log
+cd ${STORAGE_DIR} ; 
+" >> ${RUN_PIPELINE_SCRIPT} ;
+    
+    echo 'find_arr=($(find . -name "*md5*txt")) ; 
+if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) -eq 0 ] ; then
+    echo -e "[info] md5sum had been verified previously. "
+elif [ ${#find_arr[@]} == 1 ] ; then
     echo -e "[info] The md5sum file: ${find_arr[0]} "
+    echo -e "[info] starting to verify md5sum [Ctrl+C to cancel if the md5sum file is not correct]" ;
+    srun --mem=10240 -p shortq -D . -c 4 md5sum -c ${find_arr[0]} | tee ${MD5SUM_LOG} ;
 else
-    if [ ${#find_arr[@]} > 1 ] ; then
+    if [ ${#find_arr[@]} -gt 1 ] ; then
         echo -e "[info] Possible md5sum files: "
         for fname in "${find_arr[@]}" ; do
             echo " - ${fname}"
         done
     fi 
     echo "Please provide the md5sum file: [enter to continue] "
-    read line
-fi
-
-if [ ! -z ${line} ] ; then
-    MD5SUM_FILE=${line}
-' >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo "    MD5SUM_LOG=${WORKING_DIR}/config/md5sum_check.log
-fi
-
-cd ${STORAGE_DIR} ; 
-" >> ${RUN_PIPELINE_SCRIPT} ;
-    
-    echo '
-if [ -f ${MD5SUM_LOG} ] ; then
-    echo -e "[info] md5sum had been verified previously. "
-elif [ ! -z ${MD5SUM_FILE} ] ; then 
-    echo -e "[info] starting to verify md5sum "
-    srun --mem=10240 -p shortq -D . -c 4 md5sum -c ${MD5SUM_FILE} > ${MD5SUM_LOG} ;
-fi' >> ${RUN_PIPELINE_SCRIPT} ;
-
-    echo "cd ${WORKING_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
-    
-    echo '
-if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) != 0 ] ; then
-    echo "WARNING: Some files did NOT match md5sum, please check the log ${MD5SUM_LOG}. " ; 
-    exit -1 ;
+    read MD5SUM_FILE ;
+    echo -e "[info] starting to verify md5sum " ;
+    srun --mem=10240 -p shortq -D . -c 4 md5sum -c ${MD5SUM_FILE} | tee ${MD5SUM_LOG} ;
 fi ' >> ${RUN_PIPELINE_SCRIPT} ;
 
+    echo "cd ${WORKING_DIR} ; " >> ${RUN_PIPELINE_SCRIPT} ;
 }
 
 function build_concat_cmd {
@@ -1090,7 +1072,7 @@ if [ ${INTERACT} == true ] ; then
 
 	if [ ${MODE} == ${RNAFUS} ] ; then 
 	    echo -e "${WARNING}[check point]${ENDC} Please choose the version of nfcore fusion pipeline by number: "
-	    echo -e "1. version 1.2\n2. version 2.3"
+	    echo -e "1. version 1.2\n2. version 2.1"
 	    read line ;
 
             if [ ! -z ${line} ] ; then
@@ -1333,7 +1315,7 @@ fi
 ##################################################################################
 ####      if concat fastq directory is given, then add to config options      ####
 ##################################################################################
-if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] ; then
+if [ ${INTERACT} == true ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup concat submodule ? [y]/n"
     read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
@@ -1341,7 +1323,8 @@ if [ ${INTERACT} == true ] && [ ${DO_DOWNLOAD} == false ] ; then
 	DO_PIPELINE=true ; 
 	enable_all_backup ;
     else
-	DO_CONCAT=false
+	DO_CONCAT=false ;
+	CONCAT_DIR=${STORAGE_DIR} ;
     fi
 fi
 
@@ -1361,7 +1344,7 @@ fi
 ## STORAGE_DIR
 ## CONCAT_DIR
 
-if [ ${DATA_FILETYPE} == ${FASTQ} ] && ( [ ${DO_DOWNLOAD} == true ] || [ ${DO_CONCAT} == true ] ) ; then
+if [ ${DATA_FILETYPE} == ${FASTQ} ] && [ ${DO_CONCAT} == true ] ; then
 
     echo -e "\n${OKGREEN}[info]${ENDC} start setting up the concatenation submodule...."
 
