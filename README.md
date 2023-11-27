@@ -36,8 +36,8 @@ $ cd /mnt/beegfs/scratch/${USER}/03_results
 $ mkdir -p projectname/analysis_name ; cd !$
 $ ln -s /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow 
 $ cp /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/utils/start_pipeline.sh .
-$ mkdir -p DNA_samples; cd !$
-$ ln -s /somewhere_datadir/*.fastq.gz .
+$ mkdir -p DNA_samples
+$ ln -s /somewhere_datadir/*.fastq.gz DNA_samples 
 ```
 - Step 3. configure workflow
 
@@ -47,9 +47,11 @@ $ ln -s /somewhere_datadir/*.fastq.gz .
 
 3. If there are tumor, normal samples and panel of normal samples, then you need create a file **variant_call_list_TvNp.tsv** in the project directory.
 
-4. If there are only tumor samples, then you don't need to generate any tsv file. Or you can create a file **variant_call_list_T.tsv** in the project directory.
+4. If there are only tumor samples, then you need to create a file **variant_call_list_T.tsv** in the project directory.
+   
+5. If there are only normal samples, then you need to generate a file **variant_call_list_N.tsv** in the project directory.
 
-Then, you need to modify the bash file run.sh. For example, if you need to run WES pipeline for mice samples in tumor vs normal mode, then the options in the --config should modified as follow. If you don't set the values, then the default values will be taken. The default value of samples is human, and for seq_type is WGS, for mode is TvN 
+Then, you need to modify the bash file start_pipeline.sh. For example, if you need to run WES pipeline for mice samples in tumor vs normal mode, then the options in the --config should modified as follow. If you don't set the values, then the default values will be taken. The default value of samples is human, and for seq_type is WGS, for mode is TvN 
 
 ```
 $ cd /mnt/beegfs/scratch/username/yourprojectdir/projectname
