@@ -1,0 +1,6 @@
+sample_list:    "config/variant_call_list_TvN.tsv"
+sample_sheet:   "config/sample_sheet.tsv"
+raw_fastq_dir:  ""
+concat_fastq_dir: ""
+reads_patterns: ["*fq.gz", "*fastq.gz"]
+reads:          ["1","2"]

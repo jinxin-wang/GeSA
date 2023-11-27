@@ -6,16 +6,17 @@ rule get_pileup_summaries:
     output:
         temp("cross_sample_contamination/{tsample}_getpileupsummaries.table")
     params:
-        queue = "mediumq",
-        gatk  = config["gatk"]["app"],
+        queue = "shortq",
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         mutect_filter_ref = config["gatk"][config["samples"]]["mutect_filter_ref"],
     log:
         "logs/cross_sample_contamination/{tsample}_getpileupsummaries.table.log"
     threads : 4
     resources:
-        mem_mb = 102400
+        mem_mb = 51200
     shell:
-        "{params.gatk} --java-options \"-Xmx100g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" GetPileupSummaries"
+        "{params.gatk} --java-options \"-Xmx48g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" GetPileupSummaries"
         " -I {input.tumor_bam}"
         " -L {params.mutect_filter_ref}"
         " -V {params.mutect_filter_ref}"
@@ -28,8 +29,9 @@ rule calculate_contamination:
     output:
         temp("cross_sample_contamination/{tsample}_calculatecontamination.table")
     params:
-        queue = "mediumq",
-        gatk  = config["gatk"]["app"]
+        queue = "shortq",
+        # gatk  = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/cross_sample_contamination/{tsample}_calculatecontamination.table.log"
     threads : 4

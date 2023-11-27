@@ -8,7 +8,7 @@ rule get_variant_bed_tumor_only_pon:
     log:
         "logs/variant_bed_Tp/{tsample}_PON_{panel_of_normal}_Tp.bed.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         vcf2bed = config["vcf2bed"]["app"],
     threads : 1
     resources:
@@ -27,7 +27,7 @@ rule samtools_mpileup_tumor_only_pon:
     log:
         "logs/pileup_Tp/{tsample}_PON_{panel_of_normal}_Tp.pileup.log"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         samtools = config["samtools"]["app"],
         genome_ref_fasta = config["gatk"][config["samples"]]["genome_fasta"],
     threads : 8
@@ -53,7 +53,7 @@ rule split_Mutect2_tumor_only_pon:
         "logs/Mutect2_Tp_oncotator_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.log"
     threads : 1
     resources:
-        mem_mb = 20480
+        mem_mb = 10240
     shell:
         '{params.bcftools} view -l 9 -R {input.interval} -o {output.interval_vcf_bcftools} {input.Mutect2_vcf} 2> {log}  &&'
         ' python {params.reformat_script} {output.interval_vcf_bcftools} {output.interval_vcf} 2>> {log}'        
@@ -65,7 +65,7 @@ rule oncotator_tumor_only_pon:
     output:
         MAF = temp("oncotator_Tp_tmp/{tsample}_PON_{panel_of_normal}_ON_{interval}_annotated_Tp.TCGAMAF")
     params:
-        queue = "mediumq",
+        queue = "shortq",
         oncotator = config["oncotator"]["app"],
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],

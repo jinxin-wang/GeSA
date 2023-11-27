@@ -1,17 +1,29 @@
 {
-    "mode": "TvN",
     "samples" : "human",
     "seq_type": "WGS",
+    "mode": "TvN",
     "paired": True,
     "remove_duplicates": True,
+    "sam2fastq": False,
+    "do_clinic": False,
+    "do_cnvfacet": False,
+    "do_oncotator": True,
 
+    "python": {
+        "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",
+    },
+
+    "bgzip": {
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/bgzip",
+    },
+    
     "fastp": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastp",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastp",
         "adapters": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/adapters_for_fastp.tsv",
     },
 
     "fastqc": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastqc",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastqc",
         "adapters": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/adapters_for_fastqc.tsv",
     },
 
@@ -21,12 +33,12 @@
             "index": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/gatk/human_g1k_v37.fasta",
         },
         "mouse": {
-            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
+            "index":  "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa2_mm9_from_sanger/NCBIM37_um.fa",
         },
     },
 
     "samtools": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/samtools",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/samtools",
     },
 
     "gatk": {
@@ -36,6 +48,7 @@
         },
 
         "human": {
+            "app": "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
             "target_interval": " -L 1",
             "genome_fasta": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/gatk/human_g1k_v37.fasta",
             "gnomad_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
@@ -54,10 +67,11 @@
         },
 
         "mouse": {
+            "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/Mouse/share/gatk4-4.0.9.0-0/gatk",
             "target_interval": " -L /mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.bed",
             "genome_fasta": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
             "gnomad_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
-            "mutect_filter_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
+            "mutect_filter_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9_PASS_AF_only.vcf.gz",
             "WGS": {
                 "mutect_interval_dir": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/interval_mutect2",
                 "hsmetrics_interval": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",
@@ -72,7 +86,7 @@
     },
 
     "facet_snp_pileup": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/snp-pileup",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/snp-pileup",
         "human": {
             "facet_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
         },
@@ -83,7 +97,8 @@
 
 
     "R": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/Rscript",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/Rscript",
+        "Rscript4.3": "/mnt/beegfs/userdata/j_wang/.conda/envs/facets/bin/Rscript",
         "scripts": {
             "facet_graph": "workflow/scripts/facets_graphs.R",
         },
@@ -106,11 +121,11 @@
     },
 
     "vcf2bed": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/vcf2bed.py",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/vcf2bed.py",
     },
 
     "bcftools": {
-        "app":"~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/bcftools",
+        "app":"/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/bcftools",
         "human": {
             "exom_bed": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/agilent_SS_XT_V6/bed_for_mutect2/S07604514_Padded_b37.bed",
         },
@@ -120,11 +135,11 @@
     },
 
     "vcfsort": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/vcfsort",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/vcfsort",
     },
 
     "cnv_facets":{
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/cnv_facets.R",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/cnv_facets.R",
         "human": {
             "cval": "25 400",
             "ref": "hg19",
@@ -136,11 +151,11 @@
     },
 
     "mosdepth": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/mosdepth",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/mosdepth",
     },
 
     "oncotator": {
-        "app": "~/.conda/envs/pipeline_GATK_2.1.4_V2/bin/oncotator",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/oncotator",
         "human": {
             "ref": "hg19",
             "DB": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/oncotator/oncotator_v1_ds_April052016",
