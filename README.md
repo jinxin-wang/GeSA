@@ -4,32 +4,25 @@
 
 #### Usage On flamingo
 
-- Step 0. clone github workflow project on flamingo or update the code
+- Step 0. check if the pipeline is accessible for you on flamingo
+
 ```
 $ ssh username@flamingo.intra.igr.fr
-$ git clone https://github.com/jinxin-wang/Genome_Sequencing_Analysis.git
+$ ll /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/
+total 6,5K
+-rw-r--r-- 1 j_wang gs_hpc_u981 1,1K 17 nov.  15:24 LICENSE
+-rw-r--r-- 1 j_wang gs_hpc_u981 3,8K 17 nov.  15:26 README.md
+drwxr-xr-x 6 j_wang gs_hpc_u981   12 17 nov.  19:18 utils
+drwxr-xr-x 7 j_wang gs_hpc_u981    6 17 nov.  15:26 workflow
 
-or
-
-$ git pull
-```
-- Step 1. create conda envirements 
-```
-$ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/META_PRISM_conda_env.txt -n meta_prism
-$ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/Mouse_env.txt -n Mouse
-$ conda create -f ./Genome_Sequencing_Analysis/workflow/envs/pipeline_GATK_2.1.4_conda_env.txt -n pipeline_GATK_2.1.4_V2
 ```
 
-If the directory of your conda lib is not ~/.conda/, then 
+- Step 1. ln to working conda envirements 
+
 ```
-$ cd
-$ ln -s "your_conda_lib_dir" .conda
-```
-Or link the environments to ~/.conda/envs (if you already have this folder in ~/.conda/). For example:
-```
-ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/pipeline_GATK_2.1.4_V2/" .conda/envs
-ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/Mouse/" .conda/envs
-ln -s "/mnt/beegfs/userdata/${USER}/conda/miniconda/envs/meta_prism/" .conda/envs
+$ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/meta_prism* your_conda_dir/envs/
+$ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/Mouse your_conda_dir/envs/Mouse
+$ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2 your_conda_dir/envs/pipeline_GATK_2.1.4_V2
 ```
 
 - Step 2. deploy workflow
@@ -38,12 +31,13 @@ Create a directory for your project, then create soft links to your datasets in 
 that the pattern of files name is {file_name}_[012].fastq.gz. Moreover, keep in mind that the softlinks should be always accessible on the work nodes.
 
 ```
-$ cd /mnt/beegfs/scratch/username/yourprojectdir
-$ mkdir projectname; cd !$
-$ ln -s /workflowpath/workflow .
-$ cp /workflowpath/run.sh .
+$ mkdir -p /mnt/beegfs/scratch/${USER}/03_Results/
+$ cd /mnt/beegfs/scratch/${USER}/03_results
+$ mkdir -p projectname/analysis_name ; cd !$
+$ ln -s /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow 
+$ cp /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/utils/start_pipeline.sh .
 $ mkdir -p DNA_samples; cd !$
-$ ln -s /datadir/* .
+$ ln -s /somewhere_datadir/*.fastq.gz .
 ```
 - Step 3. configure workflow
 
@@ -59,16 +53,17 @@ Then, you need to modify the bash file run.sh. For example, if you need to run W
 
 ```
 $ cd /mnt/beegfs/scratch/username/yourprojectdir/projectname
-$ emacs -nw variant_call_list_TvN.tsv
-$ cat variant_call_list_TvN.tsv
+$ mkdir -p config 
+$ emacs -nw config/variant_call_list_TvN.tsv
+$ cat config/variant_call_list_TvN.tsv
 tumor_sample_A  normal_sample_A
 tumor_sample_B  normal_sample_B
-$ emacs -nw run.sh
+$ emacs -nw start_pipeline.sh
 snakemake -c 'sbatch --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' --jobs 20 --rerun-incomplete --config samples=mouse seq_type=WES mode=TvN
 ```
 - Step 4. run workflow
 ```
-$ ./run.sh
+$ ./start_pipeline.sh
 [message] Loading configuration file
 [message] Starting WES analysis pipeline for mouse samples
 [message] Pipeline runs in Tumor vs Normal mode.
