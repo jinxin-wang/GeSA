@@ -23,7 +23,7 @@ MODE="${TvN}"
 
 CONFIG_OPTIONS="samples=${SAMPLES} seq_type=${SEQ_TYPE} mode=${MODE}"
 
-module load java ;
+module load java/1.8.0_281-jdk ;
 mkdir -p logs/slurm/ ; 
 rm -f bam/*tmp* ;
 
