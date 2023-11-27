@@ -48,6 +48,7 @@
         },
 
         "human": {
+            "app": "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
             "target_interval": " -L 1",
             "genome_fasta": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/gatk/human_g1k_v37.fasta",
             "gnomad_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/b37_GATK/af-only-gnomad.raw.sites.b37.vcf.gz",
@@ -66,10 +67,11 @@
         },
 
         "mouse": {
+            "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/Mouse/share/gatk4-4.0.9.0-0/gatk",
             "target_interval": " -L /mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.bed",
             "genome_fasta": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/bwa_mm9_from_sanger/NCBIM37_um.fa",
             "gnomad_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
-            "mutect_filter_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9.vcf.gz",
+            "mutect_filter_ref": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/genome_project_snp/mgp_V2_snp_indel_mm9_PASS_AF_only.vcf.gz",
             "WGS": {
                 "mutect_interval_dir": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/interval_mutect2",
                 "hsmetrics_interval": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/mm9/agilent_V1/Sureselect_mouse_v1.padded.uniq.interval",

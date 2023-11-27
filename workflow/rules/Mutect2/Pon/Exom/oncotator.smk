@@ -47,7 +47,8 @@ rule index_exom_mutect2_pon:
         "logs/Mutect2_TvNp_exom/{tsample}_Vs_{nsample}_PON_{panel_of_normal}_TvN_index.log"
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 1
     conda: "pipeline_GATK_2.1.4_V2"
     resources:

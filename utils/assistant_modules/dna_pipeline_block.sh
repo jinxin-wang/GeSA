@@ -54,7 +54,8 @@ function build_pipeline_cmd {
     DATASOURCE_DIR="$2"
     DATAFILES_TYPE="$3"
     PIPELINE_SCRIPT="$4"
-    MODE=$5
+    MODE="$5"
+    SAMPLES="$6"
 
     if [ ${DATAFILES_TYPE} == ${FASTQ} ] ; then
 
@@ -112,8 +113,15 @@ if [[ \${dna_pipeline_success} -eq 0 ]] ; then
     echo -e '${WARNING}[check point]${ENDC} Please check if the variant call table is correct: [ctrl+C to cancel if it is NOT correct]'
     cat config/variant_call_list_${MODE}.tsv ;
 
-    echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ;
-    module load java ;
+    echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ; " >> ${PIPELINE_SCRIPT} ;
+
+    if [ ${SAMPLES} == ${HUMAN} ] ; then
+	echo '    module load java ; ' >> ${PIPELINE_SCRIPT} ;
+    elif [ ${SAMPLES} == ${MOUSE} ] ; then
+	echo '    module load java/1.8.0_281-jdk ; ' >> ${PIPELINE_SCRIPT} ;
+    fi
+
+    echo "
     rm -f bam/*tmp* ;
     ${APP_SNAKEMAKE} \\
         --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
@@ -253,7 +261,7 @@ if [ ${DO_PIPELINE} != false ] ; then
         fi
     fi
 
-    build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${DATA_FILETYPE} ${RUN_PIPELINE_SCRIPT} ${MODE} ;
+    build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${DATA_FILETYPE} ${RUN_PIPELINE_SCRIPT} ${MODE} ${SAMPLES} ;
 
     # if  [ ${DATA_FILETYPE} == ${FASTQ} ] ; then 
     #     build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${FASTQ} ${RUN_PIPELINE_SCRIPT} ${MODE} ;
@@ -350,7 +358,7 @@ fi
 ##  global: RUN_PIPELINE_SCRIPT
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2', 'BQSR', 'fastp_reports', 'remove_duplicate_metrics')
+BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2', 'BQSR', 'fastp_reports', 'remove_duplicate_metrics', "annovar_mutect2_${MODE}")
 
 BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}" 
 BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" 

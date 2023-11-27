@@ -7,7 +7,8 @@ rule collect_Hs_metrics:
         "mapping_QC/HsMetrics/{sample}_HsMetrics.tsv"
     params:
         queue    = "shortq",
-        gatk     = config["gatk"]["app"],
+        # gatk     = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         bait     = config["gatk"][config["samples"]][config["seq_type"]]["hsmetrics_bait"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["hsmetrics_interval"],
     log:

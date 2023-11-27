@@ -7,7 +7,8 @@ rule get_pileup_summaries:
         temp("cross_sample_contamination/{tsample}_getpileupsummaries.table")
     params:
         queue = "shortq",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         mutect_filter_ref = config["gatk"][config["samples"]]["mutect_filter_ref"],
     log:
         "logs/cross_sample_contamination/{tsample}_getpileupsummaries.table.log"
@@ -29,7 +30,8 @@ rule calculate_contamination:
         temp("cross_sample_contamination/{tsample}_calculatecontamination.table")
     params:
         queue = "shortq",
-        gatk  = config["gatk"]["app"]
+        # gatk  = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/cross_sample_contamination/{tsample}_calculatecontamination.table.log"
     threads : 4

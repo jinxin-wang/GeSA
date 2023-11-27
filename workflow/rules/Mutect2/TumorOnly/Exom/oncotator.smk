@@ -47,7 +47,8 @@ rule index_exom_mutect2_tumor_only:
         "logs/Mutect2_T_exom/{tsample}_tumor_only_T_index.log"
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 1
     conda: "pipeline_GATK_2.1.4_V2"
     resources:

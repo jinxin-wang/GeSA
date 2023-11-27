@@ -11,7 +11,8 @@ if config["remove_duplicates"] == True :
             mem_mb = 81920
         params:
             queue = "shortq",
-            gatk  = config["gatk"]["app"],
+            # gatk  = config["gatk"]["app"],
+            gatk = config["gatk"][config["samples"]]["app"],
         log:
             "logs/remove_duplicate_metrics/{sample}.nodup.log"
         shell:
@@ -43,7 +44,8 @@ rule base_recalibrator_pass1:
         "BQSR/{sample}_BQSR_pass1.table"
     params:
         queue = "mediumq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         target_interval = config["gatk"][config["samples"]]["target_interval"],
         index           = config["gatk"][config["samples"]]["genome_fasta"],
         gnomad_ref      = config["gatk"][config["samples"]]["gnomad_ref"],
@@ -70,7 +72,8 @@ rule apply_bqsr_pass1:
         temp("bam/{sample}.nodup.recal.beforeReformat.bam") if config["remove_duplicates"] == True else temp("bam/{sample}.recal.beforeReformat.bam")
     params:
         queue = "mediumq",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/BQSR/{sample}_ApplyBQSR_pass1.log"
@@ -128,7 +131,8 @@ rule base_recalibrator_pass2:
         "BQSR/{sample}_BQSR_pass2.table"
     params:
         queue = "shortq",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         target_interval = config["gatk"][config["samples"]]["target_interval"],
         index           = config["gatk"][config["samples"]]["genome_fasta"],
         gnomad_ref      = config["gatk"][config["samples"]]["gnomad_ref"],
@@ -154,7 +158,8 @@ rule analyze_covariates_bqsr:
         "BQSR/{sample}_BQSR_report.pdf"
     params:
         queue = "mediumq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/BQSR/{sample}_AnalyzeCovariates.log"
     threads : 4

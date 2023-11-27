@@ -9,12 +9,13 @@ rule Mutect2:
     output:
         VCF   = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz"),
         INDEX = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
-        STATS = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats"),
+        STATS = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
         queue = "shortq",
         tumor_group = "{tsample}",
         norm_group  = "{nsample}",
-        gatk        = config["gatk"]["app"],
+        # gatk        = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         samtools    = config["samtools"]["app"],
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
@@ -48,7 +49,8 @@ rule concatenate_mutect2:
         vcf_liste      = temp("Mutect2_TvN_tmp_list/{tsample}_Vs_{nsample}_TvN_mutect2_tmp.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 4
     resources:
         mem_mb = 10240
@@ -67,7 +69,8 @@ rule concatenate_mutect2_stats:
         stat_liste       = temp("Mutect2_TvN_tmp_list/{tsample}_Vs_{nsample}_TvN_mutect2_tmp_stats.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 4
     resources:
         mem_mb = 10240
@@ -84,7 +87,7 @@ rule concatenate_mutect2_stats:
 rule filter_mutect_calls:
     input :
         Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz",
-        Mutect2_stats = "Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz.stats",
+        Mutect2_stats = "Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz.stats" if config["samples"] == "human" else [],
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table",
     output:
         VCF   = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz"),
@@ -92,7 +95,8 @@ rule filter_mutect_calls:
     params:
         queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.log"
@@ -118,7 +122,8 @@ rule Filter_By_Orientation_Bias:
     params:
         queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
     threads : 4

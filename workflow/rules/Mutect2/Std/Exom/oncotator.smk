@@ -47,7 +47,8 @@ rule index_exom_mutect2:
         "logs/Mutect2_TvN_exom/{tsample}_Vs_{nsample}_TvN_index.log"
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     threads: 1
     resources:
         mem_mb = 10240

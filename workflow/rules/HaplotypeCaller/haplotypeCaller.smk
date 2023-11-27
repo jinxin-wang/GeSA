@@ -8,7 +8,8 @@ rule HaplotypeCaller:
         TBI = temp("haplotype_caller_tmp/{sample}_germline_variants_ON_{interval}.vcf.gz.tbi"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
         gnomad_ref = config["gatk"][config["samples"]]["gnomad_ref"],
         interval = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
@@ -36,7 +37,8 @@ rule concatenate_haplotypecaller:
         vcf_liste      = temp("haplotype_tmp_list/{nsample}_haplotype_tmp_list.txt")
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 1
     resources:
         mem_mb = 10240
@@ -64,7 +66,8 @@ rule HaplotypeCaller_filtering:
         VCF_FILTERED_TBI = "haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz.tbi",
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.log"
     threads : 1

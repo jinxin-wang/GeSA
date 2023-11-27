@@ -1,10 +1,6 @@
 ## A rule to call somatic SNPs and indels via local re-assembly of haplotypes, on tumor sample only, with GATK Mutect2
 ## Use list of target from target_interval_list.bed if it is present in the working directory
 
-## [J. WANG] add " --native-pair-hmm-threads {threads} " to shell
-##           raise threads 1 to 24
-##           raise mem_mb to 51200
-
 rule Mutect2_tumor_only:
     input:
         tumor_bam = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
@@ -12,10 +8,11 @@ rule Mutect2_tumor_only:
     output:
         VCF   = temp("Mutect2_T_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz"),
         INDEX = temp("Mutect2_T_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz.tbi"),
-        STATS = temp("Mutect2_T_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz.stats"),
+        STATS = temp("Mutect2_T_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
         queue = "shortq",
-        gatk        = config["gatk"]["app"],
+        # gatk = config["gatk"]["app"],
+        gatk  = config["gatk"][config["samples"]]["app"],
         samtools    = config["samtools"]["app"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
@@ -45,7 +42,8 @@ rule concatenate_mutect2_tumor_only:
         vcf_liste      = temp("mutect2_T_tmp_list/{tsample}_tumor_only_T_mutect2_tmp.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 1
     resources:
         mem_mb = 10240
@@ -57,20 +55,21 @@ rule concatenate_mutect2_tumor_only:
 
 rule concatenate_mutect2_tumor_only_stats:
     input:
-        vcfs = expand("Mutect2_T_tmp/{{tsample}}_tumor_only_T_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals)
+        vcfs = expand("Mutect2_T_tmp/{{tsample}}_tumor_only_T_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals),
     output:
         concatened_stats = temp("Mutect2_T/{tsample}_tumor_only_T.vcf.gz.stats"),
         stat_liste       = temp("mutect2_T_tmp_list/{tsample}_tumor_only_T_mutect2_tmp_stats.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 4
     resources:
         mem_mb = 10240
     log:
         "logs/vcftools/{tsample}_tumor_only_T.vcf.log"
     shell :
-        "ls -1a Mutect2_T_tmp/{wildcards.tsample}_tumor_only_T_ON_*stats > mutect2_T_tmp_list/{wildcards.tsample}_tumor_only_T_mutect2_tmp_stats.list &&"
+        "ls -1a Mutect2_T_tmp/{wildcards.tsample}_tumor_only_T_ON_*stats > mutect2_T_tmp_list/{wildcards.tsample}_tumor_only_T_mutect2_tmp_stats.list && "
         "{params.gatk}  --java-options \"-Xmx10g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeMutectStats --stats {output.stat_liste} -O {output.concatened_stats} 2> {log}"
 
 ## include: "../Common/collectSeqAM.smk"
@@ -80,7 +79,7 @@ rule concatenate_mutect2_tumor_only_stats:
 rule filter_mutect_calls_tumor_only:
     input :
         Mutect2_vcf = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz",
-        Mutect2_stats = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz.stats",
+        Mutect2_stats = "Mutect2_T/{wildcards.tsample}_tumor_only_T.vcf.gz.stats" if config["samples"] == "human" else [] ,
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table",
     output:
         VCF   = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz"),
@@ -88,7 +87,8 @@ rule filter_mutect_calls_tumor_only:
     params:
         queue = "mediumq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.log"
@@ -114,7 +114,8 @@ rule Filter_By_Orientation_Bias_tumor_only:
     params:
         queue = "mediumq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz.log"
     threads : 4

@@ -9,10 +9,11 @@ rule Mutect2_tumor_only_pon:
     output:
         VCF   = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz"),
         INDEX = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.tbi"),
-        STATS = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.stats"),
+        STATS = temp("Mutect2_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
         queue = "shortq",
-        gatk        = config["gatk"]["app"],
+        # gatk        = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
@@ -43,7 +44,8 @@ rule concatenate_mutect2_tumor_only_pon:
         vcf_liste      = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 1
     resources:
         mem_mb = 10240
@@ -62,7 +64,8 @@ rule concatenate_mutect2_tumor_only_pon_stats:
         stat_liste       = temp("mutect2_Tp_tmp_list/{tsample}_PON_{panel_of_normal}_Tp_mutect2_tmp_stats.list"),
     params:
         queue = "shortq",
-        gatk = config["gatk"]["app"]
+        # gatk = config["gatk"]["app"]
+        gatk = config["gatk"][config["samples"]]["app"],
     threads : 4
     resources:
         mem_mb = 10240
@@ -79,7 +82,7 @@ rule concatenate_mutect2_tumor_only_pon_stats:
 rule filter_mutect_calls_tumor_only_pon:
     input :
         Mutect2_vcf = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz",
-        Mutect2_stats = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats",
+        Mutect2_stats = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_Tp.vcf.gz.stats"  if config["samples"] == "human" else [] ,
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table" ,
         panel_of_normal = "PoN/{panel_of_normal}.vcf",
     output:
@@ -87,8 +90,9 @@ rule filter_mutect_calls_tumor_only_pon:
         INDEX = temp("Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz.tbi"),
     params:
         queue = "shortq",
-        gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
+        # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/filter_Mutect2_Tp/{tsample}_PON_{panel_of_normal}_filtered_Tp.vcf.gz.log"

@@ -10,7 +10,8 @@ rule Collect_Sequencing_Artifact_Metrics:
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_summary_metrics.txt"),
     params:
         queue = "shortq",
-        gatk  = config["gatk"]["app"],
+        # gatk  = config["gatk"]["app"],
+        gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
         output_prefix = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact",
     log:
