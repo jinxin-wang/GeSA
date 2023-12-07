@@ -30,7 +30,8 @@ else
     	    n=\${nsample//_1.fastq.gz/} ;
 	    t=\${t//_N/_T} ;
 	    echo -e \"\${t}\t\${n}\" >> ${VARIANT_CALL_TABLE} ;
-    done " >> ${PIPELINE_SCRIPT} ;
+        done 
+    fi " >> ${PIPELINE_SCRIPT} ;
 	
     elif [ ${MODE} == ${T} ] || [ ${MODE} == ${N} ] || [ ${MODE} == ${Tp} ] ; then
 	echo "
@@ -126,7 +127,8 @@ if [[ \${dna_pipeline_success} -eq 0 ]] ; then
     ${APP_SNAKEMAKE} \\
         --cluster 'sbatch --output=logs/slurm/slurm.%j.%N.out --cpus-per-task={threads} --mem={resources.mem_mb}M -p {params.queue}' \\
     	--jobs ${SNAKEMAKE_JOBS_NUM} --latency-wait 50 --rerun-incomplete --use-conda \\
-    	--config ${CONFIG_OPTIONS}
+        --jobscript workflow/scripts/rules_decorator.sh  \\
+    	--config ${CONFIG_OPTIONS} 
     echo 'complete' > ${DNA_PIPELINE_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
     

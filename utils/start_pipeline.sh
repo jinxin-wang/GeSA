@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=8G 
+#SBATCH --partition longq 
+
 set -e ; 
 
 #### samples: [human|mouse], default: human

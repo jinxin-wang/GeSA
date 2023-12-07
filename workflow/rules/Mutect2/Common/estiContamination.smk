@@ -14,9 +14,10 @@ rule get_pileup_summaries:
         "logs/cross_sample_contamination/{tsample}_getpileupsummaries.table.log"
     threads : 4
     resources:
-        mem_mb = 51200
+        mem_mb = 51200 if config['seq_type'] == 'WES' else 102400,
+        jvm_mem_Gb = 48 if config['seq_type'] == 'WES' else 98,
     shell:
-        "{params.gatk} --java-options \"-Xmx48g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" GetPileupSummaries"
+        "{params.gatk} --java-options \"-Xmx{resources.jvm_mem_Gb}g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" GetPileupSummaries"
         " -I {input.tumor_bam}"
         " -L {params.mutect_filter_ref}"
         " -V {params.mutect_filter_ref}"

@@ -65,7 +65,9 @@ snakemake -c 'sbatch --cpus-per-task={threads} --mem={resources.mem_mb}M -p {par
 ```
 - Step 4. run workflow
 ```
-$ ./start_pipeline.sh
+$ sbatch start_pipeline.sh
+Submitted batch job {jobid}
+$ cat slurm-{jobid}.out
 [message] Loading configuration file
 [message] Starting WES analysis pipeline for mouse samples
 [message] Pipeline runs in Tumor vs Normal mode.

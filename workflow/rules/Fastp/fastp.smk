@@ -13,7 +13,7 @@ if config["paired"] == False:
             queue = "mediumq",
             fastp = config["fastp"]["app"],
             adapters = config["fastp"]["adapters"]
-        threads : 24
+        threads : 16
         resources:
             mem_mb = 102400
         run:
@@ -34,10 +34,10 @@ elif config["paired"] == True:
         log:
             "logs/fastp/{sample}_fastp.html.log"
         params:
-            queue = "mediumq",
+            queue = lambda w,input: "mediumq" if (os.path.getsize(input.fastq_1)+os.path.getsize(input.fastq_2))/1024/1024/1024 < 100 else "longq",
             fastp = config["fastp"]["app"],
-            adapters = config["fastp"]["adapters"]
-        threads : 24
+            adapters = config["fastp"]["adapters"],
+        threads : 16
         resources:
             mem_mb = 102400
         run:

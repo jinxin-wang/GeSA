@@ -561,6 +561,7 @@ if [ ! -d ${STORAGE_DIR} ] && [ ${DOWNLOAD_TAG} -eq 0 ] ; then
         --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
         -s workflow/rules/data/download/entry_point.smk \\
         --configfile config/download.yaml \\
+        --jobscript workflow/scripts/rules_decorator.sh  \\
         --config \${CONFIG_OPTIONS} ;
     conda deactivate ;
     echo 'complete' > ${DOWNLOAD_TAG} ;
@@ -620,6 +621,7 @@ if [ ! -d ${CONCAT_DIR} ] && [[ ${concat_success} -eq 0 ]] ; then
     snakemake \\
         --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
         -s workflow/rules/data/concat/entry_point.smk \\
+        --jobscript workflow/scripts/rules_decorator.sh  \\
         --configfile workflow/config/concat.yaml \\
         --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ;
     conda deactivate ;

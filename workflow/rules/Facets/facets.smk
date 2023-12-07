@@ -32,6 +32,6 @@ rule facet_graph:
         facet_graph = config["R"]["scripts"]["facet_graph"],
     threads : 4
     resources:
-        mem_mb = 40960
+        mem_mb = 40960 if config['seq_type'] == 'WES' else 102400,
     shell:
         '{params.R} {params.facet_graph} {input.CSV}'

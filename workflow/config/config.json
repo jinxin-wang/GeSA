@@ -7,7 +7,12 @@
     "sam2fastq": False,
     "do_clinic": False,
     "do_cnvfacet": False,
+    "do_facet": True,
     "do_oncotator": True,
+    "do_mutect2": True,
+    "do_annovar": True,
+    "do_haplotype": True,
+    "do_qc": True,
 
     "python": {
         "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",
