@@ -23,7 +23,7 @@
     },
     
     "fastp": {
-        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/fastp",
+        "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/fastp/bin/fastp",
         "adapters": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/adapters_for_fastp.tsv",
     },
 

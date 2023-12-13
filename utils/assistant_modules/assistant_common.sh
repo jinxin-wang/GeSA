@@ -552,7 +552,7 @@ rm -f workflow ;
 ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${DOWNLOAD_TAG} ;
 DOWNLOAD_TAG=\$(grep 'complete' ${DOWNLOAD_TAG} | wc -l) ;
-if [ ! -d ${STORAGE_DIR} ] && [ ${DOWNLOAD_TAG} -eq 0 ] ; then 
+if [ ! -d ${STORAGE_DIR} ] && [ \${DOWNLOAD_TAG} -eq 0 ] ; then 
     echo 'downloading raw data to ${STORAGE_DIR}' ;
     module load java ;
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;	
@@ -562,9 +562,8 @@ if [ ! -d ${STORAGE_DIR} ] && [ ${DOWNLOAD_TAG} -eq 0 ] ; then
         -s workflow/rules/data/download/entry_point.smk \\
         --configfile config/download.yaml \\
         --jobscript workflow/scripts/rules_decorator.sh  \\
-        --config \${CONFIG_OPTIONS} ;
+        --config \${CONFIG_OPTIONS} && echo 'complete' > ${DOWNLOAD_TAG} ;
     conda deactivate ;
-    echo 'complete' > ${DOWNLOAD_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
 
 }
@@ -576,16 +575,15 @@ function build_md5sum_cmd {
     PIPELINE_SCRIPT=$3
 
     echo "MD5SUM_LOG=${WORKING_DIR}/config/md5sum_check.log
-cd ${STORAGE_DIR} ; 
+find_arr=(\$(find ${STORAGE_DIR} -name "*md5*txt")) ; 
 " >> ${RUN_PIPELINE_SCRIPT} ;
     
-    echo 'find_arr=($(find . -name "*md5*txt")) ; 
-if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) -eq 0 ] ; then
+    echo 'if [ -f ${MD5SUM_LOG} ] && [ $(grep FAILED ${MD5SUM_LOG} | wc -l) -eq 0 ] ; then
     echo -e "[info] md5sum had been verified previously. "
 elif [ ${#find_arr[@]} == 1 ] ; then
     echo -e "[info] The md5sum file: ${find_arr[0]} "
     echo -e "[info] starting to verify md5sum [Ctrl+C to cancel if the md5sum file is not correct]" ;
-    srun --mem=10240 -p shortq -D . -c 4 md5sum -c ${find_arr[0]} | tee ${MD5SUM_LOG} ;
+    srun --mem=10240 -p shortq -D $(dirname ${find_arr[0]}) -c 4 md5sum -c $(basename ${find_arr[0]}) | tee ${MD5SUM_LOG} ;
 else
     if [ ${#find_arr[@]} -gt 1 ] ; then
         echo -e "[info] Possible md5sum files: "
@@ -614,7 +612,7 @@ ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CONCAT_TAG} ;
 concat_success=\$(grep 'complete' ${CONCAT_TAG} | wc -l) ;
 
-if [ ! -d ${CONCAT_DIR} ] && [[ ${concat_success} -eq 0 ]] ; then 
+if [ ! -d ${CONCAT_DIR} ] && [[ \${concat_success} -eq 0 ]] ; then 
     echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
     module load java ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
@@ -623,9 +621,8 @@ if [ ! -d ${CONCAT_DIR} ] && [[ ${concat_success} -eq 0 ]] ; then
         -s workflow/rules/data/concat/entry_point.smk \\
         --jobscript workflow/scripts/rules_decorator.sh  \\
         --configfile workflow/config/concat.yaml \\
-        --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} ;
+        --config raw_fastq_dir=${STORAGE_DIR} concat_fastq_dir=${CONCAT_DIR} && echo 'complete' > ${CONCAT_TAG} ;
     conda deactivate ;
-    echo 'complete' > ${CONCAT_TAG} ;
 fi " >> ${PIPELINE_SCRIPT} ;
 }
 
@@ -635,11 +632,10 @@ function setup_backup_submodule {
 	disable_all_backup ;
 	echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup backup to storage ? [y]/n"
 	read line
-	if [ ! -z ${line} ] || [ ${line,,} == "n" ] || [ ${line,,} == "no" ] ; then
-	    # echo -e "${FAIL}[warning]${ENDC} Noting to be done."
-	    DO_BACKUP=false ;
-	else
+	if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
 	    DO_BACKUP=true ;
+	else
+	    DO_BACKUP=false ;
 	fi
     fi
 
