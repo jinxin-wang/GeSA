@@ -7,6 +7,7 @@ FAIL='\033[91m'
 ENDC='\033[0m'
 
 set -e
+trap "exit" INT
 
 #######################################################
 ####                 PATH CONVENTION               #### 
@@ -315,8 +316,8 @@ function prepare_download_from_irods {
 	if [ -z ${coln_sampleid} ] ; then
 	    coln_sampleid="sampleAlias"
 	fi
-	num_fastq_arr=($(wc -l ${metadata}))
-	dataset_size=$((${num_fastq_arr[0]}*2))
+	num_fastq_arr=$(cat ${metadata}|wc -l)
+	dataset_size=$((${num_fastq_arr}*2))
     else
 	echo -e "${WARNING}[check point]${ENDC} Please provide the bilan table of samples, [tsv/csv] "
 	echo "for example: config/bilan.tsv"
@@ -362,8 +363,8 @@ function prepare_download_from_irods {
 	    dataset_cquery_keys_arr[${#dataset_cquery_keys_arr[@]}]="'${line}'"
 	done
 	dataset_cquery_keys="[$(join_by_char ',' ${dataset_cquery_keys_arr[@]})]"
-	num_samples_arr=($(wc -l ${bilan_table})) ;
-	dataset_size=$((${num_samples_arr[0]}*10)) ;
+	num_samples_arr=$(wc -l ${bilan_table}) ;
+	dataset_size=$((${num_samples_arr}*10)) ;
     fi
 
     echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\nDATASET_SIZE: ${dataset_size}\n\n" > ${WORKING_DIR}/config/download.yaml
@@ -1165,7 +1166,7 @@ mkdir -p ${WORKING_DIR}/config
 
 RUN_PIPELINE_SCRIPT=${WORKING_DIR}/"run.sh"
 
-echo -e "#!/usr/bin/bash\n\nset -e ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
+echo -e "#!/usr/bin/bash\n\nset -e ; \ntrap 'exit' INT ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
 
 #### if workflow is not ln to src, then create a softlink
 # if [ ! -d ${WORKING_DIR}/workflow ] ; then

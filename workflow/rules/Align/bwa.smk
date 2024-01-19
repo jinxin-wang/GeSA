@@ -7,7 +7,7 @@ rule bwa_map:
     log:
         "logs/bam/{sample}.bam.log"
     params:
-        queue = lambda w,input: "shortq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 100 else "mediumq",
+        queue = lambda w,input: "shortq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 80 else "mediumq",
         bwa = config["bwa"]["app"],
         index = config["bwa"][config["samples"]]["index"],
         samtools = config["samtools"]["app"],

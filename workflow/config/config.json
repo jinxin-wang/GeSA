@@ -5,6 +5,7 @@
     "paired": True,
     "remove_duplicates": True,
     "sam2fastq": False,
+    "do_bam": True,
     "do_clinic": False,
     "do_cnvfacet": False,
     "do_facet": True,
@@ -13,6 +14,7 @@
     "do_annovar": True,
     "do_haplotype": True,
     "do_qc": True,
+    "do_mqc": True,
 
     "python": {
         "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",

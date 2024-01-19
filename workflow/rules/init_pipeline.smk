@@ -21,15 +21,17 @@ NORMAL_ONLY= False
 
 ## Note 2: config["MUTECT_INTERVAL_DIR"] should not be terminated by "/"
 
+FASTQ = []
 ## max sample file size
 if os.path.isdir('DNA_samples'):
     max_file_size_G = max([ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
+    ## Get all fastq
+    FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
+    print(FASTQ)
+
 
 ## wildcards for mutect intervals
 mutect_intervals, = glob_wildcards(config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed")
-
-## Get all fastq
-FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
 
 TSAMPLE = []
 NSAMPLE = []
@@ -95,7 +97,8 @@ def build_TvNp_targets(tsample, nsample, PoN):
         ANNOVAR.append("annovar_mutect2_TvN_pon/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + + ".avinput")
 
 def build_Tonly_targets(tsample):
-    MUTECT2.append("Mutect2_T/" + tsample+ "_tumor_only_T.vcf.gz")
+    MUTECT2.append(f"Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz")
+    # MUTECT2.append("Mutect2_T/" + tsample+ "_tumor_only_T.vcf.gz")
 
     if config["samples"] == "human":
         ONCOTATOR_COSMIC.append("oncotator_T_tsv_COSMIC/" + tsample + "_tumor_only_T_with_COSMIC.tsv.gz")

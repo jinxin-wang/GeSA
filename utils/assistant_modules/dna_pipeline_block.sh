@@ -248,6 +248,69 @@ if [ ${DO_PIPELINE} != false ] ; then
         if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
             DO_CNVFACET=true
             CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_cnvfacet=True "
+        else
+            DO_CNVFACET=false
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_cnvfacet=False "
+        fi
+    fi
+
+    if [ ${INTERACT} != false ] ; then 
+        echo -e "${WARNING}[check point]${ENDC} Please confirm if enable facet submodule: [y]/n "
+        read line
+        if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
+            DO_FACET=true
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_facet=True "
+	else
+            DO_FACET=false
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_facet=False "
+        fi
+    fi
+
+    if [ ${INTERACT} != false ] ; then 
+        echo -e "${WARNING}[check point]${ENDC} Please confirm if enable annovar submodule: [y]/n "
+        read line
+        if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
+            DO_ANNOVAR=true
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_annovar=True "
+	else
+            DO_ANNOVAR=false
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_annovar=False "
+        fi
+    fi
+
+    if [ ${INTERACT} != false ] ; then 
+        echo -e "${WARNING}[check point]${ENDC} Please confirm if enable haplotype submodule: [y]/n "
+        read line
+        if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
+            DO_HAPLOTYPE=true
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_haplotype=True "
+	else
+            DO_HAPLOTYPE=false
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_haplotype=False "
+        fi
+    fi
+
+    if [ ${INTERACT} != false ] ; then 
+        echo -e "${WARNING}[check point]${ENDC} Please confirm if enable QC submodules: [y]/n "
+        read line
+        if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
+            DO_QC=true
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_qc=True "
+	else
+            DO_QC=false
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_qc=False "
+        fi
+    fi
+
+    if [ ${INTERACT} != false ] ; then         
+        echo -e "${WARNING}[check point]${ENDC} Please confirm if enable mutect2 submodule: [y]/n "
+        read line ;
+        if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then 
+            DO_MUTECT2=true ;
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_mutect2=True "
+	else 
+            DO_MUTECT2=false ;
+            CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_mutect2=False "
         fi
     fi
 

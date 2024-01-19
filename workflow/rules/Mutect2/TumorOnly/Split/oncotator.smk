@@ -76,7 +76,7 @@ rule oncotator_tumor_only:
     resources:
         mem_mb = 10240
     shell:
-        'oncotator --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.interval_vcf} {output.MAF} {params.ref} 2> {log}'
+        '{params.oncotator} --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.interval_vcf} {output.MAF} {params.ref} 2> {log}'
 
 # concatenate oncotator T_only
 rule concatenate_oncotator_tumor_only:

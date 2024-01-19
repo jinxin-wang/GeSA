@@ -119,6 +119,8 @@ r1_list=\$(ls *1.fastq.gz) ;
 r2_list=\$(ls *2.fastq.gz) ;
 cd ${WORKING_DIR} ;
 
+echo 'sample,fastq_1,fastq_2,strandedness' >> ${NFCORE_SAMPLE_SHEET} ;
+
 if [ ! -f ${NFCORE_SAMPLE_SHEET} ] ; then 
     for r1 in \${r1_list[@]} ; do
 	echo \"\${r1/_R1.fastq.gz/},${LOCAL_FASTQ_DIR}/\${r1},${LOCAL_FASTQ_DIR}/\${r1/_R1.fastq.gz/_R2.fastq.gz},forward\" >> ${NFCORE_SAMPLE_SHEET}

@@ -79,7 +79,7 @@ rule concatenate_mutect2_tumor_only_stats:
 rule filter_mutect_calls_tumor_only:
     input :
         Mutect2_vcf = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz",
-        Mutect2_stats = "Mutect2_T/{wildcards.tsample}_tumor_only_T.vcf.gz.stats" if config["samples"] == "human" else [] ,
+        Mutect2_stats = "Mutect2_T/{tsample}_tumor_only_T.vcf.gz.stats" if config["samples"] == "human" else [] ,
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table",
     output:
         VCF   = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz"),

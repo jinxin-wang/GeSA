@@ -45,7 +45,7 @@ source ~/.bashrc
 conda activate /mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r
 
 # Rscript ~/MetaPRISM/scripts/combined_alterations/workflow/scripts/01.1_aggregate_alterations_across_modalities.R \
-Rscript workflow/rules/Clinic/scripts/01.1_aggregate_alterations_across_modalities.R \
+Rscript /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/scripts/01.1_aggregate_alterations_across_modalities.R \
             --cln ${cln} \
             --cna ${cna} \
             --fus ${fus} \

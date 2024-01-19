@@ -2,7 +2,7 @@
 if config["remove_duplicates"] == True :
     rule remove_duplicate:
         input:
-            "bam/{sample}.bam"
+            bam = "bam/{sample}.bam"
         output:
             bam = temp("bam/{sample}.nodup.bam"),
             metrics = "remove_duplicate_metrics/{sample}.nodup.metrics"
@@ -10,13 +10,13 @@ if config["remove_duplicates"] == True :
         resources:
             mem_mb = 81920
         params:
-            queue = "shortq",
+            queue = lambda w,input: "shortq" if os.path.getsize(input.bam)/1024/1024/1024 < 120 else "mediumq",
             # gatk  = config["gatk"]["app"],
             gatk = config["gatk"][config["samples"]]["app"],
         log:
             "logs/remove_duplicate_metrics/{sample}.nodup.log"
         shell:
-            "{params.gatk} --java-options \"-Xmx75g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MarkDuplicates --INPUT {input} --REMOVE_DUPLICATES true --OUTPUT {output.bam} --METRICS_FILE {output.metrics} 2> {log}"
+            "{params.gatk} --java-options \"-Xmx75g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MarkDuplicates --INPUT {input.bam} --REMOVE_DUPLICATES true --OUTPUT {output.bam} --METRICS_FILE {output.metrics} 2> {log}"
 
 ## A rule to generate bam index with samtools
 rule indexbam_before_recal:
@@ -27,7 +27,7 @@ rule indexbam_before_recal:
     params:
         queue    = "shortq",
         samtools = config["samtools"]["app"]
-    threads : 8
+    threads : 4
     resources:
         mem_mb = 10240
     log:
@@ -99,7 +99,7 @@ rule reformat_bam:
     params:
         queue = "shortq",
         samtools = config["samtools"]["app"]
-    threads: 8
+    threads: 4
     resources:
         mem_mb = 10240
     shell:
@@ -114,7 +114,7 @@ rule indexbam_after_recal:
     params:
         queue = "shortq",
         samtools = config["samtools"]["app"]
-    threads : 8
+    threads : 4
     resources:
         mem_mb = 10240
     log:

@@ -23,7 +23,7 @@ select_in_design_samples <- function(df, df_cln, cat="mut"){
     df_cln <- df_cln %>% unite("Sample_Id", Sample_Id_DNA_T, Sample_Id_DNA_N, sep="_vs_", remove=F)
     mask <- df[["Sample_Id"]] %in% df_cln[["Sample_Id"]]
     n_pair_bef <- length(unique(df$Sample_Id))
-    df <- df[mask,]
+    # df <- df[mask,]
     n_pair_aft <- length(unique(df$Sample_Id))
     cat(paste("-INFO: selected", paste0(n_pair_aft,"/",n_pair_bef), cat, "lines from pairs in cln table\n"))
     df_cln <- df_cln %>% select(-Sample_Id)
@@ -31,7 +31,7 @@ select_in_design_samples <- function(df, df_cln, cat="mut"){
   } else if (cat %in% c("exp", "fus")){
     mask <- df[["Sample_Id"]] %in% df_cln[["Sample_Id_RNA_T"]]
     n_sam_bef <- length(unique(df$Sample_Id))
-    df <- df[mask,]
+    # df <- df[mask,]
     n_sam_aft <- length(unique(df$Sample_Id))
     cat(paste("-INFO: selected", paste0(n_sam_aft,"/",n_sam_bef), cat, "lines from samples in cln table\n"))
   }
@@ -237,14 +237,14 @@ aggregate_alterations <- function(df_cna=NULL, df_fus=NULL, df_msi=NULL, df_mut=
 
   if (!is.null(df_cna)){
     cols_keep_cna <- intersect(colnames(df_cna), c(cols_keep, "HUGO_SYMBOL"))
-    df_cna <- df_cna[cols_keep_cna]
+    df_cna <- lapply(df_cna[cols_keep_cna], as.character)
   } else {
     df_cna <- data.frame()
   }
 
   if (!is.null(df_fus)){
     cols_keep_fus <- intersect(colnames(df_fus), c(cols_keep, "FUSION"))
-    df_fus <- df_fus[cols_keep_fus]
+    df_fus <- lapply(df_fus[cols_keep_fus], as.character)
   } else {
     df_fus <- data.frame()
   }
@@ -252,7 +252,7 @@ aggregate_alterations <- function(df_cna=NULL, df_fus=NULL, df_msi=NULL, df_mut=
   if (!is.null(df_msi)){
     cols_keep_msi <- intersect(colnames(df_msi),
                                c(cols_keep, "HUGO_SYMBOL"))
-    df_msi <- df_msi[cols_keep_msi]
+    df_msi <- lapply(df_msi[cols_keep_msi], as.character)
   } else {
     df_msi <- data.frame()
   }
@@ -261,7 +261,7 @@ aggregate_alterations <- function(df_cna=NULL, df_fus=NULL, df_msi=NULL, df_mut=
     cols_keep_mut <- intersect(colnames(df_mut),
                                c(cols_keep, "HUGO_SYMBOL", "PROTEIN_CHANGE", "PROTEIN_CHANGE_MORE",
                                  "Variant_Classification", "EXON"))
-    df_mut <- df_mut[cols_keep_mut]
+    df_mut <- lapply(df_mut[cols_keep_mut], as.character)
   } else {
     df_mut <- data.frame()
   }
@@ -269,7 +269,7 @@ aggregate_alterations <- function(df_cna=NULL, df_fus=NULL, df_msi=NULL, df_mut=
   if (!is.null(df_tmb)){
     cols_keep_tmb <- intersect(colnames(df_tmb),
                                c(cols_keep, "HUGO_SYMBOL"))
-    df_tmb <- df_tmb[cols_keep_tmb]
+    df_tmb <- lapply(df_tmb[cols_keep_tmb], as.character)
   } else {
     df_tmb <- data.frame()
   }
@@ -277,13 +277,33 @@ aggregate_alterations <- function(df_cna=NULL, df_fus=NULL, df_msi=NULL, df_mut=
   if (!is.null(df_exp_arv7)){
     cols_keep_exp_arv7 <- intersect(colnames(df_exp_arv7),
                                c(cols_keep, "HUGO_SYMBOL", "ALTERATION"))
-    df_exp_arv7 <- df_exp_arv7[cols_keep_exp_arv7]
+    df_exp_arv7 <- lapply(df_exp_arv7[cols_keep_exp_arv7], as.character)
   } else {
     df_exp_arv7 <- data.frame()
   }
 
   cat("done!\n")
-  bind_rows(df_cna, df_fus, df_msi, df_mut, df_tmb, df_exp_arv7)
+
+  # print("df_cna")
+  # print(lapply(df_cna, as.character))
+
+  # print("df_fus")
+  # print(lapply(df_fus, as.character))
+
+  # print("df_msi")
+  # print(lapply(df_msi, as.character))
+
+  # print("df_mut")
+  # print(lapply(df_mut, as.character))
+
+  # print("df_tmb")
+  # print(lapply(df_tmb, as.character))
+
+  # print("df_exp_arv7")
+  # print(lapply(df_exp_arv7, as.character))
+
+  #  bind_rows(df_cna, df_fus, df_msi, df_mut, df_tmb, df_exp_arv7)
+  bind_rows(df_cna, df_fus, df_mut)
 }
 
 

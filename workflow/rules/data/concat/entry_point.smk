@@ -62,9 +62,21 @@ def do_softlink(fastq_file, concat_dir, sample_id, read12):
     logging.info("softlink %s R%s done."%(sample_id, read12))
 
 raw_fastq_dir = config["raw_fastq_dir"]
-proc = subprocess.Popen(f"du -sh {raw_fastq_dir}", stdout = subprocess.PIPE, shell = True)
+proc = subprocess.Popen(f"du -shL {raw_fastq_dir}", stdout = subprocess.PIPE, shell = True)
 (out, err) = proc.communicate()
-dataset_size = int(math.ceil(float(out.decode('UTF-8').split("\t")[0].replace('G','').replace(',','.'))))
+
+
+size_str = out.decode('UTF-8').split("\t")[0].strip()
+if size_str[-1] == 'G':
+    dataset_size = float(size_str.replace('G','').replace(',','.'))
+elif size_str[-1] == 'T':
+    dataset_size = float(size_str.replace('T','').replace(',','.')) * 1024
+elif size_str[-1] == 'M':
+    dataset_size = float(size_str.replace('M','').replace(',','.'))/1024
+elif size_str[-1] == 'K':
+    dataset_size = float(size_str.replace('K','').replace(',','.'))/1024/1024
+
+dataset_size = int(math.ceil(dataset_size)) + 1
     
 if os.path.isfile(config["sample_list"]):
     samples_df = pd.read_csv(config["sample_list"], sep="\t", header=None)
