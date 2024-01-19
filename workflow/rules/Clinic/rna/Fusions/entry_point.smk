@@ -1,7 +1,7 @@
 from snakemake.utils import min_version
 min_version("6.0")
 
-include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/common.smk"
+include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/common.smk"
 
 ##### Target rules #####
 
@@ -52,7 +52,12 @@ rule all:
 ##### Modules #####
 
 # include: "rules/fastq.smk"
-include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/nf-core.smk"
-include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/aggregate.smk"
-include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/filter.smk"
-include: "/mnt/beegfs/pipelines/MetaPRISM_RNAseq_Pipeline/workflow/rules/annotate.smk"
+# include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/nf-core.smk"
+# include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/aggregate.smk"
+# include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/filter.smk"
+# include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/annotate.smk"
+
+include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/aggregate.smk"
+include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/filter.smk"
+include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/annotate.smk"
+

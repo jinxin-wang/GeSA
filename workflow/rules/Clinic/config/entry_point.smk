@@ -7,6 +7,7 @@ import pandas  as pd
 from   pathlib import Path
 
 annotation_config = {
+    "all_sample_dir": "",
     "general": {
         "patients": "config/patients.tsv",
         "samples" : "config/samples.tsv",

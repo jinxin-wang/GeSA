@@ -1,7 +1,7 @@
 # Add a filter for variants not in the intersection of all target files of the project.
 rule somatic_maf_filter_outside_intersection:
     input:
-        vcf="Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
+        vcf="Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz",
         bed=config["target_files"]["bed_padded"][config["general"]["bed_intersection"]],
     output:
         vcf=temp("calling/somatic_maf_filter_outside_intersection/{tsample}_vs_{nsample}.vcf.gz" ),

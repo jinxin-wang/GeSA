@@ -5,7 +5,7 @@ samples_df = pd.read_csv(config["general"]["samples"], dtype=str, sep="\t").set_
 # Process VCF file
 rule somatic_cnv_process_vcf:
     input:
-        vcf="cnv_facets/{tsample}_Vs_{nsample}.vcf.gz",
+        vcf="cnv_facets/{tsample}_vs_{nsample}.vcf.gz",
         rules_arm=config["params"]["cnv"]["chr_arm_rules"],
         rules_cat=config["params"]["cnv"]["cna_cat_rules"],
     output:
@@ -125,7 +125,8 @@ rule somatic_cna_civic:
             -n {input.civic} \
             -o {input.rules} \
             -t {params.category} \
-            -l {log}
+            -l {log} 
+            # || ( echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_pre} && echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_run} && echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_pos} )
         """
 
 # prepare a table for each pair tsample_vs_nsample
