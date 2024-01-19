@@ -3,9 +3,9 @@ rule facets_snp_pilleup:
         TUMOR_BAM = "bam/{tsample}.nodup.recal.bam",
         NORMAL_BAM = "bam/{nsample}.nodup.recal.bam"
     output:
-        CSV = "facets/{tsample}_Vs_{nsample}_facets.csv.gz"
+        CSV = "facets/{tsample}_vs_{nsample}_facets.csv.gz"
     log:
-        "logs/facets/{tsample}_Vs_{nsample}_facets.log"
+        "logs/facets/{tsample}_vs_{nsample}_facets.log"
     params:
         queue = "mediumq",
         snp_pileup = config["facet_snp_pileup"]["app"],
@@ -20,12 +20,12 @@ rule facets_snp_pilleup:
 #A rule to draw facets graphs
 rule facet_graph:
     input:
-        CSV="facets/{tsample}_Vs_{nsample}_facets.csv.gz"
+        CSV="facets/{tsample}_vs_{nsample}_facets.csv.gz"
     output:
-        PDF =  "facets/{tsample}_Vs_{nsample}_facets_cval500.pdf",
-        RDATA = "facets/{tsample}_Vs_{nsample}_facets_cval500.RData"
+        PDF =  "facets/{tsample}_vs_{nsample}_facets_cval500.pdf",
+        RDATA = "facets/{tsample}_vs_{nsample}_facets_cval500.RData"
     log:
-        "logs/facets/{tsample}_Vs_{nsample}_facets_graph.log"
+        "logs/facets/{tsample}_vs_{nsample}_facets_graph.log"
     params:
         queue = "shortq",
         R = config["R"]["Rscript4.3"],

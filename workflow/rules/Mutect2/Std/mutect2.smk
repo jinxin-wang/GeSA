@@ -7,9 +7,9 @@ rule Mutect2:
         tumor_bai = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai",
         norm_bai = "bam/{nsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{nsample}.recal.bam.bai",
     output:
-        VCF   = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz"),
-        INDEX = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
-        STATS = temp("Mutect2_TvN_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
+        VCF   = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz"),
+        INDEX = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
+        STATS = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
         queue = "shortq",
         tumor_group = "{tsample}",
@@ -21,7 +21,7 @@ rule Mutect2:
         index       = config["gatk"][config["samples"]]["genome_fasta"],
         interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
     log:
-        "logs/Mutect2_TvN/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.log"
+        "logs/Mutect2_TvN/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.log"
     threads : 8
     resources:
         mem_mb = 25600
@@ -43,10 +43,10 @@ rule Mutect2:
 ## Concatenate mutect2 results
 rule concatenate_mutect2:
     input:
-        vcfs = expand("Mutect2_TvN_tmp/{{tsample}}_Vs_{{nsample}}_TvN_ON_{mutect_interval}.vcf.gz", mutect_interval=mutect_intervals)
+        vcfs = expand("Mutect2_TvN_tmp/{{tsample}}_vs_{{nsample}}_TvN_ON_{mutect_interval}.vcf.gz", mutect_interval=mutect_intervals)
     output:
-        concatened_vcf = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz"),
-        vcf_liste      = temp("Mutect2_TvN_tmp_list/{tsample}_Vs_{nsample}_TvN_mutect2_tmp.list"),
+        concatened_vcf = temp("Mutect2_TvN/{tsample}_vs_{nsample}_TvN.vcf.gz"),
+        vcf_liste      = temp("Mutect2_TvN_tmp_list/{tsample}_vs_{nsample}_TvN_mutect2_tmp.list"),
     params:
         queue = "shortq",
         # gatk = config["gatk"]["app"]
@@ -55,18 +55,18 @@ rule concatenate_mutect2:
     resources:
         mem_mb = 10240
     log:
-        "logs/vcftools/{tsample}_Vs_{nsample}_TvN.vcf.log"
+        "logs/vcftools/{tsample}_vs_{nsample}_TvN.vcf.log"
     shell :
-        "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_ON_*gz > Mutect2_TvN_tmp_list/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_mutect2_tmp.list && "
+        "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_vs_{wildcards.nsample}_TvN_ON_*gz > Mutect2_TvN_tmp_list/{wildcards.tsample}_vs_{wildcards.nsample}_TvN_mutect2_tmp.list && "
         "{params.gatk}  --java-options \"-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeVcfs -I {output.vcf_liste} -O {output.concatened_vcf} 2> {log}"
  
 ## Concatenation of Mutect2 stats
 rule concatenate_mutect2_stats:
     input:
-        vcfs = expand("Mutect2_TvN_tmp/{{tsample}}_Vs_{{nsample}}_TvN_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals)
+        vcfs = expand("Mutect2_TvN_tmp/{{tsample}}_vs_{{nsample}}_TvN_ON_{mutect_interval}.vcf.gz.stats", mutect_interval=mutect_intervals)
     output:
-        concatened_stats = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz.stats"),
-        stat_liste       = temp("Mutect2_TvN_tmp_list/{tsample}_Vs_{nsample}_TvN_mutect2_tmp_stats.list"),
+        concatened_stats = temp("Mutect2_TvN/{tsample}_vs_{nsample}_TvN.vcf.gz.stats"),
+        stat_liste       = temp("Mutect2_TvN_tmp_list/{tsample}_vs_{nsample}_TvN_mutect2_tmp_stats.list"),
     params:
         queue = "shortq",
         # gatk = config["gatk"]["app"]
@@ -75,9 +75,9 @@ rule concatenate_mutect2_stats:
     resources:
         mem_mb = 10240
     log:
-        "logs/vcftools/{tsample}_Vs_{nsample}_TvN.vcf.log"
+        "logs/vcftools/{tsample}_vs_{nsample}_TvN.vcf.log"
     shell :
-        "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_ON_*stats > Mutect2_TvN_tmp_list/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_mutect2_tmp_stats.list &&"
+        "ls -1a Mutect2_TvN_tmp/{wildcards.tsample}_vs_{wildcards.nsample}_TvN_ON_*stats > Mutect2_TvN_tmp_list/{wildcards.tsample}_vs_{wildcards.nsample}_TvN_mutect2_tmp_stats.list &&"
         "{params.gatk}  --java-options \"-Xmx8g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" MergeMutectStats --stats {output.stat_liste} -O {output.concatened_stats} 2> {log}"
 
 ## include: "../Common/collectSeqAM.smk"
@@ -86,12 +86,12 @@ rule concatenate_mutect2_stats:
 ## A rule to filter variant call, from mutect tumor Vs normal
 rule filter_mutect_calls:
     input :
-        Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz",
-        Mutect2_stats = "Mutect2_TvN/{tsample}_Vs_{nsample}_TvN.vcf.gz.stats" if config["samples"] == "human" else [],
+        Mutect2_vcf = "Mutect2_TvN/{tsample}_vs_{nsample}_TvN.vcf.gz",
+        Mutect2_stats = "Mutect2_TvN/{tsample}_vs_{nsample}_TvN.vcf.gz.stats" if config["samples"] == "human" else [],
         contamination_table = "cross_sample_contamination/{tsample}_calculatecontamination.table",
     output:
-        VCF   = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz"),
-        INDEX = temp("Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.tbi"),
+        VCF   = temp("Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz"),
+        INDEX = temp("Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz.tbi"),
     params:
         queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
@@ -99,7 +99,7 @@ rule filter_mutect_calls:
         gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
-        "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.log"
+        "logs/filter_Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz.log"
     threads : 4
     resources:
         mem_mb = 25600
@@ -113,19 +113,19 @@ rule filter_mutect_calls:
 ## A rule to filter VCF on orientation bias, for OxoG and FFPE, from mutect tumor Vs normal 
 rule Filter_By_Orientation_Bias:
     input :
-        Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz",
-        Mutect2_idx = "Mutect2_TvN/{tsample}_Vs_{nsample}_filtered_TvN.vcf.gz.tbi",
+        Mutect2_vcf = "Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz",
+        Mutect2_idx = "Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz.tbi",
         pre_adapter_detail_metrics = "collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"
     output:
-        filtered_vcf       = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
-        filtered_vcf_index = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
+        filtered_vcf       = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz",
+        filtered_vcf_index = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
     params:
         queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
     log:
-        "logs/filter_Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
+        "logs/filter_Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
     threads : 4
     resources:
         mem_mb = 25600

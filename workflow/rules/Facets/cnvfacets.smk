@@ -5,10 +5,10 @@ rule cnv_facets:
         normal_bam = "bam/{nsample}.nodup.recal.bam",
         normal_bai = "bam/{nsample}.nodup.recal.bam.bai"
     output:
-        csv = "cnv_facets/{tsample}_Vs_{nsample}.vcf.gz",
-        csv_index = "cnv_facets/{tsample}_Vs_{nsample}.vcf.gz.tbi"
+        csv = "cnv_facets/{tsample}_vs_{nsample}.vcf.gz",
+        csv_index = "cnv_facets/{tsample}_vs_{nsample}.vcf.gz.tbi"
     log:
-        "logs/facets/{tsample}_Vs_{nsample}_facets.log"
+        "logs/facets/{tsample}_vs_{nsample}_facets.log"
     params:
         queue = "mediumq",
         cnv_facet = config["cnv_facets"]["app"],
