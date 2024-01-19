@@ -81,7 +81,7 @@ rule extract_aggregate_sample_table:
     input:
         patient_table = annotation_config["general"]["patients"],
     output:
-        sample_table  = "config/aggregate_sample_table.tsv",
+        sample_table  = annotation_config["general"]["agg_sample"],
     log:
         out = "logs/conf/extract_aggregate_sample_table.log",
     params:
@@ -111,10 +111,10 @@ rule extract_aggregate_sample_table:
         #     logging.error(f"the directory does NOT exist : {sample_dir} ")
         #     exit(-1)
 
-        # the column names for the pairs_table is : 
+        # the column names for table is : 
         # Subject_Id, Sample_Type, Sample_Id_DNA_N, Sample_Id_DNA_T, Sample_Id_RNA_T, Project_TCGA_More, MSKCC_Oncotree, Civic_Disease, Gender
         
-        subject_ids = abs(patient["PATIENT_ID"].map(hash))
+        # subject_ids = abs(patient["PATIENT_ID"].map(hash))
 
         sample_table = []
 
@@ -171,13 +171,13 @@ rule extract_tumor_normal_pairs:
         patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
         patient = patient.reset_index()
         
-        # the column names for the pairs_table is : 
+        # the column names for the table is : 
         # Subject_Id, Sample_Id, DNA_T, DNA_N, DNA_P, Project_TCGA_More, MSKCC_Oncotree, Civic_Disease, Gender
-        pairs   = []
+        lines   = []
 
         logging.info(patient.columns)
         
-        subject_ids = abs(patient["PATIENT_ID"].map(hash))
+        # subject_ids = abs(patient["PATIENT_ID"].map(hash))
 
         for index, row in patient.iterrows():
 
@@ -192,36 +192,142 @@ rule extract_tumor_normal_pairs:
             oncokb     = str(row["MSKCC_Oncotree"])
             gender     = match_gender(row)
 
-            pairs.append([subject_id, patient_id, dna_t, dna_n, dna_p, tcga, oncokb, civic_codes, gender])
+            lines.append([subject_id, patient_id, dna_t, dna_n, dna_p, tcga, oncokb, civic_codes, gender])
         
-        pd.DataFrame(pairs).to_csv(output.pairs_table, sep='\t', index=False,
+        pd.DataFrame(lines).to_csv(output.pairs_table, sep='\t', index=False,
                 header = ["Subject_Id", "Sample_Id", "DNA_T", "DNA_N", "DNA_P", "Project_TCGA_More", "MSKCC_Oncotree", "Civic_Disease", "Gender"])
 
 
-rule extract_samples_table:
+rule extract_dna_samples_table:
     input:
-        pairs_table  = annotation_config["general"]["tumor_normal_pairs"]
+        patient_table = annotation_config["general"]["patients"],
     output:
-        sample_table = annotation_config["general"]["samples"]
+        sample_table = annotation_config["general"]["dna_samples"]
     log:
-        out = "logs/conf/extract_samples_table.log"
+        out = "logs/conf/extract_dna_samples_table.log",
+    params:
+        corr_table = annotation_config["params"]["civic"]["corr_table"],
     threads: 1
     resources:
         queue = "shortq",
         mem_mb= 4000,
     run:
-        if sys.version_info.major < 3:                                                                                                                                                                                                            
-            logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-
-        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+        if sys.version_info.major < 3:
+            logging.warning(f"require python3, current python version: {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}")
         
-        samples  = []
-
-        pairs_df = pd.read_csv(input.pairs_table, sep='\t').reset_index()
+        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.DEBUG)
         
-        for index, row in pairs_df.iterrows():
-            samples.append([row["Subject_Id"], row["DNA_N"], "DNA_N", "OK", row["Project_TCGA_More"], row["MSKCC_Oncotree"], row["Civic_Disease"], row["Gender"]])
-            samples.append([row["Subject_Id"], row["DNA_T"], "DNA_T", "OK", row["Project_TCGA_More"], row["MSKCC_Oncotree"], row["Civic_Disease"], row["Gender"]])
+        # corresp = pd.read_excel(params.corr_table, header = 0)
+        corresp = pd.read_csv(params.corr_table, sep='\t', header=0).set_index(['Project_TCGA_More', 'MSKCC_Oncotree'])
+        
+        # the column names for the patient_table is : 
+        # PATIENT_ID, Project_TCGA_More, MSKCC_Oncotree, Sex
+        patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
+        patient = patient.reset_index()
+        
+        # the column names for the table is :
+        # "Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"
+        lines   = []
+
+        logging.info(patient.columns)
+        
+        # subject_ids = abs(patient["PATIENT_ID"].map(hash))
+
+        for index, row in patient.iterrows():
+
+            # subject_id = str(subject_ids[index])
+            patient_id = str(row["PATIENT_ID"])
+            subject_id = patient_id
+            civic_codes= match_civic(row, corresp)
+            tcga       = str(row["Project_TCGA_More"])
+            oncotree   = str(row["MSKCC_Oncotree"])
+            gender     = match_gender(row)
+
+            lines.append([subject_id, f"{patient_id}_N", "DNA_N", "OK", tcga, oncotree, civic_codes, gender])
+            lines.append([subject_id, f"{patient_id}_T", "DNA_T", "OK", tcga, oncotree, civic_codes, gender])
+        
+        pd.DataFrame(lines).to_csv(output.pairs_table, sep='\t', index=False,
+                header = ["Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"]) 
+
+
+# rule extract_dna_samples_table:
+#     input:
+#         pairs_table  = annotation_config["general"]["tumor_normal_pairs"]
+#     output:
+#         sample_table = annotation_config["general"]["dna_samples"]
+#     log:
+#         out = "logs/conf/extract_samples_table.log"
+#     threads: 1
+#     resources:
+#         queue = "shortq",
+#         mem_mb= 4000,
+#     run:
+#         if sys.version_info.major < 3:                                                                                                                                                                                                            
+#             logging.warning("require python3, current python version: %d.%d.%d"%(sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+
+#         logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.INFO)
+        
+#         samples  = []
+
+#         pairs_df = pd.read_csv(input.pairs_table, sep='\t').reset_index()
+        
+#         for index, row in pairs_df.iterrows():
+#             samples.append([row["Subject_Id"], row["DNA_N"], "DNA_N", "OK", row["Project_TCGA_More"], row["MSKCC_Oncotree"], row["Civic_Disease"], row["Gender"]])
+#             samples.append([row["Subject_Id"], row["DNA_T"], "DNA_T", "OK", row["Project_TCGA_More"], row["MSKCC_Oncotree"], row["Civic_Disease"], row["Gender"]])
     
-        pd.DataFrame(samples).to_csv(output.sample_table, sep='\t', index=False,
-            header = ["Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"]) 
+#         pd.DataFrame(samples).to_csv(output.sample_table, sep='\t', index=False,
+#             header = ["Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"]) 
+
+rule build_rna_samples_table:
+    input:
+        patient_table = annotation_config["general"]["patients"],
+    output:
+        sample_table = annotation_config["general"]["rna_samples"],
+    log:
+        out = "logs/conf/build_rna_samples_table.log",
+    params:
+        corr_table = annotation_config["params"]["civic"]["corr_table"],
+    threads: 1
+    resources:
+        queue = "shortq",
+        mem_mb= 4000,
+    run:
+        if sys.version_info.major < 3:
+            logging.warning(f"require python3, current python version: {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}")
+        
+        logging.basicConfig(filename=log.out, encoding='utf-8', level=logging.DEBUG)
+        
+        # corresp = pd.read_excel(params.corr_table, header = 0)
+        corresp = pd.read_csv(params.corr_table, sep='\t', header=0).set_index(['Project_TCGA_More', 'MSKCC_Oncotree'])
+        
+        # the column names for the patient_table is : 
+        # PATIENT_ID, Project_TCGA_More, MSKCC_Oncotree, Sex
+        patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
+        patient = patient.reset_index()
+        
+        # the column names for the table is : 
+        # Subject_Id, Sample_Id, Sample_Id_Long, Sample_Id_RNA_T, FASTQ_1_Name, FASTQ_2_Name, IRODS_Status, Project_TCGA_More, MSKCC_Oncotree, Civic_Disease, Gender
+        lines   = []
+
+        logging.info(patient.columns)
+        
+        # subject_ids = abs(patient["PATIENT_ID"].map(hash))
+
+        for index, row in patient.iterrows():
+
+            # subject_id = str(subject_ids[index])
+            patient_id = str(row["PATIENT_ID"])
+            subject_id = patient_id
+            sample_id  = f"{patient_id}_R"
+            fq1        = f"results/data/fastq/{patient_id}_1.fastq.gz"
+            fq2        = f"results/data/fastq/{patient_id}_2.fastq.gz"
+            civic_codes= match_civic(row, corresp)
+            tcga       = str(row["Project_TCGA_More"])
+            oncokb     = str(row["MSKCC_Oncotree"])
+            gender     = match_gender(row)
+
+            lines.append([subject_id, sample_id, sample_id, sample_id, fq1, fq2, "OK", tcga, oncokb, civic_codes, gender])
+        
+        pd.DataFrame(lines).to_csv(output.pairs_table, sep='\t', index=False,
+                header = ["Subject_Id", "Sample_Id", "Sample_Id_Long", "Sample_Id_RNA_T", "FASTQ_1_Name", "FASTQ_2_Name", "IRODS_Status", "Project_TCGA_More", "MSKCC_Oncotree", "Civic_Disease", "Gender"])
+

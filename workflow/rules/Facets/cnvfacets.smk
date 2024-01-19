@@ -15,7 +15,7 @@ rule cnv_facets:
         gnomad_ref = config["gatk"][config["samples"]]["gnomad_ref"],
         cval = config["cnv_facets"][config["samples"]]["cval"],
         ref  = config["cnv_facets"][config["samples"]]["ref"],
-        out_pattern = "{tsample}_Vs_{nsample}"
+        out_pattern = "{tsample}_vs_{nsample}"
     threads : 16
     resources:
         mem_mb = 102400

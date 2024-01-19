@@ -1,11 +1,11 @@
 # A rule to generate a bed from mutect2 vcf  
 rule get_variant_bed:
     input:
-        Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz"
+        Mutect2_vcf = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz"
     output:
-        BED = temp("variant_bed_TvN/{tsample}_Vs_{nsample}_TvN.bed"),
+        BED = temp("variant_bed_TvN/{tsample}_vs_{nsample}_TvN.bed"),
     log:
-        "logs/variant_bed_TvN/{tsample}_Vs_{nsample}_TvN.bed.log"
+        "logs/variant_bed_TvN/{tsample}_vs_{nsample}_TvN.bed.log"
     params:
         queue   = "shortq",
         vcf2bed = config["vcf2bed"]["app"],
@@ -18,13 +18,13 @@ rule get_variant_bed:
 ## Run samtools mpileup 
 rule samtools_mpileup:
     input:
-        BED = "variant_bed_TvN/{tsample}_Vs_{nsample}_TvN.bed",
+        BED = "variant_bed_TvN/{tsample}_vs_{nsample}_TvN.bed",
         BAM = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
         BAI = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai"
     output:
-        PILEUP = temp("pileup_TvN/{tsample}_Vs_{nsample}_TvN.pileup.gz"),
+        PILEUP = temp("pileup_TvN/{tsample}_vs_{nsample}_TvN.pileup.gz"),
     log:
-        "logs/pileup_TvN/{tsample}_Vs_{nsample}_TvN.pileup.log"
+        "logs/pileup_TvN/{tsample}_vs_{nsample}_TvN.pileup.log"
     params:
         queue = "shortq",
         samtools = config["samtools"]["app"],
@@ -38,11 +38,11 @@ rule samtools_mpileup:
 ## A rule to split mutect2 results in pieces 
 rule split_Mutect2:
     input:
-        Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
-        vcf_index   = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
+        Mutect2_vcf = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz",
+        vcf_index   = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
     output:
-        interval_vcf_bcftools = temp("Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}_bcftools.vcf.gz"),
-        interval_vcf          = temp("Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz"),
+        interval_vcf_bcftools = temp("Mutect2_TvN_oncotator_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}_bcftools.vcf.gz"),
+        interval_vcf          = temp("Mutect2_TvN_oncotator_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz"),
     params:
         queue    = "shortq",
         bcftools = config["bcftools"]["app"],
@@ -50,7 +50,7 @@ rule split_Mutect2:
         interval = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
         python   = config["python"]["2.7"],
     log:
-        "logs/Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.log"
+        "logs/Mutect2_TvN_oncotator_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.log"
     threads : 1
     resources:
         mem_mb = 10240
@@ -61,16 +61,16 @@ rule split_Mutect2:
 # A rule to annotate mutect2 tumor versus normal results with oncotator  
 rule oncotator:
     input:
-        interval_vcf = "Mutect2_TvN_oncotator_tmp/{tsample}_Vs_{nsample}_TvN_ON_{interval}.vcf.gz",
+        interval_vcf = "Mutect2_TvN_oncotator_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz",
     output:
-        MAF = temp("oncotator_TvN_tmp/{tsample}_Vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"),
+        MAF = temp("oncotator_TvN_tmp/{tsample}_vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"),
     params:
         queue = "shortq",
         oncotator = config["oncotator"]["app"],
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
     log:
-        "logs/oncotator_TvN_tmp/{tsample}_Vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"
+        "logs/oncotator_TvN_tmp/{tsample}_vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"
     threads : 1
     resources:
         mem_mb = 10240
@@ -81,10 +81,10 @@ rule oncotator:
 # concatenate oncotator TvN
 rule concatenate_oncotator:
     input:
-        maf = expand("oncotator_TvN_tmp/{{tsample}}_Vs_{{nsample}}_ON_{mutect_interval}_annotated_TvN.TCGAMAF", mutect_interval=mutect_intervals)
+        maf = expand("oncotator_TvN_tmp/{{tsample}}_vs_{{nsample}}_ON_{mutect_interval}_annotated_TvN.TCGAMAF", mutect_interval=mutect_intervals)
     output:
-        concatened_oncotator = temp("oncotator_TvN/{tsample}_Vs_{nsample}_annotated_TvN.TCGAMAF"),
-        tmp_list             = temp("oncotator_TvN_tmp/{tsample}_Vs_{nsample}_TvN_oncotator_tmp.list"),
+        concatened_oncotator = temp("oncotator_TvN/{tsample}_vs_{nsample}_annotated_TvN.TCGAMAF"),
+        tmp_list             = temp("oncotator_TvN_tmp/{tsample}_vs_{nsample}_TvN_oncotator_tmp.list"),
     params:
         queue = "shortq",
         python= config["python"]["2.7"],
@@ -93,20 +93,20 @@ rule concatenate_oncotator:
     resources:
         mem_mb = 10240
     log:
-        "logs/merge_oncotator/{tsample}_Vs_{nsample}_TvN.vcf.log"
+        "logs/merge_oncotator/{tsample}_vs_{nsample}_TvN.vcf.log"
     shell :
-        "ls -1a oncotator_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_ON_*_annotated_TvN.TCGAMAF > oncotator_TvN_tmp/{wildcards.tsample}_Vs_{wildcards.nsample}_TvN_oncotator_tmp.list && "
+        "ls -1a oncotator_TvN_tmp/{wildcards.tsample}_vs_{wildcards.nsample}_ON_*_annotated_TvN.TCGAMAF > oncotator_TvN_tmp/{wildcards.tsample}_vs_{wildcards.nsample}_TvN_oncotator_tmp.list && "
         "{params.python} {params.merge} {output.tmp_list} {output.concatened_oncotator} 2> {log}"
         
 ## A rule to simplify oncotator output on tumor vs normal samples
 rule oncotator_reformat_TvN:
     input:
-        maf = "oncotator_TvN/{tsample}_Vs_{nsample}_annotated_TvN.TCGAMAF"
+        maf = "oncotator_TvN/{tsample}_vs_{nsample}_annotated_TvN.TCGAMAF"
     output:
-        maf = "oncotator_TvN_maf/{tsample}_Vs_{nsample}_TvN_selection.TCGAMAF",
-        tsv = temp("oncotator_TvN_tsv/{tsample}_Vs_{nsample}_TvN.tsv"),
+        maf = "oncotator_TvN_maf/{tsample}_vs_{nsample}_TvN_selection.TCGAMAF",
+        tsv = temp("oncotator_TvN_tsv/{tsample}_vs_{nsample}_TvN.tsv"),
     log:
-        "logs/oncotator/{tsample}_Vs_{nsample}_TvN_selection.log"
+        "logs/oncotator/{tsample}_vs_{nsample}_TvN_selection.log"
     params:
         queue   = "shortq",
         python  = config["python"]["2.7"],
@@ -120,12 +120,12 @@ rule oncotator_reformat_TvN:
 ## A rule to cross oncotator output on tumor vs normal samples with pileup information
 rule oncotator_with_pileup_TvN:
     input:
-        tsv    = "oncotator_TvN_tsv/{tsample}_Vs_{nsample}_TvN.tsv",
-        pileup = "pileup_TvN/{tsample}_Vs_{nsample}_TvN.pileup.gz",
+        tsv    = "oncotator_TvN_tsv/{tsample}_vs_{nsample}_TvN.tsv",
+        pileup = "pileup_TvN/{tsample}_vs_{nsample}_TvN.pileup.gz",
     output:
-        tsv = temp("oncotator_TvN_tsv_pileup/{tsample}_Vs_{nsample}_TvN_with_pileup.tsv"),
+        tsv = temp("oncotator_TvN_tsv_pileup/{tsample}_vs_{nsample}_TvN_with_pileup.tsv"),
     log:
-        "logs/oncotator/{tsample}_Vs_{nsample}_TvN_with_pileup.log"
+        "logs/oncotator/{tsample}_vs_{nsample}_TvN_with_pileup.log"
     params:
         queue = "shortq",
         python  = config["python"]["2.7"],
@@ -139,11 +139,11 @@ rule oncotator_with_pileup_TvN:
 ## A rule to cross oncotator output on tumor vs normal samples with COSMIC information
 rule oncotator_with_COSMIC_TvN:
     input:
-        tsv = "oncotator_TvN_tsv_pileup/{tsample}_Vs_{nsample}_TvN_with_pileup.tsv"
+        tsv = "oncotator_TvN_tsv_pileup/{tsample}_vs_{nsample}_TvN_with_pileup.tsv"
     output:
-        tsv = "oncotator_TvN_tsv_COSMIC/{tsample}_Vs_{nsample}_TvN_with_COSMIC.tsv"
+        tsv = "oncotator_TvN_tsv_COSMIC/{tsample}_vs_{nsample}_TvN_with_COSMIC.tsv"
     log:
-        "logs/oncotator/{tsample}_Vs_{nsample}_TvN_with_COSMIC.log"
+        "logs/oncotator/{tsample}_vs_{nsample}_TvN_with_COSMIC.log"
     params:
         queue = "shortq",
         python= config["python"]["2.7"],        
@@ -160,12 +160,12 @@ rule oncotator_with_COSMIC_TvN:
 
 use rule compr_with_gzip_abstract as oncotator_reformat_gzip_TvN with:
     input:
-        "oncotator_TvN_maf/{tsample}_Vs_{nsample}_TvN_selection.TCGAMAF",
+        "oncotator_TvN_maf/{tsample}_vs_{nsample}_TvN_selection.TCGAMAF",
     output:
-        "oncotator_TvN_maf/{tsample}_Vs_{nsample}_TvN_selection.TCGAMAF.gz",
+        "oncotator_TvN_maf/{tsample}_vs_{nsample}_TvN_selection.TCGAMAF.gz",
 
 use rule compr_with_gzip_abstract as COSMIC_gzip_TvN with:
     input:
-        "oncotator_TvN_tsv_COSMIC/{tsample}_Vs_{nsample}_TvN_with_COSMIC.tsv"
+        "oncotator_TvN_tsv_COSMIC/{tsample}_vs_{nsample}_TvN_with_COSMIC.tsv"
     output:
-        "oncotator_TvN_tsv_COSMIC/{tsample}_Vs_{nsample}_TvN_with_COSMIC.tsv.gz"
+        "oncotator_TvN_tsv_COSMIC/{tsample}_vs_{nsample}_TvN_with_COSMIC.tsv.gz"

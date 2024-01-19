@@ -54,19 +54,19 @@ ONCOTATOR_EXOM_MAF = []
 VARIANT_CALL_TABLE = ""
 
 def build_TvN_targets(tsample, nsample):
-    CNV_FACETS.append("cnv_facets/" + tsample + "_Vs_" + nsample + ".vcf.gz",)
-    FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
-    MUTECT2.append("Mutect2_TvN/" + tsample + "_Vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
+    CNV_FACETS.append("cnv_facets/" + tsample + "_vs_" + nsample + ".vcf.gz",)
+    FACETS.append("facets/" + tsample + "_vs_" + nsample + "_facets_cval500.pdf")
+    MUTECT2.append("Mutect2_TvN/" + tsample + "_vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
 
     if config["samples"] == "human":
-        ONCOTATOR_MAF.append("oncotator_TvN_maf/" + tsample + "_Vs_" + nsample + "_TvN_selection.TCGAMAF")
-        ONCOTATOR_COSMIC.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
+        ONCOTATOR_MAF.append("oncotator_TvN_maf/" + tsample + "_vs_" + nsample + "_TvN_selection.TCGAMAF")
+        ONCOTATOR_COSMIC.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
         if config["seq_type"] == "WGS":
-            ONCOTATOR_EXOM_MAF.append("oncotator_TvN_maf/" + tsample + "_Vs_" + nsample + "_TvN_selection.TCGAMAF.gz")
-            ONCOTATOR_EXOM_COSMIC.append("oncotator_TvN_tsv_COSMIC_exom/" + tsample + "_Vs_" + nsample + "_TvN_with_COSMIC_exom.tsv.gz")
+            ONCOTATOR_EXOM_MAF.append("oncotator_TvN_maf/" + tsample + "_vs_" + nsample + "_TvN_selection.TCGAMAF.gz")
+            ONCOTATOR_EXOM_COSMIC.append("oncotator_TvN_tsv_COSMIC_exom/" + tsample + "_vs_" + nsample + "_TvN_with_COSMIC_exom.tsv.gz")
             
     elif config["samples"] == "mouse":
-        ANNOVAR.append("annovar_mutect2_TvN/" + tsample + "_Vs_" + nsample + ".avinput")
+        ANNOVAR.append("annovar_mutect2_TvN/" + tsample + "_vs_" + nsample + ".avinput")
 
 def build_Tp_targets(tsample, PoN):
     FACETS.append("facets_Tp/" + tsample + "_PON_" + Pon + "_facets_cval500.pdf")
@@ -83,18 +83,18 @@ def build_Tp_targets(tsample, PoN):
   
 
 def build_TvNp_targets(tsample, nsample, PoN):
-    CNV_FACETS.append("cnv_facets/" + tsample + "_Vs_" + nsample + ".vcf.gz",)
-    FACETS.append("facets/" + tsample + "_Vs_" + nsample + "_facets_cval500.pdf")
-    MUTECT2.append("Mutect2_TvNp/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_twicefiltered_TvNp.vcf.gz")
+    CNV_FACETS.append("cnv_facets/" + tsample + "_vs_" + nsample + ".vcf.gz",)
+    FACETS.append("facets/" + tsample + "_vs_" + nsample + "_facets_cval500.pdf")
+    MUTECT2.append("Mutect2_TvNp/" + tsample + "_vs_" + nsample + "_PON_" + PoN + "_twicefiltered_TvNp.vcf.gz")
 
     if config["samples"] == "human": 
-        ONCOTATOR.append("oncotator_TvNp_tsv_COSMIC/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_TvNp_with_COSMIC.tsv.gz")
+        ONCOTATOR.append("oncotator_TvNp_tsv_COSMIC/" + tsample + "_vs_" + nsample + "_PON_" + PoN + "_TvNp_with_COSMIC.tsv.gz")
 
         if config["seq_type"] == "WGS":
-            ONCOTATOR_EXOM.append("oncotator_TvNp_tsv_COSMIC_exom/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + "_TvNp_with_COSMIC_exom.tsv.gz")
+            ONCOTATOR_EXOM.append("oncotator_TvNp_tsv_COSMIC_exom/" + tsample + "_vs_" + nsample + "_PON_" + PoN + "_TvNp_with_COSMIC_exom.tsv.gz")
 
     elif config["samples"] == "mouse":
-        ANNOVAR.append("annovar_mutect2_TvN_pon/" + tsample + "_Vs_" + nsample + "_PON_" + PoN + + ".avinput")
+        ANNOVAR.append("annovar_mutect2_TvN_pon/" + tsample + "_vs_" + nsample + "_PON_" + PoN + + ".avinput")
 
 def build_Tonly_targets(tsample):
     MUTECT2.append(f"Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz")

@@ -10,7 +10,9 @@ annotation_config = {
     "all_sample_dir": "",
     "general": {
         "patients": "config/patients.tsv",
-        "samples" : "config/samples.tsv",
+        "dna_samples" : "config/dna_samples.tsv",
+        "rna_samples" : "config/rna_samples.tsv",
+        "agg_sample"  : "config/clinic.tsv",
         "tumor_normal_pairs": "config/tumor_normal_pairs.tsv",
     },
 
@@ -25,5 +27,6 @@ include: "conf.smk"
 
 rule target:
     input:
-        annotation_config["general"]["samples"],
         annotation_config["general"]["tumor_normal_pairs"],
+        annotation_config["general"]["dna_samples"],
+        annotation_config["general"]["rna_samples"],

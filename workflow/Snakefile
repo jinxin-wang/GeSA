@@ -100,8 +100,6 @@ if NORMAL_ONLY == False :
 onsuccess:
     print("[TAG] DNA routine analysis complete")
 
-print(MUTECT2)
-
 rule all:
     input:
         expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ if config["do_qc"] == True else []),

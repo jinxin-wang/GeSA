@@ -1,12 +1,12 @@
 # A rule to extract exom variant from a whole genome mutect2
 rule extract_exom_mutect2:
     input:
-        Mutect2_vcf = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz",
-        Mutect2_vcf_index = "Mutect2_TvN/{tsample}_Vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
+        Mutect2_vcf = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz",
+        Mutect2_vcf_index = "Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.tbi",
     output:
-        exom_Mutect2 = temp("Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom_unsorted.vcf.gz")
+        exom_Mutect2 = temp("Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom_unsorted.vcf.gz")
     log:
-        "logs/Mutect2_TvN_exom/{tsample}_Vs_{nsample}_TvN.vcf.log"
+        "logs/Mutect2_TvN_exom/{tsample}_vs_{nsample}_TvN.vcf.log"
     params:
         queue = "shortq",
         bcftools = config["bcftools"]["app"],
@@ -20,11 +20,11 @@ rule extract_exom_mutect2:
 # A rule to sort exom vcf
 rule sort_exom_mutect2:
     input:
-        Mutect2_vcf = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom_unsorted.vcf.gz",
+        Mutect2_vcf = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom_unsorted.vcf.gz",
     output:
-        exom_Mutect2 = temp("Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz"),
+        exom_Mutect2 = temp("Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz"),
     log:
-        "logs/Mutect2_TvN_exom/{tsample}_Vs_{nsample}_TvN_sort.log"
+        "logs/Mutect2_TvN_exom/{tsample}_vs_{nsample}_TvN_sort.log"
     params:
         queue = "shortq",
         vcfsort = config["vcfsort"]["app"],
@@ -34,17 +34,17 @@ rule sort_exom_mutect2:
         mem_mb = 10240
     shell:
         '{params.bgzip} -d {input.Mutect2_vcf} && '
-        '{params.vcfsort} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom_unsorted.vcf > Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf && '
-        '{params.bgzip} Mutect2_TvN_exom/{wildcards.tsample}_Vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
+        '{params.vcfsort} Mutect2_TvN_exom/{wildcards.tsample}_vs_{wildcards.nsample}_twicefiltered_TvN_exom_unsorted.vcf > Mutect2_TvN_exom/{wildcards.tsample}_vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf && '
+        '{params.bgzip} Mutect2_TvN_exom/{wildcards.tsample}_vs_{wildcards.nsample}_twicefiltered_TvN_exom.vcf'
 
 # A rule to extract exom variant from a whole genome mutect2
 rule index_exom_mutect2:
     input:
-        exom_Mutect2 = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz"
+        exom_Mutect2 = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz"
     output:
-        exom_Mutect2_index = temp("Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi"),
+        exom_Mutect2_index = temp("Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi"),
     log:
-        "logs/Mutect2_TvN_exom/{tsample}_Vs_{nsample}_TvN_index.log"
+        "logs/Mutect2_TvN_exom/{tsample}_vs_{nsample}_TvN_index.log"
     params:
         queue = "shortq",
         # gatk = config["gatk"]["app"],
@@ -59,12 +59,12 @@ rule index_exom_mutect2:
 # A rule to generate a bed from mutect2 vcf  
 rule get_variant_bed_exom:
     input:
-        Mutect2_vcf = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz",
-        Mutect2_vcf_index = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi"
+        Mutect2_vcf = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz",
+        Mutect2_vcf_index = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi"
     output:
-        BED = temp("variant_bed_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.bed"),
+        BED = temp("variant_bed_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.bed"),
     log:
-        "logs/variant_bed_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.bed.log"
+        "logs/variant_bed_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.bed.log"
     params:
         queue = "shortq",
         vcf2bed = config["vcf2bed"]["app"]
@@ -77,13 +77,13 @@ rule get_variant_bed_exom:
 ## Run samtools mpileup 
 rule samtools_mpileup_exom:
     input:
-        BED = "variant_bed_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.bed",
+        BED = "variant_bed_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.bed",
         BAM = "bam/{tsample}.nodup.recal.bam" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam",
         BAI = "bam/{tsample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{tsample}.recal.bam.bai"
     output:
-        PILEUP = temp("pileup_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.pileup.gz")
+        PILEUP = temp("pileup_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.pileup.gz")
     log:
-        "logs/pileup_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.pileup.log"
+        "logs/pileup_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.pileup.log"
     params:
         queue = "shortq",
         samtools = config["samtools"]["app"],
@@ -97,17 +97,17 @@ rule samtools_mpileup_exom:
 # A rule to annotate mutect2 tumor versus normal results with oncotator  
 rule oncotator_exom:
     input:
-        Mutect2_vcf       = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz",
-        Mutect2_vcf_index = "Mutect2_TvN_exom/{tsample}_Vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi",
+        Mutect2_vcf       = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz",
+        Mutect2_vcf_index = "Mutect2_TvN_exom/{tsample}_vs_{nsample}_twicefiltered_TvN_exom.vcf.gz.tbi",
     output:
-        MAF = temp("oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF")
+        MAF = temp("oncotator_TvN_exom/{tsample}_vs_{nsample}_annotated_TvN_exom.TCGAMAF")
     params:
         queue = "shortq",
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
         oncotator = config["oncotator"]["app"],
     log:
-        "logs/oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF"
+        "logs/oncotator_TvN_exom/{tsample}_vs_{nsample}_annotated_TvN_exom.TCGAMAF"
     threads : 1
     resources:
         mem_mb = 10240
@@ -117,12 +117,12 @@ rule oncotator_exom:
 ## A rule to simplify oncotator output on tumor vs normal samples
 rule oncotator_reformat_TvN_exom:
     input:
-        maf = "oncotator_TvN_exom/{tsample}_Vs_{nsample}_annotated_TvN_exom.TCGAMAF"
+        maf = "oncotator_TvN_exom/{tsample}_vs_{nsample}_annotated_TvN_exom.TCGAMAF"
     output:
-        maf = "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF",
-        tsv = temp("oncotator_TvN_tsv_exom/{tsample}_Vs_{nsample}_TvN_exom.tsv"),
+        maf = "oncotator_TvN_maf_exom/{tsample}_vs_{nsample}_TvN_selection_exom.TCGAMAF",
+        tsv = temp("oncotator_TvN_tsv_exom/{tsample}_vs_{nsample}_TvN_exom.tsv"),
     log:
-        "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.log"
+        "logs/oncotator_exom/{tsample}_vs_{nsample}_TvN_selection_exom.log"
     params:
         queue = "shortq",
         python= config["python"]["2.7"],
@@ -136,12 +136,12 @@ rule oncotator_reformat_TvN_exom:
 ## A rule to cross oncotator output on tumor vs normal samples with pileup information
 rule oncotator_with_pileup_TvN_exom:
     input:
-        tsv = "oncotator_TvN_tsv_exom/{tsample}_Vs_{nsample}_TvN_exom.tsv",
-        pileup = "pileup_TvN_exom/{tsample}_Vs_{nsample}_TvN_exom.pileup.gz"
+        tsv = "oncotator_TvN_tsv_exom/{tsample}_vs_{nsample}_TvN_exom.tsv",
+        pileup = "pileup_TvN_exom/{tsample}_vs_{nsample}_TvN_exom.pileup.gz"
     output:
-        tsv = temp("oncotator_TvN_tsv_pileup_exom/{tsample}_Vs_{nsample}_TvN_with_pileup_exom.tsv"),
+        tsv = temp("oncotator_TvN_tsv_pileup_exom/{tsample}_vs_{nsample}_TvN_with_pileup_exom.tsv"),
     log:
-        "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_with_pileup_exom.log"
+        "logs/oncotator_exom/{tsample}_vs_{nsample}_TvN_with_pileup_exom.log"
     params:
         queue = "shortq",
         oncotator_cross_pileup = config["oncotator"]["scripts"]["pileup"],
@@ -154,11 +154,11 @@ rule oncotator_with_pileup_TvN_exom:
 ## A rule to cross oncotator output on tumor vs normal samples with COSMIC information
 rule oncotator_with_COSMIC_TvN_exom:
     input:
-        tsv = "oncotator_TvN_tsv_pileup_exom/{tsample}_Vs_{nsample}_TvN_with_pileup_exom.tsv",
+        tsv = "oncotator_TvN_tsv_pileup_exom/{tsample}_vs_{nsample}_TvN_with_pileup_exom.tsv",
     output:
-        tsv = "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv",
+        tsv = "oncotator_TvN_tsv_COSMIC_exom/{tsample}_vs_{nsample}_TvN_with_COSMIC_exom.tsv",
     log:
-        "logs/oncotator_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.log"
+        "logs/oncotator_exom/{tsample}_vs_{nsample}_TvN_with_COSMIC_exom.log"
     params:
         queue = "shortq",
         oncotator_cross_cosmic = config["oncotator"]["scripts"]["cosmic_t_n"],
@@ -173,12 +173,12 @@ rule oncotator_with_COSMIC_TvN_exom:
 
 use rule compr_with_gzip_abstract as oncotator_reformat_exom_gzip_TvN with:
     input:
-        "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF",
+        "oncotator_TvN_maf_exom/{tsample}_vs_{nsample}_TvN_selection_exom.TCGAMAF",
     output:
-        "oncotator_TvN_maf_exom/{tsample}_Vs_{nsample}_TvN_selection_exom.TCGAMAF.gz",
+        "oncotator_TvN_maf_exom/{tsample}_vs_{nsample}_TvN_selection_exom.TCGAMAF.gz",
 
 use rule compr_with_gzip_abstract as COSMIC_exom_gzip_TvN with:
     input:
-        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv",
+        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_vs_{nsample}_TvN_with_COSMIC_exom.tsv",
     output:
-        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_Vs_{nsample}_TvN_with_COSMIC_exom.tsv.gz",
+        "oncotator_TvN_tsv_COSMIC_exom/{tsample}_vs_{nsample}_TvN_with_COSMIC_exom.tsv.gz",

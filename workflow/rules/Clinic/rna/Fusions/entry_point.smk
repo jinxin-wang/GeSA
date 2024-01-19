@@ -57,6 +57,8 @@ rule all:
 # include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/filter.smk"
 # include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/annotate.smk"
 
+# include: "/mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/config/conf.smk"
+
 include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/aggregate.smk"
 include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/filter.smk"
 include: "/mnt/beegfs/userdata/j_wang/pipelines/metaprism_rnafusion_pipeline/workflow/rules/annotate.smk"
