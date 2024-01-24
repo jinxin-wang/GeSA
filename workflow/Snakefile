@@ -10,21 +10,25 @@ if config["sam2fastq"]:
     include: "rules/Sam2fq/sam2fq.smk"
 
 ######## clean fastq files with fastp ########
-include: "rules/Fastp/fastp.smk"
+if config["do_fastp"]:
+    include: "rules/Fastp/fastp.smk"
 
 ######## Fast QC ########
-include: "rules/Fastqc/fastqc.smk"
+if config["do_qc"]:
+    include: "rules/Fastqc/fastqc.smk"
 
 ######## align single-end or paired-end DNA samples with bwa ########
-include: "rules/Align/bwa.smk"
+if config["do_bam"]:
+    include: "rules/Align/bwa.smk"
 
-######## [GATK - BQSR] Base Quality Score Recalibration ########
-## https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-
-## remove duplicated readswith, then do BQSR
-include: "rules/BQSR/BQSR.smk"
+    ######## [GATK - BQSR] Base Quality Score Recalibration ########
+    ## https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-
+    ## remove duplicated readswith, then do BQSR
+    include: "rules/BQSR/BQSR.smk"
 
 ######## Facets ########
-include: "rules/Facets/cnvfacets.smk"
+if config["do_cnvfacet"]:
+    include: "rules/Facets/cnvfacets.smk"
     
 if TUMOR_ONLY == False or NORMAL_ONLY == False : 
     include: "rules/Facets/facets.smk"
@@ -32,19 +36,22 @@ if TUMOR_ONLY == False or NORMAL_ONLY == False :
 ######## HaplotypeCaller and Annovar ########
 
 ## Call germline SNPs and indels via local re-assembly of haplotypes
-include: "rules/HaplotypeCaller/haplotypeCaller.smk"
+if config["do_haplotype"]:
+    include: "rules/HaplotypeCaller/haplotypeCaller.smk"
 
 ## Annovar on Haplotype caller, only to normal samples
-include: "rules/Annovar/annovar.smk"
+if config["do_annovar"]:
+    include: "rules/Annovar/annovar.smk"
 
 if NORMAL_ONLY == False : 
     ######## Mapping QC ########
     
-    ## check mapping stats, with GATK CollectHsMetrics
-    include: "rules/HsMetrics/hsMetrics.smk"
+    if config["do_mqc"]:
+        ## check mapping stats, with GATK CollectHsMetrics
+        include: "rules/HsMetrics/hsMetrics.smk"
     
-    ## check mapping metrics with samtools flagstat
-    include: "rules/Flagstat/flagstat.smk"
+        ## check mapping metrics with samtools flagstat
+        include: "rules/Flagstat/flagstat.smk"
     
     ######## Annotate on Mutect2 ########
     
