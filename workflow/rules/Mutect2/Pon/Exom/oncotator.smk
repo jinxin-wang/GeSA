@@ -100,7 +100,7 @@ rule oncotator_pon_exom:
         Mutect2_vcf = "Mutect2_TvNp_exom/{tsample}_vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz",
         Mutect2_vcf_index = "Mutect2_TvNp_exom/{tsample}_vs_{nsample}_PON_{panel_of_normal}_twicefiltered_TvNp_exom.vcf.gz.tbi",
     output:
-        MAF = temp("oncotator_TvNp_exom/{tsample}_vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp_exom.TCGAMAF")
+        MAF = "oncotator_TvNp_exom/{tsample}_vs_{nsample}_PON_{panel_of_normal}_annotated_TvNp_exom.TCGAMAF",
     params:
         queue = "shortq",
         DB    = config["oncotator"][config["samples"]]["DB"],

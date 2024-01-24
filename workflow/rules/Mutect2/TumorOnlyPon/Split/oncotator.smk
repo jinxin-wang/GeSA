@@ -43,7 +43,7 @@ rule split_Mutect2_tumor_only_pon:
         vcf_index = "Mutect2_Tp/{tsample}_PON_{panel_of_normal}_twicefiltered_Tp.vcf.gz.tbi",
     output:
         interval_vcf_bcftools = temp("Mutect2_Tp_oncotator_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}_bcftools.vcf.gz"),
-        interval_vcf          = temp("Mutect2_Tp_oncotator_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz")
+        interval_vcf          = temp("Mutect2_Tp_o)ncotator_tmp/{tsample}_PON_{panel_of_normal}_Tp_ON_{interval}.vcf.gz")
     params:
         queue = "shortq",
         bcftools = config["bcftools"]["app"],
@@ -82,7 +82,7 @@ rule concatenate_oncotator_tumor_only_pon:
     input:
         maf = expand("oncotator_Tp_tmp/{{tsample}}_PON_{{panel_of_normal}}_ON_{mutect_interval}_annotated_Tp.TCGAMAF", mutect_interval=mutect_intervals)
     output:
-        concatened_oncotator = temp("oncotator_Tp/{tsample}_PON_{panel_of_normal}_annotated_Tp.TCGAMAF"),
+        concatened_oncotator = "oncotator_Tp/{tsample}_PON_{panel_of_normal}_annotated_Tp.TCGAMAF",
         tmp_list = temp("oncotator_Tp_tmp/{tsample}_PON_{panel_of_normal}_Tp_oncotator_tmp.list"),
     params:
         queue = "shortq",

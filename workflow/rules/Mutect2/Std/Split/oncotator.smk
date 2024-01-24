@@ -83,7 +83,7 @@ rule concatenate_oncotator:
     input:
         maf = expand("oncotator_TvN_tmp/{{tsample}}_vs_{{nsample}}_ON_{mutect_interval}_annotated_TvN.TCGAMAF", mutect_interval=mutect_intervals)
     output:
-        concatened_oncotator = temp("oncotator_TvN/{tsample}_vs_{nsample}_annotated_TvN.TCGAMAF"),
+        concatened_oncotator = "oncotator_TvN/{tsample}_vs_{nsample}_annotated_TvN.TCGAMAF",
         tmp_list             = temp("oncotator_TvN_tmp/{tsample}_vs_{nsample}_TvN_oncotator_tmp.list"),
     params:
         queue = "shortq",
