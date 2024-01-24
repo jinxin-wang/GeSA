@@ -411,6 +411,32 @@ function prepare_download_from_amazon_s3 {
     echo -e "S3_DATASET_SIZE: ${dataset_size}\n" >> ${WORKING_DIR}/config/download.yaml
 }
 
+function prepare_download_from_amazon_aws {
+
+    STORAGE_DIR=$1
+
+    mkdir -p ${WORKING_DIR}/aws_config ;
+    export AWS_SHARED_CREDENTIALS_FILE="${WORKING_DIR}/aws_config/credentials"
+    export AWS_CONFIG_FILE="${WORKING_DIR}/aws_config/config"
+
+    echo -e "${WARNING}[check point]${ENDC} Starting to configure s3 :"
+    /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/aws configure ;
+
+    echo -e "${WARNING}[check point]${ENDC} Please provide the path on amazon s3: [for example: s3://homlsxyr-598731762349/F23A430001132-04_HOMlsxyR ] " >> `tty`
+    read s3_path
+    
+    /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/aws s3 ls ${s3_path} --recursive --human-readable --summarize ;
+
+    echo -e "${OKGREEN}[info]${ENDC} Please let know the total number of data size: integer [GiB] for example 200 " >> `tty`
+    read dataset_size
+    
+    echo -e "DATABASE: ${DATABASE} \nSTORAGE_PATH: ${STORAGE_DIR}\n\nS3_APP: /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/s3cmd\nS3_PATH: ${s3_path}\n" > ${WORKING_DIR}/config/download.yaml
+    echo -e "S3_CONFIG_FILE: null\n" >> ${WORKING_DIR}/config/download.yaml
+    echo -e "AWS_SHARED_CREDENTIALS_FILE: ${WORKING_DIR}/aws_config/credentials\n" >> ${WORKING_DIR}/config/download.yaml
+    echo -e "AWS_CONFIG_FILE: ${WORKING_DIR}/aws_config/config\n" >> ${WORKING_DIR}/config/download.yaml
+    echo -e "S3_DATASET_SIZE: ${dataset_size}\n" >> ${WORKING_DIR}/config/download.yaml
+    
+}
 function prepare_download_from_bgi {
     STORAGE_DIR=$1
 
@@ -524,7 +550,8 @@ function prepare_download {
         prepare_download_from_irods ${STORAGE_DIR} ;
         build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
     ${AMAZON} )
-        prepare_download_from_amazon_s3 ${STORAGE_DIR} ;
+        # prepare_download_from_amazon_s3 ${STORAGE_DIR} ;
+	prepare_download_from_amazon_aws ${STORAGE_DIR} ;
         build_download_cmd ${PROJECT_NAME} ${STORAGE_DIR} ${RUN_PIPELINE_SCRIPT} ;; 
     ${BGI} )
         prepare_download_from_bgi ${STORAGE_DIR} ;
