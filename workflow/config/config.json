@@ -167,9 +167,9 @@
         "human": {
             "ref": "hg19",
             "DB": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/oncotator/oncotator_v1_ds_April052016",
-            "cosmic_mutation": "/mnt/beegfs/userdata/a_ivashkin/references/code/wgs_wes_pipeline/databases/CosmicMutant_count.tsv",
-            "cancer_census_oncogene": "/mnt/beegfs/userdata/a_ivashkin/references/code/wgs_wes_pipeline/databases/cancer_gene_census_hg19_oncogene_IDs.tsv",
-            "cancer_census_tumorsupressor": "/mnt/beegfs/userdata/a_ivashkin/references/code/wgs_wes_pipeline/databases/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv",
+            "cosmic_mutation": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/CosmicMutant_count.tsv",
+            "cancer_census_oncogene": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_oncogene_IDs.tsv",
+            "cancer_census_tumorsupressor": "/mnt/beegfs/userdata/a_ivashkin/references/genome_data/cosmic/cancer_gene_census_hg19_tumor_supressor_genes_IDs.tsv",
         },
 
         "mouse": {
