@@ -89,3 +89,23 @@ the "facets_snp_pileup" rule generates a compressed CSV (Comma-Separated Values)
 The presence of two different alleles at a particular gene locus. A heterozygous genotype may include one normal allele and one mutated allele or two different mutated alleles (compound heterozygote)
 
 #### [Chapter 7 FACETS: allele-specific copy number and clonal heterogeneity analysis tool for high-throughput DNA sequencing](https://link.springer.com/content/pdf/10.1007/978-1-0716-2293-3.pdf?pdf=button%20sticky)
+
+## Build conda env for cnv_facets
+```
+conda install https://repo.anaconda.com/pkgs/main/linux-64/readline-7.0-h7b6447c_5.tar.bz2
+conda install https://conda.anaconda.org/r/linux-64/r-base-3.5.1-h1e0a451_2.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/bzip2-1.0.8-h7b6447c_0.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/icu-58.2-h9c2bf20_1.tar.bz2
+conda install https://repo.anaconda.com/pkgs/free/linux-64/libgfortran-3.0.0-1.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/libgfortran-ng-7.3.0-hdf63c60_0.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/gfortran_impl_linux-64-7.3.0-hdf63c60_1.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/gfortran_linux-64-7.3.0-h553295d_7.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/ncurses-6.1-he6710b0_1.tar.bz2
+conda install https://repo.anaconda.com/pkgs/main/linux-64/libstdcxx-ng-9.1.0-hdf63c60_0.tar.bz2
+conda install https://conda.anaconda.org/bioconda/linux-64/bcftools-1.9-ha228f0b_4.tar.bz2
+conda install https://conda.anaconda.org/bioconda/linux-64/bioconductor-rsamtools-1.34.0-r351hf484d3e_0.tar.bz2
+conda install https://conda.anaconda.org/bioconda/linux-64/htslib-1.9-ha228f0b_7.tar.bz2
+conda install https://conda.anaconda.org/bioconda/linux-64/samtools-1.9-h8571acd_11.tar.bz2
+conda install https://conda.anaconda.org/bioconda/linux-64/snp-pileup-0.5.14-h0b85cd1_1.tar.bz2
+```
+need r-packages as well
