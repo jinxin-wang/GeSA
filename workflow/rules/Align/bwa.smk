@@ -14,7 +14,7 @@ rule bwa_map:
         bwa_core_n = 8,
         sam_core_n = 2,
         sam_mem_mb = lambda w, input: 1024 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 40 else 4096,
-    threads: 12
+    threads: 10
     resources:
         mem_mb = lambda w, input: 102400 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 40 else 204800,
         disk_mb= lambda w, input: sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024 * 3
