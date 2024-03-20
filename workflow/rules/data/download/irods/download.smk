@@ -35,7 +35,7 @@ def download_to_dir(irods_abs_path, save_to_dir):
     dataset_id = irods_abs_path.split("/")[-1]
     target_path= Path(save_to_dir).joinpath(dataset_id)
     if not target_path.is_dir() or not any(target_path.iterdir()):
-        download_cmd = f"iget -rvK {irods_abs_path} {save_to_dir}"
+        download_cmd = f"iget -rvK '{irods_abs_path}' '{save_to_dir}'"
         logging.info(f"Download command: {download_cmd}")
         os.system(download_cmd)
     else:

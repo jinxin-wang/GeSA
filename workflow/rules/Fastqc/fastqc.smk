@@ -11,7 +11,7 @@ rule fastqc_raw:
         queue = "shortq",
         fastqc = config["fastqc"]["app"],
         adapters = config["fastqc"]["adapters"]
-    threads : 8
+    threads : 4
     resources:
         mem_mb = 25600
     shell:
@@ -30,7 +30,7 @@ rule fastqc_clean:
         queue = "shortq",
         fastqc = config["fastqc"]["app"],
         adapters = config["fastqc"]["adapters"]
-    threads : 8
+    threads : 4
     resources:
         mem_mb = 25600
     shell:

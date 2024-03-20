@@ -20,7 +20,7 @@ rule cnv_facets:
     resources:
         mem_mb = 102400
     ## It needs the local conda env, abs. path of env will stimulate cnvfacet's protest
-    conda: "pipeline_GATK_2.1.4_V2"
+    conda: "routine"
     shell:
-        'cd cnv_facets; {params.cnv_facet} --snp-nprocs {threads} --gbuild {params.ref} --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n ../{input.normal_bam} --out {params.out_pattern}'
+        'cd cnv_facets; cnv_facets.R --snp-nprocs {threads} --gbuild {params.ref} --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n ../{input.normal_bam} --out {params.out_pattern}'
  

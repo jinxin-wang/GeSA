@@ -1,12 +1,13 @@
 ## load json configuration file
 print("[message] Loading configuration file")
+
 configfile: "workflow/config/config.json"
 
 include: "rules/init_pipeline.smk"
 
 include: "rules/data/utils/gz.smk"
     
-if config["sam2fastq"]:
+if config["do_sam2fastq"]:
     include: "rules/Sam2fq/sam2fq.smk"
 
 ######## clean fastq files with fastp ########
@@ -109,9 +110,11 @@ onsuccess:
 
 rule all:
     input:
-        expand('fastq_QC_raw/{sample}_fastqc.html', sample = FASTQ if config["do_qc"] == True else []),
-        expand('fastq_QC_clean/{sample}_fastqc.html', sample =  FASTQ if config["do_qc"] == True else []),
-        expand('bam/{sample}.nodup.recal.bam', sample = TSAMPLE + NSAMPLE if config["do_bam"] else []),
+        expand('DNA_samples/{sample}_{read}.fastq.gz', sample = TSAMPLE + NSAMPLE if config["do_sam2fastq"] else [], read = [1,2] if config["do_sam2fastq"] else []),
+        # FASTQ = expand("DNA_samples/{sample}_{reads}.fastq.gz", sample=SAMPLES, reads=['1','2'] config["paired"] == True else ['0'])
+        expand('fastq_QC_raw/{sample}_{reads}_fastqc.html', sample = SAMPLES if config["do_qc"] else [], reads=['1','2'] if config["paired"] else ['0']),
+        expand('fastq_QC_clean/{sample}_{reads}_fastqc.html', sample = SAMPLES if config["do_qc"] else [], reads=['1','2'] if config["paired"] else ['0']),
+        expand('bam/{sample}.nodup.recal.bam' if config["remove_duplicates"] == True else 'bam/{sample}.recal.bam', sample = TSAMPLE + NSAMPLE if config["do_bam"] else []),
         expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE if config["do_haplotype"] == True else []),
         expand("annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"], sample = NSAMPLE if config["samples"] == "human" and config["do_annovar"] == True else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE if config["do_mqc"] == True else []),

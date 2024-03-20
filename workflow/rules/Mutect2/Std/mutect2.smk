@@ -11,7 +11,7 @@ rule Mutect2:
         INDEX = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
         STATS = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
-        queue = "shortq",
+        queue = lambda w,input: "shortq" if config['seq_type'] == 'WGS' or (os.path.getsize(input.tumor_bam)+os.path.getsize(input.norm_bam))/1024/1024/1024 < 30 else "mediumq",
         tumor_group = "{tsample}",
         norm_group  = "{nsample}",
         # gatk        = config["gatk"]["app"],
@@ -19,7 +19,7 @@ rule Mutect2:
         samtools    = config["samtools"]["app"],
         gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
-        interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
+        interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed" if config["targeted_seq"] == False else config["targeted"]["mutect_interval_dir"] + "/{interval}.bed",
     log:
         "logs/Mutect2_TvN/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.log"
     threads : 8
@@ -34,10 +34,10 @@ rule Mutect2:
         " -L {params.interval}"
         " --reference {params.index} "
         " --germline-resource {params.gnomad_ref}"
-        " -I {input.tumor_bam}"
-        " -I {input.norm_bam}"
-        " -tumor $readGroup_{wildcards.tsample}"
-        " -normal $readGroup_{wildcards.nsample}"
+        " -I {input.tumor_bam} "
+        " -I {input.norm_bam} "
+        " -tumor $readGroup_{wildcards.tsample} "
+        " -normal $readGroup_{wildcards.nsample} "
         " -O {output.VCF} 2> {log}"
 
 ## Concatenate mutect2 results

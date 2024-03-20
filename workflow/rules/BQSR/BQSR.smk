@@ -21,19 +21,20 @@ if config["remove_duplicates"] == True :
 ## A rule to generate bam index with samtools
 rule indexbam_before_recal:
     input:
-        bam = "bam/{sample}.nodup.bam" if config["remove_duplicates"] == True else "bam/{sample}.bam"
+        bam = "bam/{sample}.nodup.bam" if config["remove_duplicates"] == True else "bam/{sample}.bam",
     output:
-        bai = temp("bam/{sample}.nodup.bam.bai") if config["remove_duplicates"] == True else temp("bam/{sample}.bam.bai")
+        bai = temp("bam/{sample}.nodup.bam.bai") if config["remove_duplicates"] == True else temp("bam/{sample}.bam.bai"),
     params:
         queue    = "shortq",
-        samtools = config["samtools"]["app"]
-    threads : 4
+        samtools = config["samtools"]["app"],
+    threads : 1
     resources:
         mem_mb = 10240
     log:
         "logs/bam/{sample}.bam.bai.log"
     shell:
-        "{params.samtools} index -@ {threads} {input} 2> {log}"
+        # "{params.samtools} index -@ {threads} {input} 2> {log}"
+        "{params.samtools} index {input} 2> {log}"
 
 ## A rule to do Base Quality Score Recalibration (BQSR) - first pass, GATK BaseRecalibrator
 rule base_recalibrator_pass1:
@@ -43,7 +44,7 @@ rule base_recalibrator_pass1:
     output:
         "BQSR/{sample}_BQSR_pass1.table"
     params:
-        queue = "mediumq",
+        queue = lambda w,input: "mediumq" if os.path.getsize(input.bam)/1024/1024/1024 < 50 else 'longq',
         # gatk = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
         target_interval = config["gatk"][config["samples"]]["target_interval"],
@@ -51,7 +52,7 @@ rule base_recalibrator_pass1:
         gnomad_ref      = config["gatk"][config["samples"]]["gnomad_ref"],
     log:
         "logs/BQSR/{sample}_BQSR_pass1.log"
-    threads: 4
+    threads: 1
     resources:
         mem_mb = 51200
     shell:
@@ -71,13 +72,13 @@ rule apply_bqsr_pass1:
     output:
         temp("bam/{sample}.nodup.recal.beforeReformat.bam") if config["remove_duplicates"] == True else temp("bam/{sample}.recal.beforeReformat.bam")
     params:
-        queue = "mediumq",
+        queue = lambda w,input: "mediumq" if os.path.getsize(input.bam)/1024/1024/1024 < 50 else 'longq',
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/BQSR/{sample}_ApplyBQSR_pass1.log"
-    threads: 4
+    threads: 1
     resources:
         mem_mb = 51200
     shell:
@@ -97,11 +98,11 @@ rule reformat_bam:
     log:
         "logs/bam_reformat/{sample}_reformat.log"
     params:
-        queue = "shortq",
-        samtools = config["samtools"]["app"]
+        queue = lambda w,input: "shortq" if os.path.getsize(input.bam)/1024/1024/1024 < 50 else 'mediumq',
+        samtools = config["samtools"]["app"],
     threads: 4
     resources:
-        mem_mb = 10240
+        mem_mb = 20480
     shell:
         "{params.samtools} view -@ {threads} -b -h -o {output} {input.bam}"
         
@@ -113,14 +114,15 @@ rule indexbam_after_recal:
         bai = "bam/{sample}.nodup.recal.bam.bai" if config["remove_duplicates"] == True else "bam/{sample}.recal.bam.bai"
     params:
         queue = "shortq",
-        samtools = config["samtools"]["app"]
-    threads : 4
+        samtools = config["samtools"]["app"],
+    threads : 1
     resources:
         mem_mb = 10240
     log:
         "logs/bam/{sample}.bam.bai.log"
     shell:
-        "{params.samtools} index -@ {threads} {input} 2> {log}"
+        # "{params.samtools} index -@ {threads} {input} 2> {log}"
+        "{params.samtools} index {input} 2> {log}"
 
 ## A rule to do Base Quality Score Recalibration (BQSR) - second pass, GATK BaseRecalibrator
 rule base_recalibrator_pass2:
@@ -130,7 +132,7 @@ rule base_recalibrator_pass2:
     output:
         "BQSR/{sample}_BQSR_pass2.table"
     params:
-        queue = "shortq",
+        queue = lambda w,input: "shortq" if os.path.getsize(input.bam)/1024/1024/1024 < 50 else 'mediumq',
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
         target_interval = config["gatk"][config["samples"]]["target_interval"],
@@ -138,7 +140,7 @@ rule base_recalibrator_pass2:
         gnomad_ref      = config["gatk"][config["samples"]]["gnomad_ref"],
     log:
         "logs/BQSR/{sample}_BQSR_pass2.log"
-    threads: 4
+    threads: 1
     resources:
         mem_mb = 51200
     shell:
@@ -157,12 +159,12 @@ rule analyze_covariates_bqsr:
     output:
         "BQSR/{sample}_BQSR_report.pdf"
     params:
-        queue = "mediumq",
+        queue = "shortq",
         # gatk = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
     log:
         "logs/BQSR/{sample}_AnalyzeCovariates.log"
-    threads : 4
+    threads : 1
     resources:
         mem_mb = 51200
     shell:
@@ -172,3 +174,4 @@ rule analyze_covariates_bqsr:
         " --after-report-file {input.table2}"
         " --plots-report-file {output} 2> {log}"
 
+ruleorder: indexbam_after_recal > indexbam_before_recal

@@ -10,7 +10,7 @@ rule extract_exom_mutect2:
     params:
         queue = "shortq",
         bcftools = config["bcftools"]["app"],
-        exom_bed = config["bcftools"][config["samples"]]["exom_bed"],
+        exom_bed = config["bcftools"][config["samples"]]["exom_bed"] if config["targeted_seq"] == False else config["targeted"]["exom_bed"],
     threads : 1
     resources:
         mem_mb = 10240

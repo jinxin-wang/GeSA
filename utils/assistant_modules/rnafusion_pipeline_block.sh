@@ -161,7 +161,7 @@ if [ -f config/patients.tsv ] && [ \${clinic_success} -eq 0 ] ; then " >> ${PIPE
     echo '
     rm -f workflow ;
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
-    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s ~/Workspace/Genome_Sequencing_Analysis_Clinic/workflow/rules/Clinic/rna/nfcore/rnafusion/1.2/entry_point.smk ; 
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/rna/Fusions/entry_point.smk ; 
     conda deactivate ; ' >> ${PIPELINE_SCRIPT} ;
 
     echo "    echo 'complete' > ${CLINIC_TAG} ;

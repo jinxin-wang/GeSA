@@ -29,8 +29,8 @@ rule somatic_maf_filter_outside_intersection:
         zgrep "^#" {input.vcf} > $header ;
         gawk 'BEGIN{{FS="\\t"; OFS="\\t"}} {{if ($7=="PASS") $7="OFF_TARGETS_INTERSECTION"; else $7="OFF_TARGETS_INTERSECTION;"$7; print}}' $offbed > $offbed_ann ;
         sed -i '3 i ##FILTER=<ID=OFF_TARGETS_INTERSECTION,Description='"\\"Variant is outside the bed file {input.bed}.\\""'>' $header ;
-        cat $header $inbed $offbed_ann | {params.bgzip} -c > {output.vcf} && {params.picard} SortVcf I={output.vcf} O={output.vcf} ;        
-        rm $header $inbed $offbed $offbed_ann ;
+        cat $header $inbed $offbed_ann | {params.bgzip} -c > {output.vcf} && {params.picard} -Xmx4g SortVcf I={output.vcf} O={output.vcf} ;
+        # rm $header $inbed $offbed $offbed_ann ;
         """
 
 # Save VCF after all filtering.
@@ -293,7 +293,7 @@ rule somatic_maf:
     threads: 1
     resources:
         queue="shortq",
-        mem_mb=4000,
+        mem_mb=8000,
     shell:
         """
         python -u workflow/rules/Clinic/mut/TvN/scripts/03.2_maf_merge_vep_and_maf.py \

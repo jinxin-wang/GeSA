@@ -10,7 +10,7 @@ rule extract_exom_mutect2_tumor_only:
     params:
         queue = "shortq",
         bcftools = config["bcftools"]["app"],
-        exom_bed = config["bcftools"][config["samples"]]["exom_bed"],
+        exom_bed = config["bcftools"][config["samples"]]["exom_bed"] if config["targeted_seq"] == False else config["targeted"]["exom_bed"],
     threads : 1
     resources:
         mem_mb = 10240
@@ -126,12 +126,13 @@ rule oncotator_reformat_tumor_only_exom:
         "logs/oncotator_exom/{tsample}_tumor_only_T_selection_exom.log"
     params:
         queue = "shortq",
+        python= config["python"]["2.7"],
         oncotator_extract_Tonly = config["oncotator"]["scripts"]["extract_tumor_only"],
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        'python2.7 {params.oncotator_extract_Tonly} {input.maf} {output.maf} {output.tsv} 2> {log}'
+        '{params.python} {params.oncotator_extract_Tonly} {input.maf} {output.maf} {output.tsv} 2> {log}'
 
 ## A rule to simplify oncotator output on tumor only samples
 rule oncotator_with_pileup_tumor_only_exom:

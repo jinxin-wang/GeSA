@@ -1,81 +1,11 @@
-def match_gender(row):
-    if str(row["Sex"]).strip()[0] == "F":
-        return "Female"
+include: "match.smk"
 
-    elif str(row["Sex"]).strip()[0] == "M":
-        return "Male"
+def check_patient_table(patient_df):
+    for cn in ['PATIENT_ID', 'Project_TCGA_More', 'MSKCC_Oncotree', 'Sex']:
+        if cn not in patient_df.columns:
+            logging.error(f"There is no column name as {cn} ")
+            raise Exception(f"Missing column {cn} in the table of patient. ")
     
-    return None
-            
-def match_civic(row, corresp): 
-
-    civic_set  = set()
-            
-    def civic_string_to_set(civic_str):
-        civic_str = str(civic_str)
-        return set(civic_str.split('|'))
-
-    try : 
-        if pd.notnull(row["Project_TCGA_More"]) and pd.notnull(row["MSKCC_Oncotree"]):
-            tcga = row["Project_TCGA_More"]
-            oncotree = row["MSKCC_Oncotree"]
-            logging.info(f"TCGA: {tcga} , OncoTree: {oncotree} ")
-            for civic in corresp.loc[tcga, oncotree]["Civic_Disease"]:
-                if pd.notnull(civic):
-                    civic_set.update(civic_string_to_set(civic))
-                            
-        elif pd.notnull(row["Project_TCGA_More"]):
-            tcga = row["Project_TCGA_More"]
-            logging.info(f"TCGA: {tcga} ")
-            for civic in corresp.loc[tcga, :]["Civic_Disease"]:
-                if pd.notnull(civic):
-                    civic_set.update(civic_string_to_set(civic))
-                
-        elif pd.notnull(row["MSKCC_Oncotree"]):
-            oncotree = row["MSKCC_Oncotree"]
-            logging.info(f"Oncotree: {oncotree} ")
-            for civic in corresp.loc[:, oncotree]["Civic_Disease"]:
-                if pd.notnull(civic):
-                    civic_set.update(civic_string_to_set(civic))
-                            
-        # elif pd.isnull(row["Project_TCGA_More"]) and pd.isnull(row["MSKCC_Oncotree"]):
-        # DO NOTHING
-        #     pass
-
-    except KeyError as err: 
-        patient_id = str(row["PATIENT_ID"])
-        logging.debug(f"patient id: {patient_id}, error: KeyError [{err}]")
-                
-        if pd.notnull(row["Project_TCGA_More"]) :
-            tcga     = re.split('-|_| ', str(row["Project_TCGA_More"]))[0]
-            logging.debug(f"TCGA: {tcga} ")
-                    
-        if pd.notnull(row["MSKCC_Oncotree"]) :
-            oncotree = re.split('-|_| ', str(row["MSKCC_Oncotree"]))[0]
-            logging.debug(f"OncoTre: {oncotree} ")
-
-        if pd.isnull(row["Project_TCGA_More"]) :
-            tcga     = oncotree
-            logging.debug(f"set oncotree to tcga: {oncotree} ")
-
-        if pd.isnull(row["MSKCC_Oncotree"]) :
-            oncotree = tcga
-            logging.debug(f"set tcga to oncotree: {tcga} ")
-
-        query_cmd = f"Project_TCGA_More.str.contains('{tcga}') and MSKCC_Oncotree.str.contains('{oncotree}') "
-        logging.info(f"Query cmd: {query_cmd} ")
-        for civic in corresp.query(query_cmd, engine='python')["Civic_Disease"]:
-            if pd.notnull(civic):
-                civic_set.update(civic_string_to_set(civic))
-
-        if len(civic_set) == 0:
-            query_cmd = f"Project_TCGA_More == '{tcga}' or MSKCC_Oncotree == '{oncotree}' "
-            logging.info(f"Query cmd: {query_cmd} ")
-            for civic in corresp.query(query_cmd, engine='python')["Civic_Disease"]:
-                if pd.notnull(civic):
-                    civic_set.update(civic_string_to_set(civic))
-                        
-    return "|".join(civic_set)
 
 rule extract_aggregate_sample_table:
     input:
@@ -104,6 +34,9 @@ rule extract_aggregate_sample_table:
         # PATIENT_ID, Project_TCGA_More, MSKCC_Oncotree, Sex
         patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
         patient = patient.reset_index()
+
+        check_patient_table(patient)
+        logging.debug(patient)
         
         # sample_dir = params.all_sample_dir
         
@@ -171,6 +104,10 @@ rule extract_tumor_normal_pairs:
         patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
         patient = patient.reset_index()
         
+        check_patient_table(patient)
+
+        logging.debug(patient)
+
         # the column names for the table is : 
         # Subject_Id, Sample_Id, DNA_T, DNA_N, DNA_P, Project_TCGA_More, MSKCC_Oncotree, Civic_Disease, Gender
         lines   = []
@@ -225,6 +162,9 @@ rule extract_dna_samples_table:
         patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
         patient = patient.reset_index()
         
+        check_patient_table(patient)
+        logging.debug(patient)
+
         # the column names for the table is :
         # "Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"
         lines   = []
@@ -246,7 +186,7 @@ rule extract_dna_samples_table:
             lines.append([subject_id, f"{patient_id}_N", "DNA_N", "OK", tcga, oncotree, civic_codes, gender])
             lines.append([subject_id, f"{patient_id}_T", "DNA_T", "OK", tcga, oncotree, civic_codes, gender])
         
-        pd.DataFrame(lines).to_csv(output.pairs_table, sep='\t', index=False,
+        pd.DataFrame(lines).to_csv(output.sample_table, sep='\t', index=False,
                 header = ["Subject_Id", "Sample_Id","Sample_Type","IRODS_Status","Project_TCGA_More","MSKCC_Oncotree","Civic_Disease","Gender"]) 
 
 
@@ -304,6 +244,9 @@ rule build_rna_samples_table:
         # PATIENT_ID, Project_TCGA_More, MSKCC_Oncotree, Sex
         patient = pd.read_csv(input.patient_table, sep='\t', header = 0)
         patient = patient.reset_index()
+
+        check_patient_table(patient)
+        logging.debug(patient)
         
         # the column names for the table is : 
         # Subject_Id, Sample_Id, Sample_Id_Long, Sample_Id_RNA_T, FASTQ_1_Name, FASTQ_2_Name, IRODS_Status, Project_TCGA_More, MSKCC_Oncotree, Civic_Disease, Gender
@@ -328,6 +271,6 @@ rule build_rna_samples_table:
 
             lines.append([subject_id, sample_id, sample_id, sample_id, fq1, fq2, "OK", tcga, oncokb, civic_codes, gender])
         
-        pd.DataFrame(lines).to_csv(output.pairs_table, sep='\t', index=False,
+        pd.DataFrame(lines).to_csv(output.sample_table, sep='\t', index=False,
                 header = ["Subject_Id", "Sample_Id", "Sample_Id_Long", "Sample_Id_RNA_T", "FASTQ_1_Name", "FASTQ_2_Name", "IRODS_Status", "Project_TCGA_More", "MSKCC_Oncotree", "Civic_Disease", "Gender"])
 

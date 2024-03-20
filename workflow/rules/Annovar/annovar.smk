@@ -15,7 +15,7 @@ rule annovar:
         operation= config["annovar"][config["samples"]]["operations"],
     threads : 8
     resources:
-        mem_mb = 10240
+        mem_mb = lambda w,input: 10240 if (os.path.getsize(input.vcf))/1024/1024 < 100 else 20480,
     log:
         "logs/annovar/{sample}.log"
     shell :

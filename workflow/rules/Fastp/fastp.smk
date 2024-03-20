@@ -34,7 +34,7 @@ elif config["paired"] == True:
         log:
             "logs/fastp/{sample}_fastp.html.log"
         params:
-            queue = lambda w,input: "shortq" if (os.path.getsize(input.fastq_1)+os.path.getsize(input.fastq_2))/1024/1024/1024 < 80 else "mediumq",
+            queue = lambda w,input: "shortq" if (os.path.getsize(input.fastq_1)+os.path.getsize(input.fastq_2))/1024/1024/1024 < 60 else "mediumq",
             fastp = config["fastp"]["app"],
             adapters = config["fastp"]["adapters"],
         threads : 8

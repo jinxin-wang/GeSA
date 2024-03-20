@@ -419,7 +419,7 @@ function prepare_download_from_amazon_aws {
     export AWS_SHARED_CREDENTIALS_FILE="${WORKING_DIR}/aws_config/credentials"
     export AWS_CONFIG_FILE="${WORKING_DIR}/aws_config/config"
 
-    echo -e "${WARNING}[check point]${ENDC} Starting to configure s3 :"
+    echo -e "${WARNING}[check point]${ENDC} Starting to configure s3. It will last for a while, please be patient. "
     /mnt/beegfs/userdata/j_wang/.conda/envs/aws/bin/aws configure ;
 
     echo -e "${WARNING}[check point]${ENDC} Please provide the path on amazon s3: [for example: s3://homlsxyr-598731762349/F23A430001132-04_HOMlsxyR ] " >> `tty`

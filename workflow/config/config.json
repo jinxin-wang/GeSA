@@ -2,9 +2,12 @@
     "samples" : "human",
     "seq_type": "WGS",
     "mode": "TvN",
+
     "paired": True,
+    "targeted_seq": False,
     "remove_duplicates": True,
-    "sam2fastq": False,
+
+    "do_sam2fastq": False,
     "do_fastp": True,
     "do_bam": True,
     "do_clinic": False,
@@ -189,4 +192,14 @@
             "cosmic_t_only": "workflow/scripts/cross_oncotator_tumor_only_with_COSMIC_pipeline_version.py",
         },
     }, 
+
+    "sam2fastq": {
+        "targets": "config/targets.bed",
+    },
+
+    "targeted": {
+        "target": "config/targets.bed",
+        "mutect_interval_dir": "config/bed_for_mutect2",
+        "exom_bed": "config/bed_for_mutect2/targeted_S07604514_Padded_b37.bed",
+    },
 }

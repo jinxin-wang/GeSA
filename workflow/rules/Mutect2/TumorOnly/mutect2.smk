@@ -14,9 +14,9 @@ rule Mutect2_tumor_only:
         # gatk = config["gatk"]["app"],
         gatk  = config["gatk"][config["samples"]]["app"],
         samtools    = config["samtools"]["app"],
+        gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"],
         index       = config["gatk"][config["samples"]]["genome_fasta"],
-        interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed",
-        gnomad_ref  = config["gatk"][config["samples"]]["gnomad_ref"]
+        interval    = config["gatk"][config["samples"]][config["seq_type"]]["mutect_interval_dir"] + "/{interval}.bed" if config["targeted_seq"] == False else config["targeted"]["mutect_interval_dir"] + "/{interval}.bed",
     log:
         "logs/Mutect2_T_tmp/{tsample}_tumor_only_T_ON_{interval}.vcf.log"
     threads : 8
@@ -85,7 +85,7 @@ rule filter_mutect_calls_tumor_only:
         VCF   = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz"),
         INDEX = temp("Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.tbi"),
     params:
-        queue = "mediumq",
+        queue = "shortq",
         # gatk = "/mnt/beegfs/software/gatk/4.1.4.1/gatk",
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],

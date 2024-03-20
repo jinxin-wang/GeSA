@@ -1,0 +1,25 @@
+restart-times: 1
+jobscript: "slurm-jobscript.sh"
+cluster: "slurm-submit.py"
+cluster-status: "slurm-status.py"
+cluster-cancel: "scancel"
+max-jobs-per-second: 1
+max-status-checks-per-second: 1
+local-cores: 2
+jobs: 30
+keep-going: True
+reason: True
+printshellcmds: True
+jobname: "{name}.{jobid}.sh"
+conda-prefix: /mnt/beegfs/userdata/j_wang/.conda/envs/
+# conda-prefix: /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/shared_install/
+# singularity-prefix: /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/singularity/
+# wrapper-prefix: file:///mnt/beegfs/pipelines/snakemake-wrappers/
+#use-singularity: true
+use-conda: True
+shadow-prefix: tmp
+rerun-triggers: mtime
+use-envmodules: True
+rerun-incomplete: True
+latency-wait: 300
+# log-handler-script: "log_handler.py"

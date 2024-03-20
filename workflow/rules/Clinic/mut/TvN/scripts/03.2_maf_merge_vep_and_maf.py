@@ -15,7 +15,7 @@
 Take as input the tsv table with annotations produced by VEP as well as the incomplete tsv table in maf-format produced
 by applying vcf2maf on the vcf file also produced by VEP.
 """
-
+import gc
 import argparse
 from functools import reduce
 import numpy as np
@@ -122,13 +122,20 @@ def explode_columns(df, col_explodeby, cols_id, col_idreplace, verbose=True):
 
     df_exploded = df[cols_other]
     for col in cols_explode:
+        print(f"\t >>> start {col} ")
         df_for_explosion = df.replace(["-", "."], np.nan)[cols_id + [col_explodeby, col]]
         df_for_explosion = df_for_explosion.dropna(subset=[col]).drop_duplicates()
         df_exploded_col = explode_df(df=df_for_explosion, cols=[col_explodeby, col], sep=",")
         df_exploded_col[col_idreplace] = df_exploded_col[col_explodeby]
         del df_exploded_col[col_explodeby]
         df_exploded_col = df_exploded_col.replace("N/A", np.nan).drop_duplicates()
+        gc.collect()
+        if col == 'PROVEAN_score' :
+            print(df_exploded_col)
+            print(cols_id)
         df_exploded = df_exploded.merge(df_exploded_col, how="left", on=cols_id)
+    
+    print("explode_columns done.")
 
     return df_exploded
 
@@ -176,6 +183,7 @@ def main(args):
     df_vep =  pd.read_table(args.vep_table, skiprows=len(header), na_values=["-","."])
     df_vep["Feature_No_Version"] = df_vep["Feature"].apply(lambda x: x.split(".")[0] if type(x)==str else x)
     del df_vep["Allele"]
+    gc.collect()
 
     # Some annotations are given for all ensembl id transcripts.
     # Guess which columns are like this. Then explode them and keep only the rows where the transcript id
@@ -187,6 +195,7 @@ def main(args):
     del df_vep["Ensembl_transcriptid"]
     del df_vep["Ensembl_proteinid"]
     del df_vep["Feature_No_Version"]
+    gc.collect()
 
     # remove empty columns except some
     ignore = ["#Uploaded_variation", "Chromosome", "Start_Position", "Location", "Reference_Allele",
@@ -200,6 +209,7 @@ def main(args):
     df_vep["Tumor_Seq_Allele2"] = df_vep["#Uploaded_variation"].apply(lambda x: x.split("_")[-1].split("/")[-1])
     del df_vep["Location"]
     del df_vep["#Uploaded_variation"]
+    gc.collect()
 
     # build row identifier
     cols_ids = ["#Uploaded_variation", "Feature"]
@@ -212,6 +222,7 @@ def main(args):
     del df_vep["#Uploaded_variation"]
     df_maf = df_maf.replace(["-", "."], np.nan)
     df_vep = df_vep.replace(["-", "."], np.nan)
+    gc.collect()
 
     # select in vep the pairs (gene, transcripts) from maf (should be CANONICAL="YES")
     df_vep = df_vep.loc[df_vep[col_id].isin(df_maf[col_id].unique())]
@@ -291,7 +302,7 @@ def main(args):
 
     # delete residual columns
     del df_maf[col_id]
-
+    gc.collect()
     # save
     df_maf.to_csv(args.output, index=False, sep="\t")
 

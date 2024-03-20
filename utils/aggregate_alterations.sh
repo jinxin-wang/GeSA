@@ -17,29 +17,58 @@ log="aggregate_alterations_across_modalities.log"
 output_best="aggregated_alterations.tsv"
 output_all="aggregated_alterations_all.tsv"
 
-echo "[check point] Please provide the path of the table for patient informations: [enter to continue with default: ${cln} ]"
-read line
-if [ ! -z ${line} ] ; then 
-    cln=${line}
+TODAY=`date +%Y%m%d`
+
+echo "[check point] Please provide the batch number:"
+read batch
+
+agg="/mnt/beegfs/scratch/j_wang/03_Results/STING_UNLOCK/${TODAY}_human_aggregate_batch${batch}"
+
+mkdir -p ${agg} ;
+
+echo "[check point] Please provide the directory of the analysis of wes : "
+read wes
+if [ -z ${wes} ] ; then
+    exit -1 ;
 fi
 
-echo "[check point] Please provide the path of oncokb and civic annotation results for cna: [enter to continue with default: ${cna} ]"
-read line
-if [ ! -z ${line} ] ; then 
-    cna=${line}
+echo "[check point] Please provide the directory of the analysis of rna : "
+read rna
+if [ -z ${rna} ] ; then
+    exit -1 ;
 fi
 
-echo "[check point] Please provide the path of oncokb and civic annotation results for mut: [enter to continue with default: ${mut} ]"
-read line
-if [ ! -z ${line} ] ; then 
-    mut=${line}
-fi
+ln -s ${wes}/aggregate ${agg}
+ln -s ${rna}/results ${agg}
+ln -s ${wes}/config ${agg}
 
-echo "[check point] Please provide the path of oncokb and civic annotation results for fus: [enter to continue with default: ${fus} ]"
-read line
-if [ ! -z ${line} ] ; then 
-    fus=${line}
-fi
+ln -s /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow ${agg}
+
+# echo "[check point] Please provide the path of the table for patient informations: [enter to continue with default: ${cln} ]"
+# read line
+# if [ ! -z ${line} ] ; then 
+#     cln=${line}
+# fi
+
+# echo "[check point] Please provide the path of oncokb and civic annotation results for cna: [enter to continue with default: ${cna} ]"
+# read line
+# if [ ! -z ${line} ] ; then 
+#     cna=${line}
+# fi
+
+# echo "[check point] Please provide the path of oncokb and civic annotation results for mut: [enter to continue with default: ${mut} ]"
+# read line
+# if [ ! -z ${line} ] ; then 
+#     mut=${line}
+# fi
+
+# echo "[check point] Please provide the path of oncokb and civic annotation results for fus: [enter to continue with default: ${fus} ]"
+# read line
+# if [ ! -z ${line} ] ; then 
+#     fus=${line}
+# fi
+
+cd ${agg}
 
 source ~/.bashrc
 conda activate /mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r
@@ -56,3 +85,8 @@ Rscript /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rule
             --log ${log} \
             --output_best ${output_best} \
             --output_all ${output_all} 
+
+
+module load python ;
+python /mnt/beegfs/scratch/j_wang/03_Results/STING_UNLOCK/20240221_human_aggregate_batch5/workflow/rules/Clinic/scripts/correct_aggregate_samples_name_by_bilan.py
+module unload python ;

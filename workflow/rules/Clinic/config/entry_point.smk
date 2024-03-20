@@ -1,13 +1,7 @@
-import os
-import re
-import sys
-import glob
-import logging
-import pandas  as pd
-from   pathlib import Path
-
+## "general" adapt Yoann's pipeline setting
 annotation_config = {
     "all_sample_dir": "",
+    
     "general": {
         "patients": "config/patients.tsv",
         "dna_samples" : "config/dna_samples.tsv",

@@ -22,12 +22,13 @@ NORMAL_ONLY= False
 ## Note 2: config["MUTECT_INTERVAL_DIR"] should not be terminated by "/"
 
 FASTQ = []
+
 ## max sample file size
 if os.path.isdir('DNA_samples'):
-    max_file_size_G = max([ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
+    max_file_size_G = max([0] + [ ceil(os.stat(f"DNA_samples/{sample_file}").st_size / 1024 / 1024 / 1024) for sample_file in os.listdir("DNA_samples") ])
     ## Get all fastq
-    FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
-    print(FASTQ)
+    # FASTQ, = glob_wildcards("DNA_samples/{name}.fastq.gz")
+    # print(FASTQ)
 
 
 ## wildcards for mutect intervals
@@ -186,3 +187,6 @@ if config["mode"] == "N":
                 NSAMPLE.append(nsample)
                 
 SAMPLES = list(set(TSAMPLE + NSAMPLE))
+
+# FASTQ = expand("DNA_samples/{sample}_{reads}.fastq.gz", sample=SAMPLES, reads=['1','2'] config["paired"] == True else ['0'])
+# print(FASTQ)

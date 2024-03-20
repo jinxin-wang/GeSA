@@ -126,8 +126,8 @@ rule somatic_cna_civic:
             -o {input.rules} \
             -t {params.category} \
             -l {log} 
-            # || ( echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_pre} && echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_run} && echo -e "Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode\tCivic_Disease\tHugo_Symbol\tAlteration\n" > {output.table_pos} )
         """
+
 
 # prepare a table for each pair tsample_vs_nsample
 rule somatic_cna_oncokb:

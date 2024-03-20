@@ -46,6 +46,14 @@ table_alt=$(printf "%s" "${table_alt[*]}")
 # preprocess table of alterations before annotating with CIViC
 printf -- "-INFO: preparing table before annotating with CIViC...\n"
 
+printf -- "python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_civic_preprocess.py \
+    --table_alt ${table_alt} \
+    --table_cln ${table_cln} \
+    --table_gen ${table_gen} \
+    --gen_gene_name name \
+    --category ${category} \
+    --output ${table_pre} \n"
+
 python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_civic_preprocess.py \
     --table_alt ${table_alt} \
     --table_cln ${table_cln} \
@@ -56,7 +64,15 @@ python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_civic_preprocess.py \
 
 printf -- "-INFO: running CIViC annotator...\n" 
 
-python -u ${code_dir}/civic.py \
+printf -- "python -u ${code_dir}/civic.py \
+    --input ${table_pre} \
+    --civic ${civic} \
+    --rules ${rules} \
+    --category ${category} \
+    --output ${table_run} \n "
+
+# python -u ${code_dir}/civic.py \
+python -u workflow/scripts/CivicAnnotator/civic.py \
     --input ${table_pre} \
     --civic ${civic} \
     --rules ${rules} \
@@ -64,6 +80,10 @@ python -u ${code_dir}/civic.py \
     --output ${table_run} 
 
 printf -- "-INFO: postprocess CIViC annotations...\n" 
+
+printf -- "python -u workflow/rules/Clinic/mut/TvN/scripts/04.2_civic_postprocess.py \
+    --input ${table_run} \
+    --output ${table_pos} \n"
 
 python -u workflow/rules/Clinic/mut/TvN/scripts/04.2_civic_postprocess.py \
     --input ${table_run} \

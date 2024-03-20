@@ -70,7 +70,7 @@ function build_pipeline_cmd {
     for s in * ; do
         s1=${s//-/_}   ;
         s2=${s1//__/_} ;
-        mv ${s} ${s2}  ;
+        if [ ${s} != ${s2} ] ; then mv ${s} ${s2} ; fi
     done
     cd ..
 fi ' >> ${PIPELINE_SCRIPT} ;
@@ -423,7 +423,7 @@ fi
 ##  global: RUN_PIPELINE_SCRIPT
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2', 'BQSR', 'fastp_reports', 'remove_duplicate_metrics', "annovar_mutect2_${MODE}")
+BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2' 'BQSR' 'fastp_reports' 'remove_duplicate_metrics' "annovar_mutect2_${MODE}")
 
 BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}" 
 BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" 

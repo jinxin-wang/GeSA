@@ -47,6 +47,16 @@ table_alt=$(printf "%s" "${table_alt[*]}")
 
 # preprocess table of alterations before annotating with OncoKB
 printf -- "-INFO: preparing table before annotating with OncoKB...\n"
+
+printf -- "python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_oncokb_preprocess.py \ 
+    --table_alt ${table_alt} \ 
+    --table_cln ${table_cln} \ 
+    --table_gen ${table_gen} \ 
+    --gen_gene_name 'Hugo Symbol' \ 
+    --category ${category} \ 
+    --output_alt ${table_alt_pre} \ 
+    --output_cln ${table_cln_pre} \n"
+
 python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_oncokb_preprocess.py \
     --table_alt ${table_alt} \
     --table_cln ${table_cln} \
@@ -60,12 +70,25 @@ python -u workflow/rules/Clinic/mut/TvN/scripts/04.1_oncokb_preprocess.py \
 printf -- "-INFO: running OncoKB-annotator...\n"
 
 if [[ ${category} == "cna" ]]; then
+    printf -- "python -u ${code_dir}/CnaAnnotator.py \ 
+        -i ${table_alt_pre} \ 
+        -c ${table_cln_pre} \ 
+        -b ${token} \ 
+        -o ${table_run} \n"
+
     python -u ${code_dir}/CnaAnnotator.py \
         -i ${table_alt_pre} \
         -c ${table_cln_pre} \
         -b ${token} \
         -o ${table_run}
 elif [[ ${category} == "mut" ]]; then
+    printf -- "python -u ${code_dir}/MafAnnotator.py \ 
+        -i ${table_alt_pre} \ 
+        -c ${table_cln_pre} \ 
+        -b ${token} \ 
+        -q Genomic_Change \ 
+        -o ${table_run} \n"
+
     python -u ${code_dir}/MafAnnotator.py \
         -i ${table_alt_pre} \
         -c ${table_cln_pre} \
@@ -79,6 +102,13 @@ fi
 
 # postprocess annotations
 printf -- "-INFO: postprocess OncoKB annotations...\n"
+
+printf -- "python -u workflow/rules/Clinic/mut/TvN/scripts/04.2_oncokb_postprocess.py \ 
+    --input ${table_run} \ 
+    --rules ${rules} \ 
+    --category ${category} \ 
+    --output ${table_pos} \n "
+
 python -u workflow/rules/Clinic/mut/TvN/scripts/04.2_oncokb_postprocess.py \
     --input ${table_run} \
     --rules ${rules} \
