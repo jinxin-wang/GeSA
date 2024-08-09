@@ -1,6 +1,7 @@
 general:
   # Table of samples to be processed with paths to fastqs and library orientation
   samples: "config/samples.tsv"
+  tumor_normal_pairs: "config/tumor_normal_pairs.tsv"
   # Set disable: true to disable automatic irods checks. This step checks that the user
   # has access to the fastq filepaths specified in the tables `samples.tsv` by requesting
   # all fastqs available for a given project. The name(s) of the project(s) that include
@@ -103,7 +104,7 @@ oncokb:
   code_dir: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator"
   data_dir: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data"
   gene_list: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data/cancerGeneList_oncokb_annotated.tsv"
-  token: "81a7024b-b860-4e9c-ba71-4380d64b0e9a"
+  token: "d670d5f0-d271-49f1-8241-169622f99ce9"
   rules_clean: "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/data/OncoKB_Curation_And_Rules.xlsx"
 
 data:

@@ -546,7 +546,7 @@ if [ ${DO_PIPELINE} == true ] ; then
 
     if [ ! -f ${NFCORE_SAMPLE_SHEET} ] ; then 
 	for r1 in ${r1_list} ; do
-	    echo "${r1/_R1.fastq.gz/},${local_fastq_dir}/${r1},${local_fastq_dir}/${r1/_R1.fastq.gz/_R2.fastq.gz},forward" >> ${NFCORE_SAMPLE_SHEET}
+	    echo "${r1/_R1.fastq.gz/},${local_fastq_dir}/${r1},${local_fastq_dir}/${r1/_R1.fastq.gz/_R2.fastq.gz},auto" >> ${NFCORE_SAMPLE_SHEET}
 	done
     fi
 

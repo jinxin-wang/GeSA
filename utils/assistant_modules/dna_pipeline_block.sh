@@ -11,40 +11,44 @@ function prepare_variant_call_table {
 touch ${DNA_PIPELINE_TAG} ;
 dna_pipeline_success=\$(grep 'complete' ${DNA_PIPELINE_TAG} | wc -l)
 
-if [ -f ${VARIANT_CALL_TABLE} ] && [[ \${dna_pipeline_success} -eq 0 ]] ; then
+if [[ \${dna_pipeline_success} -eq 0 ]] ; then
+
+  if [ -f ${VARIANT_CALL_TABLE} ] ; then
     echo '[info] variant call table is ready, please check if it is correct. '
     cat ${VARIANT_CALL_TABLE} ;
 
-else 
+  else 
     echo '[info] Generating variant call table...'
     cd DNA_samples ; "  >> ${PIPELINE_SCRIPT} ;
 	
     if [ ${MODE} == ${TvN} ] || [ ${MODE} == ${TvNp} ] ; then
 	echo "
-    nsamples=(*_N_1.fastq.gz) ;
-    tsamples=(*_T_1.fastq.gz) ;
-    cd ${WORKING_DIR} ;
+      nsamples=(*_N_1.fastq.gz) ;
+      tsamples=(*_T_1.fastq.gz) ;
+      cd ${WORKING_DIR} ;
 
-    if [[ \${#nsamples[*]} -gt 0 ]] ; then
-        for nsample in \${nsamples[@]} ; do 
-    	    n=\${nsample//_1.fastq.gz/} ;
-	    t=\${t//_N/_T} ;
-	    echo -e \"\${t}\t\${n}\" >> ${VARIANT_CALL_TABLE} ;
-        done 
-    fi " >> ${PIPELINE_SCRIPT} ;
+      if [[ \${#nsamples[*]} -gt 1 ]] ; then
+          for nsample in \${nsamples[@]} ; do 
+     	    nsample=\${nsample/_1.fastq.gz/} ;
+ 	    tsample=\${nsample/_N/_T} ;
+            echo -e \"\${tsample}\t\${nsample}\" >> ${VARIANT_CALL_TABLE} ;
+          done 
+      fi " >> ${PIPELINE_SCRIPT} ;
 	
     elif [ ${MODE} == ${T} ] || [ ${MODE} == ${N} ] || [ ${MODE} == ${Tp} ] ; then
 	echo "
     samples=(*1.fastq.gz) ;
     cd ${WORKING_DIR} ;
     for s in \${samples[@]} ; do
-    	 echo \"\${s/_1.fastq.gz/}\" >> ${VARIANT_CALL_TABLE} ;
-    done " >> ${PIPELINE_SCRIPT} ;
+      echo \"\${s/_1.fastq.gz/}\" >> ${VARIANT_CALL_TABLE} ;
+    done 
+    " >> ${PIPELINE_SCRIPT} ;
     fi
     
     echo "
     echo '[info] variant call table is done, please check if it is correct. [ctrl + C to cancel the process if it is NOT correct]'
     cat ${VARIANT_CALL_TABLE} ;
+  fi
 fi" >> ${PIPELINE_SCRIPT} ;
 
 }
@@ -58,19 +62,32 @@ function build_pipeline_cmd {
     MODE="$5"
     SAMPLES="$6"
 
+    # echo "====================== debug info start ========================="
+    # echo "CONFIG_OPTIONS=${CONFIG_OPTIONS}"
+    # echo "DATASOURCE_DIR=${DATASOURCE_DIR}"
+    # echo "DATAFILES_TYPE=${DATAFILES_TYPE}"
+    # echo "PIPELINE_SCRIPT=${PIPELINE_SCRIPT}"
+    # echo "MODE=${MODE}"
+    # echo "SAMPLES=${SAMPLES}"
+    # echo "====================== debug info end ========================="
+
     if [ ${DATAFILES_TYPE} == ${FASTQ} ] ; then
 
         echo 'if [ -z "$(ls DNA_samples)"  ] ; then '  >> ${PIPELINE_SCRIPT} ;
     
         echo "
-    ln -s ${DATASOURCE_DIR}/*gz DNA_samples" >> ${PIPELINE_SCRIPT} ;
+    for fn in \` find \${DATASOURCE_DIR} -name *gz \` ; do 
+        ln -s \${fn} DNA_samples
+    done " >> ${PIPELINE_SCRIPT} ;
     
         echo '
-    cd DNA_samples
+    cd DNA_samples ;
     for s in * ; do
         s1=${s//-/_}   ;
         s2=${s1//__/_} ;
-        if [ ${s} != ${s2} ] ; then mv ${s} ${s2} ; fi
+        if [ ${s} != ${s2} ] ; then 
+           mv ${s} ${s2} ; 
+        fi
     done
     cd ..
 fi ' >> ${PIPELINE_SCRIPT} ;
@@ -116,9 +133,9 @@ if [[ \${dna_pipeline_success} -eq 0 ]] ; then
 
     echo '[info] Starting ${SAMPLES} ${SEQ_TYPE} pipeline ${MODE} mode' ; " >> ${PIPELINE_SCRIPT} ;
 
-    if [ ${SAMPLES} == ${HUMAN} ] ; then
+    if [ "${SAMPLES}" == "${HUMAN}" ] ; then
 	echo '    module load java ; ' >> ${PIPELINE_SCRIPT} ;
-    elif [ ${SAMPLES} == ${MOUSE} ] ; then
+    elif [ "${SAMPLES}" == "${MOUSE}" ] ; then
 	echo '    module load java/1.8.0_281-jdk ; ' >> ${PIPELINE_SCRIPT} ;
     fi
 
@@ -148,6 +165,14 @@ if [ ! -f config/patients.tsv ] ; then
 fi ' >> ${PIPELINE_SCRIPT}
 
     echo "
+if [ ! -f config/config.yaml ] ; then
+   cd config ; ln -s clinic.yaml config.yaml ; cd .. ; 
+fi
+
+if [ ! -f config/samples.tsv ] ; then
+   cd config ; ln -s dna_samples.tsv samples.tsv ; cd .. ;
+fi
+
 rm -f workflow ;
 ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
 touch ${CLINIC_TAG} ;
@@ -237,11 +262,19 @@ if [ ${DO_PIPELINE} != false ] ; then
 
     if [ -z "${STORAGE_DIR}" ] && [ ${DATA_FILETYPE} == ${BAM} ] && [ ${INTERACT} != false ] ; then
 	STORAGE_DIR=$(setup_storage_dir ${SCRATCH_FASTQ_PWD} ${PROJECT_NAME} ${DATE} ${DATABASE}) ;
+	CONCAT_DIR="${STORAGE_DIR}"
+	# echo "============================ debug info start ================================="
+	# echo "STORAGE_DIR=${STORAGE_DIR}"
+	# echo "============================ debug info end ================================="
 	echo -e "${OKGREEN}[info]${ENDC} The directory for the bam files : ${OKGREEN}${STORAGE_DIR}${ENDC}  "
     fi
 
     CONFIG_OPTIONS=" samples=${SAMPLES} seq_type=${SEQ_TYPE} mode=${MODE} "
 
+    if [ ${DATA_FILETYPE} == ${BAM} ] ; then
+	CONFIG_OPTIONS=" ${CONFIG_OPTIONS} do_bam=False do_fastq=False do_qc=False "
+    fi
+    
     if [ ${INTERACT} != false ] ; then 
         echo -e "${WARNING}[check point]${ENDC} Please confirm if enable cnvfacet submodule: [y]/n "
         read line
@@ -326,6 +359,15 @@ if [ ${DO_PIPELINE} != false ] ; then
         fi
     fi
 
+    # echo "=========================== debug info start ============================="
+    # echo "CONFIG_OPTIONS = ${CONFIG_OPTIONS}"
+    # echo "CONCAT_DIR = ${CONCAT_DIR}"
+    # echo "DATA_FILETYPE = ${DATA_FILETYPE}"
+    # echo "RUN_PIPELINE_SCRIPT = ${RUN_PIPELINE_SCRIPT}"
+    # echo "MODE = ${MODE}"
+    # echo "SAMPLES = ${SAMPLES}"
+    # echo "=========================== debug info end  ============================="
+
     build_pipeline_cmd "${CONFIG_OPTIONS}" ${CONCAT_DIR} ${DATA_FILETYPE} ${RUN_PIPELINE_SCRIPT} ${MODE} ${SAMPLES} ;
 
     # if  [ ${DATA_FILETYPE} == ${FASTQ} ] ; then 
@@ -341,7 +383,7 @@ fi
 ####         setup oncokb and civic submodule      ####
 #######################################################
 
-if [ ${INTERACT} != false ] && [ ${SAMPLES} == ${HUMAN} ] && [ ${MODE} == ${TvN} ] ; then
+if [ ${INTERACT} != false ] && [ "${SAMPLES}" == "${HUMAN}" ] && [ "${MODE}" == "${TvN}" ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup Oncokb and CIVIC submodule ? [y]/n"
     read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then
@@ -400,7 +442,9 @@ location of the table: [enter to continue and set the table later, or set the pa
         fi
     fi
 
-    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/clinic.yaml ${WORKING_DIR}/config/ ;
+    cp ${ANALYSIS_PIPELINE_SRC_DIR}/workflow/config/clinic.yaml ${WORKING_DIR}/config/config.yaml ;
+
+    echo -e "${WARNING} [info] don't forget to check if the API token for OncoKB is expired. "
 
     build_oncokb_civic_cmd ${RUN_PIPELINE_SCRIPT} ${CLINIC_TAG} ;
 fi
@@ -423,7 +467,7 @@ fi
 ##  global: RUN_PIPELINE_SCRIPT
 
 #### do backup of all analysis results
-BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2' 'BQSR' 'fastp_reports' 'remove_duplicate_metrics' "annovar_mutect2_${MODE}")
+BACKUP_TARGETS=('config' 'fastq_QC_raw' 'fastq_QC_clean' 'haplotype_caller_filtered' 'annovar' 'mapping_QC' 'cnv_facets' 'facets' "Mutect2_${MODE}" "Mutect2_${MODE}_exom" "oncotator_${MODE}" "oncotator_${MODE}_exom" "oncotator_${MODE}_maf" "oncotator_${MODE}_maf_exom"  "oncotator_${MODE}_tsv_COSMIC"  "oncotator_${MODE}_tsv_COSMIC_exom" 'annovar_mutect2' 'BQSR' 'fastp_reports' 'remove_duplicate_metrics' "annovar_mutect2_${MODE}")
 
 BACKUP_FASTQ_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${FASTQS_DIR}/${DATE}_${DATABASE}" 
 BACKUP_CONCATS_PWD="${BACKUP_PWD}/${USER^^}/${PROJECT_NAME}/${CONCATS_DIR}/${DATE}_${DATABASE}" 

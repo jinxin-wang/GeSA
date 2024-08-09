@@ -64,6 +64,12 @@ def load_and_preprocess_cna(table_alt, table_gen, table_cln, gen_gene_name):
     df_gen = read_table(table_gen)
     df_cln = read_table(table_cln)
 
+    cols_civ = ["Tumor_Sample_Barcode", "Matched_Norm_Sample_Barcode", "Civic_Disease", "Hugo_Symbol", "Alteration"]
+
+    if len(df_cna) == 0:
+        print("WARNING: dataframe of cna is empty")
+        return pd.DataFrame(columns=cols_civ)
+
     # add sampe pair
     col_pair = "DNA_P"
     col_tsb = "Tumor_Sample_Barcode"
@@ -88,7 +94,6 @@ def load_and_preprocess_cna(table_alt, table_gen, table_cln, gen_gene_name):
     # format for civic 
     df_cna_civ = df_cna_civ.merge(df_cln[["Civic_Disease", "DNA_P",]], how="left", on="DNA_P")
     df_cna_civ["Alteration"] = df_cna_civ["Copy_Number"].map({2: "Amplification", -2: "Deletion"})
-    cols_civ = ["Tumor_Sample_Barcode", "Matched_Norm_Sample_Barcode", "Civic_Disease", "Hugo_Symbol", "Alteration"]
     df_cna_civ = df_cna_civ[cols_civ]
 
     # debug: 

@@ -21,6 +21,7 @@ import numpy as np
 import os
 import pandas as pd
 import subprocess
+from pathlib import Path
 
 # functions ============================================================================================================
 
@@ -59,6 +60,7 @@ def select_genes(df_alt, alt_gene_name, df_gen, gen_gene_name, table_gen):
 
 
 def load_and_preprocess_cna(table_alt, table_gen, table_cln, gen_gene_name):
+
     # load alterations
     df_cna = pd.concat([read_table(tab) for tab in table_alt])
     df_gen = read_table(table_gen)
@@ -68,8 +70,16 @@ def load_and_preprocess_cna(table_alt, table_gen, table_cln, gen_gene_name):
     col_pair = "DNA_P"
     col_tsb = "Tumor_Sample_Barcode"
     col_nsb = "Matched_Norm_Sample_Barcode"
-    df_cna[col_pair] = df_cna[[col_tsb, col_nsb]].fillna("NA").apply("_vs_".join, axis=1)
-    print("-INFO: loaded %d lines from %d sample pairs" % (len(df_cna), len(table_alt)))
+    
+    if len(df_cna) == 0:
+        print("-WARN: empty sample pair.")
+        pairs = [ Path(tab).name.split('.')[0] for tab in table_alt ]
+        df_cln_okb = pd.DataFrame(columns=["SAMPLE_ID", "ONCOTREE_CODE"])
+        df_cna_okb = pd.DataFrame(columns=["Hugo_Symbol", "Locus ID", "Cytoband", *pairs])
+        return df_cna_okb, df_cln_okb
+    else :
+        df_cna[col_pair] = df_cna[[col_tsb, col_nsb]].fillna("NA").apply("_vs_".join, axis=1) 
+        print("-INFO: loaded %d lines from %d sample pairs" % (len(df_cna), len(table_alt)))
 
     # retain only calls with Copy_Number_More = -2 or 2
     mask_in = df_cna["Copy_Number"].isin([-2, 2])

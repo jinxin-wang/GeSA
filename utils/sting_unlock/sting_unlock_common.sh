@@ -531,16 +531,11 @@ fi
 
 if [ ${DO_DOWNLOAD} == true ] ; then
 
-    echo -e "${OKGREEN}[info]${ENDC} start setting up the download submodule...."
+    echo -e "${OKGREEN}[info]${ENDC} setup the download submodule...."
 
-    if [ ${INTERACT} == false ] && [ -z ${DATABASE} ] ; then
-        echo -e "${FAIL}[Error]${ENDC} --download-DB is mandatory option :  ${EGA} , ${IRODS}, ${AMAZON}, ${BGI}, ${FTP}, ${STORAGE} "
-        exit -1
-    fi
+    DATABASE=${IRODS}
     
     if [ ${INTERACT} == true ] && [ ! -f ${WORKING_DIR}/config/download.yaml ] ; then
-
-        DATABASE=$(choose_database)
 
         if [ -z ${STORAGE_DIR} ] ; then 
             STORAGE_DIR="${SCRATCH_FASTQ_PWD}/${PROJECT_NAME}/${DATE}_${DATABASE}"

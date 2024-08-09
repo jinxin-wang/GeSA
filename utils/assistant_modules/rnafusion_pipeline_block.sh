@@ -24,7 +24,7 @@ if [[ \${fusion_pipeline_success} -eq 0 ]] ; then
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/shared_install/cf86d417625a66c2fd24c9995cffb88e_ ; 
 
     nextflow -config config/nextflow.config \
-	run /mnt/beegfs/pipelines/nf-core-rnafusion/1.2.0/main.nf \
+	run /mnt/beegfs/userdata/j_wang/lib/nfcore/rnafusion/1.2.0/main.nf \
 	-resume \
 	--read_length 150 \
 	--plaintext_email \
@@ -119,11 +119,10 @@ r1_list=\$(ls *1.fastq.gz) ;
 r2_list=\$(ls *2.fastq.gz) ;
 cd ${WORKING_DIR} ;
 
-echo 'sample,fastq_1,fastq_2,strandedness' >> ${NFCORE_SAMPLE_SHEET} ;
-
 if [ ! -f ${NFCORE_SAMPLE_SHEET} ] ; then 
+    echo 'sample,fastq_1,fastq_2,strandedness' >> ${NFCORE_SAMPLE_SHEET} ;
     for r1 in \${r1_list[@]} ; do
-	echo \"\${r1/_R1.fastq.gz/},${LOCAL_FASTQ_DIR}/\${r1},${LOCAL_FASTQ_DIR}/\${r1/_R1.fastq.gz/_R2.fastq.gz},forward\" >> ${NFCORE_SAMPLE_SHEET}
+	echo \"\${r1/_R1.fastq.gz/},${LOCAL_FASTQ_DIR}/\${r1},${LOCAL_FASTQ_DIR}/\${r1/_R1.fastq.gz/_R2.fastq.gz},auto\" >> ${NFCORE_SAMPLE_SHEET}
     done
 fi
 
@@ -153,6 +152,12 @@ if [ -f config/patients.tsv ] && [ \${clinic_success} -eq 0 ] ; then " >> ${PIPE
     echo "Starting oncokb and civic annotation" ; 
     rm -f workflow ;
     ln -s ${ANALYSIS_PIPELINE_SRC_DIR}/workflow workflow ;
+    if [ ! -f config/config.yaml ] ; then
+       cd config ; ln -s clinic.yaml config.yaml ; cd .. ; 
+    fi
+    if [ ! -f config/samples.tsv ] ; then
+       cd config ; ln -s dna_samples.tsv samples.tsv ; cd .. ;
+    fi
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
     snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;

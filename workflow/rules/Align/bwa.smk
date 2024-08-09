@@ -7,16 +7,16 @@ rule bwa_map:
     log:
         "logs/bam/{sample}.bam.log"
     params:
-        queue = lambda w,input: "shortq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 40 else ( "mediumq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 100 else "longq"),
+        queue = lambda w,input: "shortq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 30 else ( "mediumq" if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 60 else "longq"),
         bwa = config["bwa"]["app"],
         index = config["bwa"][config["samples"]]["index"],
         samtools = config["samtools"]["app"],
         bwa_core_n = 8,
         sam_core_n = 2,
-        sam_mem_mb = lambda w, input: 1024 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 40 else 4096,
+        sam_mem_mb = lambda w, input: 1024 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 30 else 4096,
     threads: 10
     resources:
-        mem_mb = lambda w, input: 102400 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 40 else 204800,
+        mem_mb = lambda w, input: 102400 if sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024/1024 < 30 else 204800,
         disk_mb= lambda w, input: sum([os.path.getsize(fq) for fq in input.fastq])/1024/1024 * 3
     shell:
         "rm -f {output}.tmp.*.bam ; "

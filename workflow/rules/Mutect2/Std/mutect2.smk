@@ -11,7 +11,7 @@ rule Mutect2:
         INDEX = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.tbi"),
         STATS = temp("Mutect2_TvN_tmp/{tsample}_vs_{nsample}_TvN_ON_{interval}.vcf.gz.stats") if config["samples"] == "human" else [] ,
     params:
-        queue = lambda w,input: "shortq" if config['seq_type'] == 'WGS' or (os.path.getsize(input.tumor_bam)+os.path.getsize(input.norm_bam))/1024/1024/1024 < 30 else "mediumq",
+        queue = lambda w,input: "shortq" if config["seq_type"] == "WGS" else ("mediumq" if os.path.getsize(input.tumor_bam)/1024/1024/1024 < 20 else "longq"),
         tumor_group = "{tsample}",
         norm_group  = "{nsample}",
         # gatk        = config["gatk"]["app"],
@@ -102,9 +102,10 @@ rule filter_mutect_calls:
         "logs/filter_Mutect2_TvN/{tsample}_vs_{nsample}_filtered_TvN.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = 25600
+        mem_mb = lambda w, input: 11240 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 512 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 1024 else 45960),
+        jvm_gb = lambda w, input: 10    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 512 else ( 20    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 1024 else 40),
     shell:
-        "{params.gatk} --java-options \"-Xmx20g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls "
+        "{params.gatk} --java-options \"-Xmx{resources.jvm_gb}G -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls "
         " -V {input.Mutect2_vcf} "
         " -R {params.index} "
         " --contamination-table {input.contamination_table} "
@@ -128,9 +129,11 @@ rule Filter_By_Orientation_Bias:
         "logs/filter_Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = 25600
+        mem_mb = lambda w, input: 11240 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (45960 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 107400)),
+        jvm_gb = lambda w, input: 10    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 20    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (40    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 100)),
+
     shell:
-        "{params.gatk} --java-options \"-Xmx20g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
+        "{params.gatk} --java-options \"-Xmx{resources.jvm_gb}G -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
         " -V {input.Mutect2_vcf}"
         " -AM G/T -AM C/T"
         " -P {input.pre_adapter_detail_metrics}"

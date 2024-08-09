@@ -92,11 +92,12 @@ rule filter_mutect_calls_tumor_only:
         index = config["gatk"][config["samples"]]["genome_fasta"],
     log:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_filtered_T.vcf.gz.log"
-    threads : 1
+    threads : 4
     resources:
-        mem_mb = 10240
+        mem_mb = lambda w, input: 11240 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 512 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 1024 else 45960),
+        jvm_gb = lambda w, input: 10    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 512 else ( 20    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 1024 else 40),
     shell:
-        "{params.gatk} --java-options \"-Xmx10g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls"
+        "{params.gatk} --java-options \"-Xmx{resources.jvm_gb}G -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterMutectCalls"
         " -V {input.Mutect2_vcf}"
         " -R {params.index}"
         " --contamination-table {input.contamination_table}"
@@ -120,9 +121,10 @@ rule Filter_By_Orientation_Bias_tumor_only:
         "logs/filter_Mutect2_T/{tsample}_tumor_only_twicefiltered_T.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = 10240
+        mem_mb = lambda w, input: 11240 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (45960 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 102500)),
+        jvm_gb = lambda w, input: 10    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 20    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (40    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 100)),
     shell:
-        "{params.gatk} --java-options \"-Xmx10g -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
+        "{params.gatk} --java-options \"-Xmx{resources.jvm_gb}G -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"
         " -V {input.Mutect2_vcf}"
         " -AM G/T -AM C/T"
         " -P {input.pre_adapter_detail_metrics}"

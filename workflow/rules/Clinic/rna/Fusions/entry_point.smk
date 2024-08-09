@@ -34,8 +34,8 @@ def get_input_rule_all(w):
     # +++++++++++++++++++++++
     inputs.append("%s/filter/calls_fusions_all.tsv.gz" % R_FOLDER)
     inputs.append("%s/filter/calls_fusions.tsv.gz" % R_FOLDER)
-    inputs.append("%s/filter/upset_filters_wt_breakpoints.pdf" % R_FOLDER)
-    inputs.append("%s/filter/upset_filters_wo_breakpoints.pdf" % R_FOLDER)
+    # inputs.append("%s/filter/upset_filters_wt_breakpoints.pdf" % R_FOLDER)
+    # inputs.append("%s/filter/upset_filters_wo_breakpoints.pdf" % R_FOLDER)
     # +++++++++++++++++++++++
     #### ANNOTATE
     # +++++++++++++++++++++++

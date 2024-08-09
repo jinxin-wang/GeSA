@@ -68,12 +68,19 @@ ln -s /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow ${agg}
 #     fus=${line}
 # fi
 
-cd ${agg}
-
-source ~/.bashrc
-conda activate /mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r
+# cd ${agg}
 
 # Rscript ~/MetaPRISM/scripts/combined_alterations/workflow/scripts/01.1_aggregate_alterations_across_modalities.R \
+
+echo "
+#!/usr/bin/bash
+
+set -e ; 
+trap 'exit' INT ; 
+source ~/.bashrc ;
+
+conda activate /mnt/beegfs/userdata/j_wang/.conda/envs/metaprism_r
+
 Rscript /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/scripts/01.1_aggregate_alterations_across_modalities.R \
             --cln ${cln} \
             --cna ${cna} \
@@ -86,7 +93,17 @@ Rscript /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rule
             --output_best ${output_best} \
             --output_all ${output_all} 
 
+echo \"rscript aggregate_alterations_across_modalities.R is done!\"
 
-module load python ;
-python /mnt/beegfs/scratch/j_wang/03_Results/STING_UNLOCK/20240221_human_aggregate_batch5/workflow/rules/Clinic/scripts/correct_aggregate_samples_name_by_bilan.py
-module unload python ;
+# module load python ;
+conda activate metaprism_python ;
+python /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/scripts/correct_aggregate_samples_name_by_bilan.py ;
+python /mnt/beegfs/userdata/j_wang/pipelines/dna_routine_pipeline/workflow/rules/Clinic/scripts/batch_analysis_summary.py
+conda deactivate ;
+# module unload python ; " >> ${agg}/run.sh
+
+chmod +x ${agg}/run.sh ;
+
+echo "Please execute the following commands : "
+echo "cd ${agg}"
+echo "./run.sh"

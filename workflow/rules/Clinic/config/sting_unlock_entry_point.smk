@@ -8,9 +8,9 @@ from   pathlib import Path
 
 ## "general" adapt Yoann's pipeline setting
 annotation_config = {
-    "batch_num" : 16,
-    "bilan_table": "/mnt/nfs01/home/j_wang@intra.igr.fr/download/Bilan_Unlock_Seq_Anal_SERGEY3.xlsx",
-    "dataset_table": "/mnt/nfs01/home/j_wang@intra.igr.fr/download/dataset.STINGUNLOCK_batch16.metadata_20240201172831.csv",
+    "batch_num" : 20,
+    "bilan_table":   "/home/j_wang@intra.igr.fr/sting_docs/bilan.xlsx",
+    "dataset_table": "/home/j_wang@intra.igr.fr/sting_docs/metadata_batch6_2.csv",
     "bilan_rebuild": "config/bilan.xlsx",
     "rebuild_dataset_table": "config/dataset.csv",
     "variant_call_table": "config/variant_call_list_TvN.tsv",

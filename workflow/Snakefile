@@ -25,7 +25,9 @@ if config["do_bam"]:
     ######## [GATK - BQSR] Base Quality Score Recalibration ########
     ## https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-
     ## remove duplicated readswith, then do BQSR
-    include: "rules/BQSR/BQSR.smk"
+    include: "rules/BQSR/BQSR_pass1.smk"
+
+include: "rules/BQSR/BQSR_pass2.smk"
 
 ######## Facets ########
 if config["do_cnvfacet"]:
@@ -62,9 +64,10 @@ if NORMAL_ONLY == False :
     
     ## Tumor vs Normal mode
     if TUMOR_ONLY == False:
-        include: "rules/Mutect2/Std/mutect2.smk"
+        if config["do_mutect2"] == True :
+            include: "rules/Mutect2/Std/mutect2.smk"
         
-        if config["samples"] == "human":
+        if config["samples"] == "human" and config["do_oncotator"] == True :
             include: "rules/Mutect2/Std/Split/oncotator.smk"
     
             if config["seq_type"] == "WGS":
@@ -74,34 +77,37 @@ if NORMAL_ONLY == False :
             include: "rules/Mutect2/Std/Annovar/annovar.smk"
         
         ## Tumor vs Normal with panel of normals (PON)
-        include: "rules/Mutect2/Pon/mutect2.smk"
+        if config["do_mutect2"] == True and config["mode"][-1] == "p":
+            include: "rules/Mutect2/Pon/mutect2.smk"
     
-        if config["samples"] == "human":
+        if config["samples"] == "human" and config["do_oncotator"] == True :
             include: "rules/Mutect2/Pon/Split/oncotator.smk"
             
-            if config["seq_type"] == "WGS":
+            if config["seq_type"] == "WGS" and config["do_oncotator"] == True :
                 include: "rules/Mutect2/Pon/Exom/oncotator.smk"
     
     ## Tumor Only mode
-    elif TUMOR_ONLY == True: 
-        include: "rules/Mutect2/TumorOnly/mutect2.smk"
+    elif TUMOR_ONLY == True:
+        if config["do_mutect2"] == True :
+            include: "rules/Mutect2/TumorOnly/mutect2.smk"
     
-        if config["samples"] == "human":
+        if config["samples"] == "human" and config["do_oncotator"] == True :
             include: "rules/Mutect2/TumorOnly/Split/oncotator.smk"
     
-            if config["seq_type"] == "WGS":
+            if config["seq_type"] == "WGS" and config["do_oncotator"] == True :
                 include: "rules/Mutect2/TumorOnly/Exom/oncotator.smk"
         
         elif config["samples"] == "mouse":
             include: "rules/Mutect2/TumorOnly/Annovar/annovar.smk"
         
         ## Tumor Only with panel of normals (PON)
-        include: "rules/Mutect2/TumorOnlyPon/mutect2.smk"
+        if config["do_mutect2"] == True and config["mode"][-1] == "p":
+            include: "rules/Mutect2/TumorOnlyPon/mutect2.smk"
     
-        if config["samples"] == "human":
+        if config["samples"] == "human" and config["do_oncotator"] == True :
             include: "rules/Mutect2/TumorOnlyPon/Split/oncotator.smk"
             
-            if config["seq_type"] == "WGS":
+            if config["seq_type"] == "WGS" and config["do_oncotator"] == True :
                 include: "rules/Mutect2/TumorOnlyPon/Exom/oncotator.smk"
     
 ## tag in snakemake log, please don't modify
@@ -114,7 +120,7 @@ rule all:
         # FASTQ = expand("DNA_samples/{sample}_{reads}.fastq.gz", sample=SAMPLES, reads=['1','2'] config["paired"] == True else ['0'])
         expand('fastq_QC_raw/{sample}_{reads}_fastqc.html', sample = SAMPLES if config["do_qc"] else [], reads=['1','2'] if config["paired"] else ['0']),
         expand('fastq_QC_clean/{sample}_{reads}_fastqc.html', sample = SAMPLES if config["do_qc"] else [], reads=['1','2'] if config["paired"] else ['0']),
-        expand('bam/{sample}.nodup.recal.bam' if config["remove_duplicates"] == True else 'bam/{sample}.recal.bam', sample = TSAMPLE + NSAMPLE if config["do_bam"] else []),
+        expand('bam/{sample}.nodup.recal.bam.bai' if config["remove_duplicates"] == True else 'bam/{sample}.recal.bam.bai', sample = TSAMPLE + NSAMPLE if config["do_bam"] else []),
         expand("haplotype_caller_filtered/{sample}_germline_variants_filtered.vcf.gz", sample = NSAMPLE if config["do_haplotype"] == True else []),
         expand("annovar/{sample}.%s_multianno.txt.gz"%config["annovar"][config["samples"]]["ref"], sample = NSAMPLE if config["samples"] == "human" and config["do_annovar"] == True else []),
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE if config["do_mqc"] == True else []),

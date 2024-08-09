@@ -199,10 +199,11 @@ def update_dateset_to_bilan(dataset_df, bilan_df):
 def main(input, output, params):
     
     bilan_df   = pd.read_excel(input.bilan)
+    # bilan_df   = pd.read_table(input.bilan, sep=';', header=0)
     dataset_df = pd.read_table(input.dataset, sep=';', header=0)
 
-    strip_cols = ['PATIENT_ID ', 'Project_TCGA_More', 'MSKCC','*Nucleic Acid Type', '*Biopsy ID', '*Sample \nName',
-                  '*Tissue Type \n(eg: Root, Blood. Germ source.)', 'NIP', 'Sex', 'Baseline=B, Suivi=S, \nProgression=P']
+
+    strip_cols = ['PATIENT_ID ', 'Project_TCGA_More', 'MSKCC','*Nucleic Acid Type', '*Biopsy ID', '*Sample \nName', '*Tissue Type \n(eg: Root, Blood. Germ source.)', 'NIP', 'Sex', 'Baseline=B, Suivi=S, \nProgression=P']
 
     # strip all columns of type string
     for cln in strip_cols:

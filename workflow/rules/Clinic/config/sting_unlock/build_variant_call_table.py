@@ -21,14 +21,18 @@ def main(input, output, params):
     joined_df  = bilan_df[bilan_df['Batch'] == params.batch].join(dataset_pivot, on='IRODS Sample Alias')
     logging.info(joined_df)
 
-    genomic_df = joined_df[(~joined_df['datafilePath'].isna()) & (joined_df['*Nucleic Acid Type'] == 'Genomic DNA') ]
+    genomic_df = joined_df[(~joined_df['irods_datafilePath'].isna()|~joined_df['datafilePath'].isna()) & (joined_df['*Nucleic Acid Type'] == 'Genomic DNA') ]
 
     logging.info(genomic_df)
     
     variant_call_table = []
     for idx, patient_gr in genomic_df.groupby('PATIENT_ID '):
+        logging.info(f"PATIENT_ID: {idx}")
         normal = patient_gr['*Tissue Type \n(eg: Root, Blood. Germ source.)'] == 'Cell blood'
         tumor  = patient_gr['*Tissue Type \n(eg: Root, Blood. Germ source.)'] == 'Tumor'
+        
+        logging.info(f"normal: {patient_gr[normal]['*Biopsy ID']}")
+        logging.info(f"tumor: {patient_gr[tumor]['*Biopsy ID']}")
 
         if sum(normal) == 0:
             logging.warning(f"{idx} doesn't have a normal sample. ")

@@ -700,6 +700,21 @@ function setup_backup_submodule {
     fi
 }
 
+function check_backup_pwd {
+	echo "
+if [[ \$(hostname) != 'flamingo-lg-01' ]] ; then 
+    echo 'WARNING: You are on the slave node \$(hostname), to access to backup storage, you need to connect to master node [flamingo-lg-01]. '
+    exit 0 ;
+fi
+
+if [[ ! -d ${BACKUP_PWD} ]] ; then 
+    echo 'ERROR: ${BACKUP_PWD} doesnot exist, please double check. '
+    exit -1 ;
+fi
+" >> ${RUN_PIPELINE_SCRIPT} ;
+
+}
+
 function backup_results {
     if [ $DO_BACKUP_RESULTS == true ] ; then
 	echo -e "${OKGREEN}[info]${ENDC} backup analysis results to storage"
@@ -1193,7 +1208,21 @@ mkdir -p ${WORKING_DIR}/config
 
 RUN_PIPELINE_SCRIPT=${WORKING_DIR}/"run.sh"
 
-echo -e "#!/usr/bin/bash\n\nset -e ; \ntrap 'exit' INT ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
+# echo -e "#!/usr/bin/bash\n\nset -e ; \ntrap 'exit' INT ; \nsource ~/.bashrc ;\n\n" > ${RUN_PIPELINE_SCRIPT}
+
+echo "#!/usr/bin/bash
+
+#SBATCH --job-name=${RESULT_BATCH_NAME}.run
+#SBATCH --mem=1gb
+#SBATCH --time=7-00:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=longq
+
+set -e ; 
+trap 'exit' INT ; 
+source ~/.bashrc ;
+
+" > ${RUN_PIPELINE_SCRIPT}
 
 #### if workflow is not ln to src, then create a softlink
 # if [ ! -d ${WORKING_DIR}/workflow ] ; then
@@ -1341,7 +1370,11 @@ fi
 ##################################################################################
 ####      if concat fastq directory is given, then add to config options      ####
 ##################################################################################
-if [ ${INTERACT} == true ] ; then
+# echo "================================ debug info start ==========================="
+# echo "STORAGE_DIR=${STORAGE_DIR}"
+# echo "================================ debug info end ==========================="
+
+if [ ${INTERACT} == true ] && [ ${DATA_FILETYPE} == ${FASTQ} ] ; then
     echo -e "${WARNING}[check point]${ENDC} Do you need to activate and setup concat submodule ? [y]/n"
     read line
     if [ -z ${line} ] || [ ${line,,} == "y" ] || [ ${line,,} == "yes" ] ; then

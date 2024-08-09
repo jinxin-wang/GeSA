@@ -5,6 +5,7 @@ source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/assistant_modules/assistant_common.sh
 if [ ${SEQ_TYPE} == ${WGS} ] || [ ${SEQ_TYPE} == ${WES} ] ; then
     source ${ANALYSIS_PIPELINE_SRC_DIR}/utils/assistant_modules/dna_pipeline_block.sh
     setup_backup_submodule ;
+    check_backup_pwd ;
     backup_results ;
     backup_raw ;
     backup_concat ;

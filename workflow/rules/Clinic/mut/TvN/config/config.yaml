@@ -1,5 +1,5 @@
 general:
-    samples: config/samples.tsv
+    samples: config/dna_samples.tsv
     tumor_normal_pairs: config/tumor_normal_pairs.tsv
     disable_automatic_irods_check: false
     skip_aggregate: false
@@ -170,7 +170,7 @@ params:
         run_per_sample:
           cna: true
           maf: true
-        token: 2940699f-2cf4-42d6-8466-b7fe106e8107
+        token: d670d5f0-d271-49f1-8241-169622f99ce9
         rules_clean: /mnt/beegfs/database/bioinfo/metaprism/wes/resources/oncokb/OncoKB_Curation_And_Rules.xlsx
     picard:
         MarkDuplicates: 

@@ -35,3 +35,21 @@ rule facet_graph:
         mem_mb = 40960 if config['seq_type'] == 'WES' else 102400,
     shell:
         '{params.R} {params.facet_graph} {input.CSV}'
+
+rule facet_purity_ploidy:
+    input:
+        RDATA = "facets/{tsample}_vs_{nsample}_facets_cval500.RData"
+    output:
+        CSV   =  "facets/{tsample}_vs_{nsample}_purity_ploidy.csv",
+    log:
+        "logs/facets/{tsample}_vs_{nsample}_purity_ploidy.log"
+    params:
+        queue = "shortq",
+        R = config["R"]["Rscript4.3"],
+        facet_purity = config["R"]["scripts"]["facet_purity"],
+    threads : 1
+    resources:
+        mem_mb = 512 if config['seq_type'] == 'WES' else 1024,
+    shell:
+        '{params.R} {params.facet_purity} -f {input.RDATA} -o {output.CSV} '
+
