@@ -30,11 +30,13 @@ rule facet_graph:
         queue = "shortq",
         R = config["R"]["Rscript4.3"],
         facet_graph = config["R"]["scripts"]["facet_graph"],
+	facet_unmutch_normal = config["facet_unmutch_normal"],
+        facet_cell_lines = config["facet_cell_lines"]
     threads : 4
     resources:
         mem_mb = 40960 if config['seq_type'] == 'WES' else 102400,
     shell:
-        '{params.R} {params.facet_graph} {input.CSV}'
+        '{params.R} {params.facet_graph} {input.CSV} {params.facet_unmutch_normal} {params.facet_cell_lines}'
 
 rule facet_purity_ploidy:
     input:
