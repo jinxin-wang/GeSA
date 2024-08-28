@@ -1,4 +1,4 @@
-# DNA routine analysis for human/mouse samples
+# Genome Sequencing Analysis for human/mouse/cell line samples
 
 [![Snakemake](https://img.shields.io/badge/snakemake-=5.23.0-brightgreen.svg)](https://snakemake.github.io)
 
