@@ -7,6 +7,7 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
 #### 1. Preprocessing 
   - samtools
   - fastp, fastq, bwa-mem2, gatk bqsr
+  - msodepth, HsMetrics, Flagstat
     
 #### 2. Variant Calling  
   - gatk mutect2
