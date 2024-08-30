@@ -29,7 +29,9 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
   - test SigProfiler, mantis, facets_suites, manta, SvABA, 
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
+  - build references
   - Documents
+  - refactor and release in nextflow
   
 ## Usage
 
