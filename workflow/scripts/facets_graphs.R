@@ -11,26 +11,28 @@ if (length(args)==0) {
 }
 
 datafile = args[1]
+facet_unmutch_normal =  as.logical(args[2])
+facet_cell_lines =  as.logical(args[3])
 
 #rcmat = readSnpMatrix(datafile)
 #xx = preProcSample(rcmat)
 
-
-if (facet_unmutch_normal) {
+if (facet_unmutch_normal && !facet_cell_lines) {
     rcmat = readSnpMatrix(datafile)
     xx = preProcSample(rcmat, ndepth=5,  het.thresh=0.10, unmatched=TRUE)
-} else if (facet_cell_lines) {
+} else if (!facet_unmutch_normal && facet_cell_lines) {
     ###Facets modification for cell lines
-
     rcmat = readSnpMatrix(datafile)
     rcmat[,c(3:6)]=rcmat[,c(3:6)]*3
     xx = preProcSample(rcmat,snp.nbhd=5000,cval=500,ndepth=20,ndepthmax=5000,het.thresh=0.3,unmatched=T,gbuild="hg19", hetscale=T)
     oo=procSample(xx,cval=5000,min.nhet=30)
     fit=emcncf(oo,min.nhet = 30,trace = TRUE, unif=FALSE)
-    
-} else {
+} else if (!facet_unmutch_normal && !facet_cell_lines) {
     rcmat = readSnpMatrix(datafile)
     xx = preProcSample(rcmat)
+} else {
+    print('Not handling the case!')
+    stop(-1)
 }
 
 
