@@ -5,11 +5,30 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
 
 ## Summary
 #### 1. Preprocessing 
+  - samtools
+  - fastp, fastq, bwa-mem2, gatk bqsr
+    
 #### 2. Variant Calling  
-#### 3. Analysis 
-#### 4. Annotation
-
-
+  - gatk mutect2, manta, SvABA
+  - haplotype, annovar
+  - facets, cnv_facets, facets suites
+    
+#### 3. Annotation
+  - oncotator
+  - vep
+  - gatk funcotator
+  - oncokb
+    
+#### 4. Analysis
+  - snp-pileup, mantis
+  - SigProfiler
+    
+### TODO:
+  - test SigProfiler, mantis, facets_suites, manta, SvABA, deepvariant,
+  - concatenate variants (somatic and germline)
+  - Jomar -> PoN, etc.
+  - Documents
+  
 ## Usage
 
 ## Contributions & Support
