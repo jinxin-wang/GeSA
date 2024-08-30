@@ -9,9 +9,10 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
   - fastp, fastq, bwa-mem2, gatk bqsr
     
 #### 2. Variant Calling  
-  - gatk mutect2, manta, SvABA
+  - gatk mutect2
   - haplotypeCaller, annovar
   - facets, cnv_facets, facets suites
+  - manta, SvABA
     
 #### 3. Annotation
   - oncotator
