@@ -34,6 +34,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
   - build references
+  - logging 
   - Documents
   - refactor and release in nextflow
   
