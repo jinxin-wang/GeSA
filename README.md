@@ -11,11 +11,12 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
     
 #### 2. Variant Calling  
   - gatk mutect2
-  - haplotypeCaller, annovar
+  - haplotypeCaller
   - facets, cnv_facets, facets suites
   - manta, SvABA
     
 #### 3. Annotation
+  - annovar
   - oncotator
   - vep
   - gatk funcotator
