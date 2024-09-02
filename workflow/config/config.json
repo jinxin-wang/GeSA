@@ -20,6 +20,9 @@
     "do_qc": True,
     "do_mqc": True,
 
+    "facet_unmutch_normal": False,
+    "facet_cell_lines": False,
+
     "python": {
         "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",
     },
