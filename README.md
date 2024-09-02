@@ -5,7 +5,7 @@ GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototyp
 
 ## Summary
 
-The pipeline consists of four modules that operate in a serial fashion. Each performs a specific task, reading from a standard input file and producing a standard output file (e.g., fastq, bam, vcf, maf). The pipeline's starting point and ending point can be dynamically set, providing great flexibility in analysis workflows.
+The pipeline consists of four modules that operate in a serial fashion. Each performs a specific task, reading from a standard input file and producing a standard output file (e.g., fastq, bam, vcf, maf). The pipeline's starting point and ending point can be dynamically set, providing great flexibility in analysis workflows. This modular design enables you to easily expand the pipeline with your own tools and analyses. 
 
 #### 1. Preprocessing 
   - samtools
