@@ -4,6 +4,9 @@ GESA (**Ge**nome **S**equencing **A**nalysis Pipeline) is a workflow designed to
 GESA was first prototyped by Ismael and Leonardo. Jinxin refactored the prototype scripts and continued development alongside his colleagues Andrei and ???. Significant contributions have also been made by Jomar, [Andrei Ivashkin](https://github.com/andrrrsss), Yoann, and others.
 
 ## Summary
+
+The pipeline consists of four modules that operate in a serial fashion. Each performs a specific task, reading from a standard input file and producing a standard output file (e.g., fastq, bam, vcf, maf). The pipeline's starting point and ending point can be dynamically set, providing great flexibility in analysis workflows.
+
 #### 1. Preprocessing 
   - samtools
   - fastp, fastq, bwa-mem2, gatk bqsr
