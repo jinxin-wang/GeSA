@@ -43,6 +43,11 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   
 ## Usage
 
+1. 以Preprocessing模块为入口
+2. 以Variant Calling模块为入口
+3. 以Annotation模块为入口
+4. 以Analysis模块为入口
+
 ## Contributions & Support
 
 ## Citations
