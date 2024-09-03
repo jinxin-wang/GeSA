@@ -33,7 +33,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - test SigProfiler, mantis, facets_suites, manta, SvABA, 
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
-  - build references
+  - build references (GRCh37/hg19/GRCh38/hg38)
   - logging 
   - Documents
   - refactor and release in nextflow
