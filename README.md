@@ -30,7 +30,8 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - SigProfiler
     
 ### TODO:
-  - test SigProfiler, mantis, facets_suites, manta, SvABA, 
+  - test SigProfiler, mantis, facets_suites, manta, SvABA,
+  - config.json -> config.yaml, then add comments
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
   - build references (GRCh37/hg19/GRCh38/hg38)
