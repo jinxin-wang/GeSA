@@ -24,7 +24,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - oncotator
   - vep
   - gatk funcotator
-  - oncokb
+  - oncokb/civic
     
 #### 4. Analysis
   - snp-pileup, mantis
