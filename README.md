@@ -33,7 +33,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
 ### TODO:
   - test SigProfiler, mantis, facets_suites, manta, SvABA,
   - remove annotation submodules extracted from metaprism
-  - clean up data module, leaving only concat block 
+  - clean up data module, leaving only concat block, and build PoN block
   - config.json -> config.yaml, then add comments
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
