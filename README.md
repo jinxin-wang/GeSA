@@ -13,13 +13,13 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - fastp, fastq, bwa-mem2, gatk bqsr
   - msodepth, HsMetrics, Flagstat
     
-#### 2. Variant Calling  
+#### 2. Variant Calling (SNPs/InDels/CNVs/SVs)
   - gatk mutect2
   - haplotypeCaller
   - facets, cnv_facets, facets suites
   - manta, SvABA
     
-#### 3. Annotation
+#### 3. Annotation 
   - annovar
   - oncotator
   - vep
@@ -37,6 +37,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - config.json -> config.yaml, then add comments
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
+  - [Ensembl Variation - Pathogenicity predictions](https://www.ensembl.org/info/genome/variation/prediction/protein_function.html)
   - build references (GRCh37/hg19/GRCh38/hg38)
   - maybe dev [civic-annotator](https://github.com/jinxin-wang/civic-annotator)
   - logging 
