@@ -39,6 +39,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - Jomar -> PoN, etc.
   - [Ensembl Variation - Pathogenicity predictions](https://www.ensembl.org/info/genome/variation/prediction/protein_function.html)
   - build references (GRCh37/hg19/GRCh38/hg38)
+  - conda envs 
   - maybe dev [civic-annotator](https://github.com/jinxin-wang/civic-annotator)
   - logging 
   - Documents
