@@ -18,6 +18,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - haplotypeCaller
   - facets, cnv_facets, facets suites
   - manta, SvABA
+  - mantis
     
 #### 3. Annotation 
   - annovar
@@ -25,9 +26,9 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - vep
   - gatk funcotator
   - oncokb/civic
+  - snp-pileup
     
 #### 4. Analysis
-  - snp-pileup, mantis
   - SigProfiler
     
 ### TODO:
