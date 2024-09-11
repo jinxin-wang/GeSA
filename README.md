@@ -38,7 +38,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - concatenate variants (somatic and germline)
   - Jomar -> PoN, etc.
   - [Ensembl Variation - Pathogenicity predictions](https://www.ensembl.org/info/genome/variation/prediction/protein_function.html)
-  - build references (GRCh37/hg19/GRCh38/hg38)
+  - build references (GRCh37/GRCh38)
   - conda envs
   - snakemake rule name -> job name
   - maybe dev [civic-annotator](https://github.com/jinxin-wang/civic-annotator)
