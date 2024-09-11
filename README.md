@@ -16,7 +16,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
 #### 2. Variant Calling (SNPs/InDels/CNVs/SVs)
   - gatk mutect2
   - haplotypeCaller
-  - facets, cnv_facets, facets suites
+  - facets, cnv_facets, facets suites, gistic2 
   - manta, SvABA
   - mantis
     
