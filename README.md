@@ -29,7 +29,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - snp-pileup
     
 #### 4. Analysis
-  - SigProfiler(SNVs/MNVs/SVs/CNVs)
+  - SigProfiler(SNVs/MNVs/SVs[WGS only]/CNVs)
     - [SigProfilerMatrixGenerator](https://github.com/AlexandrovLab/SigProfilerMatrixGenerator)
     - [SigProfilerExtractor](https://github.com/AlexandrovLab/SigProfilerExtractor)
     - [SigProfilerSingleSample](https://github.com/AlexandrovLab/SigProfilerSingleSample)
