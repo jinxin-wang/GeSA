@@ -29,7 +29,11 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - snp-pileup
     
 #### 4. Analysis
-  - SigProfiler
+  - SigProfiler(SNVs/MNVs/SVs/CNVs)
+    - [SigProfilerMatrixGenerator](https://github.com/AlexandrovLab/SigProfilerMatrixGenerator)
+    - [SigProfilerExtractor](https://github.com/AlexandrovLab/SigProfilerExtractor)
+    - [SigProfilerSingleSample](https://github.com/AlexandrovLab/SigProfilerSingleSample)
+    - [panConusig](https://github.com/UCL-Research-Department-of-Pathology/panConusig)
   - gistic2
     
 ### TODO:
