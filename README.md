@@ -14,7 +14,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
   - msodepth, HsMetrics, Flagstat
     
 #### 2. Variant Calling (SNPs/InDels/CNVs/SVs)
-  - gatk mutect2
+  - gatk mutect2, mutect3, muse, somaticsniper, varscan2
   - haplotypeCaller
   - facets, cnv_facets, facets suites 
   - manta, SvABA
@@ -39,6 +39,7 @@ The pipeline consists of four modules that operate in a serial fashion. Each per
 ### TODO:
   - test SigProfiler, mantis, facets_suites, manta, SvABA,
   - remove annotation submodules extracted from metaprism
+  - add mutect3, muse, somaticsniper, varscan2
   - clean up data module, leaving only concat block, and build PoN block
   - config.json -> config.yaml, then add comments
   - concatenate variants (somatic and germline)
