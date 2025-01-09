@@ -17,6 +17,6 @@ $ pwd
 $ ls 
 01_run_config.sh  sting_unlock_aggr_results.sh  sting_unlock_common.sh  sting_unlock_rna_analysis.sh
 ```
-*01_run_config.sh* is a script to start a short pipeline in order to generate all the necessary configuration files. 
+**01_run_config.sh** is a script to start a short pipeline in order to generate all the necessary configuration files. 
 
-*sting_unlock_aggr_results.sh* aggregates all the results of DNA and RNA analysis. 
+**sting_unlock_aggr_results.sh** aggregates all the results of DNA and RNA analysis. 
