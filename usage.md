@@ -20,6 +20,7 @@ drwxr-xr-x 7 j_wang gs_hpc_u981    6 17 nov.  15:26 workflow
 - Step 1. ln to working conda envirements 
 
 ```
+$ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/routine your_conda_dir/envs/
 $ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/meta_prism* your_conda_dir/envs/
 $ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/Mouse your_conda_dir/envs/Mouse
 $ ln -s /mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2 your_conda_dir/envs/pipeline_GATK_2.1.4_V2
