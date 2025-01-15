@@ -160,7 +160,7 @@ if [ -f config/patients.tsv ] && [ \${clinic_success} -eq 0 ] ; then " >> ${PIPE
     fi
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
-    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake  --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk ;
     conda deactivate ; ' >> ${PIPELINE_SCRIPT} ;
 
     echo '

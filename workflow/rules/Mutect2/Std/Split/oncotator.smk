@@ -69,13 +69,15 @@ rule oncotator:
         oncotator = config["oncotator"]["app"],
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
+        transcript= config["oncotator"]["CANONICAL_TRANSCRIPTS"],
     log:
         "logs/oncotator_TvN_tmp/{tsample}_vs_{nsample}_ON_{interval}_annotated_TvN.TCGAMAF"
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        '{params.oncotator} --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.interval_vcf} {output.MAF} {params.ref} 2> {log}'
+        # '{params.oncotator} --input_format=VCF --output_format=TCGAMAF -c {params.transcript} --tx-mode EFFECT --db-dir={params.DB} {input.interval_vcf} {output.MAF} {params.ref} 2> {log}'
+        '{params.oncotator} --input_format=VCF --output_format=TCGAMAF -c {params.transcript} --db-dir={params.DB} {input.interval_vcf} {output.MAF} {params.ref} 2> {log}'
 
 
 # concatenate oncotator TvN

@@ -6,7 +6,7 @@ rule sort_bam:
     log:
         "logs/BAM_samples/{sample}.sorted.log",
     params:
-        queue = "shortq",
+        queue = "mediumq",
     threads : 4
     resources:
         mem_mb = 20480
@@ -23,7 +23,7 @@ rule bam2fastq:
     log:
         "logs/BAM_samples/{sample}.log",
     params:
-        queue = "shortq",
+        queue = "mediumq",
         # samtools = config["samtools"]["app"],
         targets  = config["sam2fastq"]["targets"],
     threads : 1

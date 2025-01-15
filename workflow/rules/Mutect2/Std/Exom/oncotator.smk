@@ -106,13 +106,14 @@ rule oncotator_exom:
         DB    = config["oncotator"][config["samples"]]["DB"],
         ref   = config["oncotator"][config["samples"]]["ref"],
         oncotator = config["oncotator"]["app"],
+        transcript= config["oncotator"]["CANONICAL_TRANSCRIPTS"],
     log:
         "logs/oncotator_TvN_exom/{tsample}_vs_{nsample}_annotated_TvN_exom.TCGAMAF"
     threads : 1
     resources:
         mem_mb = 10240
     shell:
-        '{params.oncotator} --input_format=VCF --output_format=TCGAMAF --tx-mode EFFECT --db-dir={params.DB} {input.Mutect2_vcf} {output.MAF} {params.ref} 2> {log}'
+        '{params.oncotator} --input_format=VCF --output_format=TCGAMAF -c {params.transcript} --tx-mode EFFECT --db-dir={params.DB} {input.Mutect2_vcf} {output.MAF} {params.ref} 2> {log}'
 
 ## A rule to simplify oncotator output on tumor vs normal samples
 rule oncotator_reformat_TvN_exom:

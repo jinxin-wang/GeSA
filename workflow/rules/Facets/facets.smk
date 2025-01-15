@@ -49,7 +49,7 @@ rule facet_purity_ploidy:
         facet_purity = config["R"]["scripts"]["facet_purity"],
     threads : 1
     resources:
-        mem_mb = 512 if config['seq_type'] == 'WES' else 1024,
+        mem_mb = 2048 if config['seq_type'] == 'WES' else 10240,
     shell:
         '{params.R} {params.facet_purity} -f {input.RDATA} -o {output.CSV} '
 

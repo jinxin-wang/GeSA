@@ -22,20 +22,29 @@ if config["do_qc"]:
 if config["do_bam"]:
     include: "rules/Align/bwa.smk"
 
-    ######## [GATK - BQSR] Base Quality Score Recalibration ########
-    ## https://gatk.broadinstitute.org/hc/en-us/articles/360035890531-Base-Quality-Score-Recalibration-BQSR-
     ## remove duplicated readswith, then do BQSR
     include: "rules/BQSR/BQSR_pass1.smk"
 
 include: "rules/BQSR/BQSR_pass2.smk"
 
+######## Mantis - MSI (Microsatellite Instability)
+if config["do_mantis"]:
+    include: "rules/Mantis/mantis.smk"
+
 ######## Facets ########
 if config["do_cnvfacet"]:
     include: "rules/Facets/cnvfacets.smk"
+
+if config["do_facetsSuite"]:
+    include: "rules/Facets/facetsSuite.smk"
     
 if TUMOR_ONLY == False or NORMAL_ONLY == False : 
     include: "rules/Facets/facets.smk"
 
+######## SigProfiler #########
+if config["do_sigProfiler"]:
+    include: "rules/SigProfiler/SigProfiler.smk"
+    
 ######## HaplotypeCaller and Annovar ########
 
 ## Call germline SNPs and indels via local re-assembly of haplotypes
@@ -109,10 +118,6 @@ if NORMAL_ONLY == False :
             
             if config["seq_type"] == "WGS" and config["do_oncotator"] == True :
                 include: "rules/Mutect2/TumorOnlyPon/Exom/oncotator.smk"
-    
-## tag in snakemake log, please don't modify
-onsuccess:
-    print("[TAG] DNA routine analysis complete")
 
 rule all:
     input:
@@ -126,11 +131,15 @@ rule all:
         expand('mapping_QC/HsMetrics/{sample}_HsMetrics.tsv', sample = TSAMPLE + NSAMPLE if config["do_mqc"] == True else []),
         expand("mapping_QC/flagstat/{sample}_flagstat.txt",   sample = TSAMPLE + NSAMPLE if config["do_mqc"] == True else []),
         expand(ANNOVAR if config["do_annovar"] == True else []),
-        expand(FACETS if config["do_facet"] == True else []),
-        expand(CNV_FACETS if config["do_cnvfacet"] == True else []),
+        expand(FACETS if config["do_facet"] == True and config["samples"] == "human" else []),
+        expand(PURITY if config["do_facet"] == True and config["samples"] == "human" else []),
+        expand(CNV_FACETS if config["do_cnvfacet"] == True and config["samples"] == "human" else []),
         expand(MUTECT2 if config["do_mutect2"] == True else []),
         expand(ONCOTATOR_MAF if config["do_oncotator"] == True else []),
         expand(ONCOTATOR_EXOM_MAF if config["do_oncotator"] == True else []),
         expand(ONCOTATOR_COSMIC if config["do_oncotator"] == True else []),
         expand(ONCOTATOR_EXOM_COSMIC if config["do_oncotator"] == True else []),
-        
+        expand(MSI if config["do_mantis"] == True else []),
+        expand(FACETSUITES if config["do_facetsSuite"] == True else []),
+        expand(SIG_PROFILER if config["do_sigProfiler"] == True else []),
+

@@ -72,7 +72,7 @@ rule apply_bqsr_pass1:
     output:
         temp("bam/{sample}.nodup.recal.beforeReformat.bam") if config["remove_duplicates"] == True else temp("bam/{sample}.recal.beforeReformat.bam")
     params:
-        queue = lambda w,input: "mediumq" if os.path.getsize(input.bam)/1024/1024/1024 < 50 else 'longq',
+        queue = lambda w,input: "mediumq" if os.path.getsize(input.bam)/1024/1024/1024 < 40 else 'longq',
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],

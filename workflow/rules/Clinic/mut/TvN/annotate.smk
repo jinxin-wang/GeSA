@@ -217,6 +217,7 @@ rule somatic_vep_tab:
     resources:
         queue="shortq",
         mem_mb=10000,
+        time_min=60,
     shell:
         """
         {params.vep_dir}/vep  --input_file {input.vcf} \

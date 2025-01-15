@@ -8,9 +8,9 @@ from   pathlib import Path
 
 ## "general" adapt Yoann's pipeline setting
 annotation_config = {
-    "batch_num" : 20,
-    "bilan_table":   "/home/j_wang@intra.igr.fr/sting_docs/bilan.xlsx",
-    "dataset_table": "/home/j_wang@intra.igr.fr/sting_docs/metadata_batch6_2.csv",
+    "batch_num" : 17,
+    "bilan_table":   "/mnt/beegfs/scratch/t_xie/annotation/sting_docs/bilan_Tapestrisamples.xlsx",
+    "dataset_table": "/mnt/beegfs/scratch/t_xie/annotation/sting_docs/metadata_Tapestrisamples.csv",
     "bilan_rebuild": "config/bilan.xlsx",
     "rebuild_dataset_table": "config/dataset.csv",
     "variant_call_table": "config/variant_call_list_TvN.tsv",

@@ -13,7 +13,7 @@ rule concat_samplelist:
     threads: 1
     resources: 
         mem_mb = 10240,
-        queue  = "shortq",
+        queue  = "mediumq",
         time_min = dataset_size,
         disk_mb  = dataset_size * 1024,
     log:

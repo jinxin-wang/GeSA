@@ -76,7 +76,7 @@ function build_pipeline_cmd {
         echo 'if [ -z "$(ls DNA_samples)"  ] ; then '  >> ${PIPELINE_SCRIPT} ;
     
         echo "
-    for fn in \` find \${DATASOURCE_DIR} -name *gz \` ; do 
+    for fn in \` find ${DATASOURCE_DIR} -name *gz \` ; do 
         ln -s \${fn} DNA_samples
     done " >> ${PIPELINE_SCRIPT} ;
     
@@ -183,11 +183,11 @@ if [ -f config/patients.tsv ] && [ ${clinic_success} -eq 0 ] ; then " >> ${PIPEL
     echo "Starting oncokb and civic annotation" ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ; 
     ## 2.0 generate configuration files
-    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
+    # snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/config/entry_point.smk  ;
     ## 2.1 mut. oncokb and civic annotations
-    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk ;
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/mut/TvN/entry_point.smk ;
     ## 2.2 cna. oncokb and civic annotations
-    snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk     ;
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web -s workflow/rules/Clinic/cna/entry_point.smk     ;
     conda deactivate ; ' >> ${PIPELINE_SCRIPT}
 
     echo "    echo 'complete' > ${CLINIC_TAG} ;

@@ -20,6 +20,16 @@
     "do_qc": True,
     "do_mqc": True,
 
+    "do_facetsSuite": False,
+    "do_mantis": False,
+    "do_sigProfiler": False,
+
+    "do_vep": False,
+    "do_funcotator": False,
+    "do_oncokb": False,
+    "do_manta": False,
+    "do_svaba": False,
+
     "python": {
         "2.7": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/python2.7",
     },
@@ -106,6 +116,9 @@
         },
     }, 
 
+    "facets_suites": {
+        "snp_pileup_wrapper": "/mnt/beegfs/userdata/j_wang/lib/facets_suite/snp-pileup-wrapper.R",
+    },
 
     "R": {
         "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/Rscript",
@@ -151,6 +164,7 @@
     },
 
     "cnv_facets":{
+        "R": "/home/j_wang@intra.igr.fr/.conda/envs/routine/bin/Rscript",
         "app": "/mnt/beegfs/userdata/j_wang/.conda/envs/pipeline_GATK_2.1.4_V2/bin/cnv_facets.R",
         "human": {
             "cval": "25 400",
@@ -192,15 +206,56 @@
             "extract_tumor_only": "workflow/scripts/oncotator_extract_information_from_MAF_tumor_only.py",
             "cosmic_t_only": "workflow/scripts/cross_oncotator_tumor_only_with_COSMIC_pipeline_version.py",
         },
+
+        "CANONICAL_TRANSCRIPTS": "workflow/resources/canonical_transcripts_ENST_IDs.txt",
     }, 
 
     "sam2fastq": {
         "targets": "config/targets.bed",
     },
 
+    "SigProfiler": {
+        "script": "workflow/scripts/SigProfiler/SigProfiler.py",
+    },
+
     "targeted": {
         "target": "config/targets.bed",
         "mutect_interval_dir": "config/bed_for_mutect2",
         "exom_bed": "config/bed_for_mutect2/targeted_S07604514_Padded_b37.bed",
+    },
+
+    "mantis": {
+        "script": "/mnt/beegfs/software/metaprism/wes/external/mantis/mantis.py",
+        "human": {
+            "bed": "workflow/resources/metaprism_paper_regions_liftover_hg19.bed"
+        },
+        "mouse": {
+            "bed": ""
+        },
+    },
+    
+    "vep": {
+        "script": "/mnt/beegfs/software/metaprism/wes/external/vep/vep",
+        "cache": "/mnt/beegfs/software/metaprism/wes/external/vep/cache",
+    },
+    
+    "oncokb": {
+        "maf_annotator": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/MafAnnotator.py",
+        "cna_annotator": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/CnaAnnotator.py",
+        "fus_annotator": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/FusionAnnotator.py",
+        "str_annotator": "/mnt/beegfs/software/metaprism/wes/external/oncokb-annotator/StructuralVariantAnnotator.py",
+        "token": "",
+    },
+
+    "manta": {
+        "script": "",
+    },
+    
+    "svaba": {
+        "script": "",
+    },
+
+    "gz": {
+        "bgzip": "/home/j_wang@intra.igr.fr/.conda/envs/bgzip/bin/bgzip",
     },
 }

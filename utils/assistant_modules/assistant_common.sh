@@ -585,7 +585,7 @@ if [ ! -d ${STORAGE_DIR} ] && [ \${DOWNLOAD_TAG} -eq 0 ] ; then
     module load java ;
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;	
     CONFIG_OPTIONS=' PROJECT_NAME=${PROJECT_NAME} STORAGE_PATH=${STORAGE_DIR} ' ;
-    snakemake \\
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake \\
         --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
         -s workflow/rules/data/download/entry_point.smk \\
         --configfile config/download.yaml \\
@@ -644,7 +644,7 @@ if [ ! -d ${CONCAT_DIR} ] && [[ \${concat_success} -eq 0 ]] ; then
     echo '[info] Starting to concatenate the raw data to directory ${CONCAT_DIR}' ;
     module load java ; 
     conda activate /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/bigr_snakemake ;
-    snakemake \\
+    /mnt/beegfs/userdata/j_wang/.conda/envs/snakemake/bin/snakemake \\
         --profile /mnt/beegfs/pipelines/unofficial-snakemake-wrappers/profiles/slurm-web \\
         -s workflow/rules/data/concat/entry_point.smk \\
         --jobscript workflow/scripts/rules_decorator.sh  \\
@@ -757,7 +757,7 @@ function backup_concat {
 
 function backup_bam {
     #### do backup of bam file
-    if [ $DO_BACKUP_BAM == true ] && [ ${DATABASE} != ${STORAGE} ] ; then
+    if [ $DO_BACKUP_BAM == true ] ; then
 	echo -e "${OKGREEN}[info]${ENDC} backup bam files to storage"
 	mkdir -p ${BACKUP_BAM_PWD} ;
 	echo "echo '[info] starting to backup bam files to storage: ${BACKUP_BAM_PWD} '" >> ${RUN_PIPELINE_SCRIPT} ;

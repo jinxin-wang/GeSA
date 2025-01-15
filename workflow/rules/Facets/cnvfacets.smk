@@ -11,7 +11,8 @@ rule cnv_facets:
         "logs/facets/{tsample}_vs_{nsample}_facets.log"
     params:
         queue = "mediumq",
-        cnv_facet = config["cnv_facets"]["app"],
+        R = config["cnv_facets"]["R"],
+        cnv_facets = config["cnv_facets"]["app"],
         gnomad_ref = config["gatk"][config["samples"]]["gnomad_ref"],
         cval = config["cnv_facets"][config["samples"]]["cval"],
         ref  = config["cnv_facets"][config["samples"]]["ref"],
@@ -22,5 +23,5 @@ rule cnv_facets:
     ## It needs the local conda env, abs. path of env will stimulate cnvfacet's protest
     conda: "routine"
     shell:
-        'cd cnv_facets; cnv_facets.R --snp-nprocs {threads} --gbuild {params.ref} --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n ../{input.normal_bam} --out {params.out_pattern}'
+        'cd cnv_facets; {params.R} {params.cnv_facets} --snp-nprocs {threads} --gbuild {params.ref} --cval {params.cval} --snp-vcf {params.gnomad_ref} -t ../{input.tumor_bam} -n ../{input.normal_bam} --out {params.out_pattern}'
  

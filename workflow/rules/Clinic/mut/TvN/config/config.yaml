@@ -170,7 +170,7 @@ params:
         run_per_sample:
           cna: true
           maf: true
-        token: d670d5f0-d271-49f1-8241-169622f99ce9
+        token: 08464043-25eb-434b-8cd1-60f8fa7ba0ed
         rules_clean: /mnt/beegfs/database/bioinfo/metaprism/wes/resources/oncokb/OncoKB_Curation_And_Rules.xlsx
     picard:
         MarkDuplicates: 

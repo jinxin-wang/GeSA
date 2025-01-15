@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from Bio.Seq import Seq
 
 ## Example command
@@ -22,10 +23,11 @@ def parse_normal(column_info,column_selection_require_processing_index,column_se
     created_info['n_t_ref_count'] = column_info[column_selection_require_processing_index[3]].split('|')[0]
     created_info['n_tumor_f'] = column_info[column_selection_require_processing_index[4]].split('|')[0]
     created_info['n_ref_F1R2'] = F1R2_info[0]
-    created_info['n_alt_F1R2'] = F1R2_info[alt_pos]
     created_info['n_ref_F2R1'] = F2R1_info[0]
-    created_info['n_alt_F2R1'] = F2R1_info[alt_pos]
-    created_info['n_t_alt_count'] = str(int(F2R1_info[alt_pos]) + int(F1R2_info[alt_pos]))
+    created_info['n_alt_F1R2'] = F1R2_info[alt_pos] if len(F1R2_info) > alt_pos else 0
+    created_info['n_alt_F2R1'] = F2R1_info[alt_pos] if len(F2R1_info) > alt_pos else 0
+    # created_info['n_t_alt_count'] = str(int(F2R1_info[alt_pos]) + int(F1R2_info[alt_pos])) 
+    created_info['n_t_alt_count'] = str(int(created_info['n_alt_F1R2']) + int(created_info['n_alt_F2R1']))
     return created_info
 
 ## One function to parse line of tumor sample, return created_info table with new information
@@ -40,10 +42,11 @@ def parse_tumor(column_info,column_selection_require_processing_index,column_sel
     created_info['t_t_ref_count'] = column_info[column_selection_require_processing_index[3]].split('|')[0]
     created_info['t_tumor_f'] = column_info[column_selection_require_processing_index[4]].split('|')[0]
     created_info['t_ref_F1R2'] = F1R2_info[0]
-    created_info['t_alt_F1R2'] = F1R2_info[alt_pos]
     created_info['t_ref_F2R1'] = F2R1_info[0]
-    created_info['t_alt_F2R1'] = F2R1_info[alt_pos]
-    created_info['t_t_alt_count'] = str(int(F2R1_info[alt_pos]) + int(F1R2_info[alt_pos]))
+    created_info['t_alt_F1R2'] = F1R2_info[alt_pos] if len(F1R2_info) > alt_pos else 0
+    created_info['t_alt_F2R1'] = F2R1_info[alt_pos] if len(F2R1_info) > alt_pos else 0
+    # created_info['t_t_alt_count'] = str(int(F2R1_info[alt_pos]) + int(F1R2_info[alt_pos])) 
+    created_info['t_t_alt_count'] = str(int(created_info['t_alt_F1R2']) + int(created_info['t_alt_F2R1']))
     return created_info
 
 def get_context_right(column_info, context_idx):
@@ -162,7 +165,7 @@ for line in MAF_FILE:
                     column_info[index] = column_info[index].split('|')[0]
                 newline = newline + column_info[index] + '\t'
             for title in created_info_list:
-                newline = newline + created_info[title] + '\t'
+                newline = newline + str(created_info[title]) + '\t'
             for info in context_info:
                 newline = newline + info + '\t'
             MAF_SUMMARY.write(newline.strip() + '\n')

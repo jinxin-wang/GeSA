@@ -129,8 +129,8 @@ rule Filter_By_Orientation_Bias:
         "logs/filter_Mutect2_TvN/{tsample}_vs_{nsample}_twicefiltered_TvN.vcf.gz.log"
     threads : 4
     resources:
-        mem_mb = lambda w, input: 11240 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (45960 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 107400)),
-        jvm_gb = lambda w, input: 10    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 20    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (40    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 100)),
+        mem_mb = lambda w, input: 17408 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 25480 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (45960 if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 107400)),
+        jvm_gb = lambda w, input: 16    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 200 else ( 24    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 400 else (40    if os.path.getsize(input.Mutect2_vcf)/1024/1024 < 800 else 100)),
 
     shell:
         "{params.gatk} --java-options \"-Xmx{resources.jvm_gb}G -XX:+UseParallelGC -XX:ParallelGCThreads={threads} -Djava.io.tmpdir=/mnt/beegfs/userdata/$USER/tmp \" FilterByOrientationBias"

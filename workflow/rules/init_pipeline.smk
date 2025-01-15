@@ -41,6 +41,7 @@ SAMPLES = []
 ## Collecting information on files to produce
 FACETS     = []
 CNV_FACETS = []
+FACETS_SUITE = []
 
 ANNOVAR   = []
 
@@ -52,14 +53,26 @@ ONCOTATOR_EXOM_COSMIC = []
 ONCOTATOR_MAF      = []
 ONCOTATOR_EXOM_MAF = []
 
+PURITY = []
+
+SIG_PROFILER = [f"SigProfiler_{config['mode']}/output/SBS/Results.SBS96.{'exome' if config['seq_type'] == 'WES' else 'all'}",
+                f"SigProfiler_{config['mode']}/SBS_cosmic_fit/Assignment_Solution/Signatures/Assignment_Solution_Signatures.txt"]
+
+MSI = []
+FACETSUITES = []
+
 VARIANT_CALL_TABLE = ""
 
 def build_TvN_targets(tsample, nsample):
-    CNV_FACETS.append("cnv_facets/" + tsample + "_vs_" + nsample + ".vcf.gz",)
-    FACETS.append("facets/" + tsample + "_vs_" + nsample + "_facets_cval500.pdf")
     MUTECT2.append("Mutect2_TvN/" + tsample + "_vs_" + nsample + "_twicefiltered_TvN.vcf.gz")
-
     if config["samples"] == "human":
+        CNV_FACETS.append("cnv_facets/" + tsample + "_vs_" + nsample + ".vcf.gz")
+        FACETS.append("facets/" + tsample + "_vs_" + nsample + "_facets_cval500.pdf")
+        PURITY.append(f"facets/{tsample}_vs_{nsample}_purity_ploidy.csv")
+    
+    if config["samples"] == "human":
+        MSI.append(f"msi/{tsample}_vs_{nsample}.tsv")
+        FACETSUITES.append(f"facets_suites/{tsample}_vs_{nsample}.snp_pileup.gz")
         ONCOTATOR_MAF.append("oncotator_TvN_maf/" + tsample + "_vs_" + nsample + "_TvN_selection.TCGAMAF")
         ONCOTATOR_COSMIC.append("oncotator_TvN_tsv_COSMIC/" + tsample + "_vs_" + nsample + "_TvN_with_COSMIC.tsv.gz")
         if config["seq_type"] == "WGS":
