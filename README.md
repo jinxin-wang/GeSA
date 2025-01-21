@@ -1,7 +1,7 @@
 ## Introduction
 GeSA (**Ge**nome **S**equencing **A**nalysis Pipeline) is a workflow designed to detect variants in whole genome, whole exome, or targeted sequencing data, specifically for Human and Mouse samples. GeSA can handle various scenarios including tumor-only, tumor/(matched/unmatched) normal, tumor/Panel of Normal (PoN), or tumor/(matched/unmatched) normal/PoN, as well as cell line data.
 
-GeSA was first prototyped by Ismael Padioleau, Denis Vorobyev and Leonardo Panunzi. [Jinxin WANG](https://github.com/jinxin-wang/) refactored the prototype scripts and continued development alongside his colleagues Andrey Yurchenko and ???. Significant contributions have also been made by [Jomar SANGALANG](https://github.com/jsangalang), [Andrei Ivashkin](https://github.com/andrrrsss), [
+GeSA was first prototyped by Ismael Padioleau, Denis Vorobyev and Leonardo Panunzi. [Jinxin WANG](https://github.com/jinxin-wang/) refactored the prototype scripts and continued development alongside his colleagues [EAST Philip](https://github.com/phileastbioinf), [Ivan Valiev](https://github.com/Spirit-booze) and Andrey Yurchenko. Significant contributions have also been made by [Jomar SANGALANG](https://github.com/jsangalang), [Andrei Ivashkin](https://github.com/andrrrsss), [
 Thibault DAYRIS](https://github.com/tdayris), [Yoann PRADAT](https://github.com/ypradat), and others.
 
 ## Summary
