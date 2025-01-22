@@ -9,7 +9,7 @@ rule Collect_Sequencing_Artifact_Metrics:
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_detail_metrics.txt"),
         temp("collect_Sequencing_Artifact_Metrics/{tsample}_artifact.pre_adapter_summary_metrics.txt"),
     params:
-        queue = "shortq",
+        queue = lambda w, input: "shortq" if os.path.getsize(input.tumor_bam)/1024/1024/1024 < 50 else ( "mediumq" if os.path.getsize(input.tumor_bam)/1024/1024/1024 < 120 else "longq"),
         # gatk  = config["gatk"]["app"],
         gatk = config["gatk"][config["samples"]]["app"],
         index = config["gatk"][config["samples"]]["genome_fasta"],
